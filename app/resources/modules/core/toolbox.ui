@@ -7,8 +7,20 @@
     <x>0</x>
     <y>0</y>
     <width>844</width>
-    <height>75</height>
+    <height>78</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>524287</width>
+    <height>78</height>
+   </size>
   </property>
   <property name="features">
    <set>QDockWidget::DockWidgetMovable</set>
@@ -23,13 +35,6 @@
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_4">
-      <item>
-       <widget class="Line" name="line">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-       </widget>
-      </item>
       <item>
        <widget class="QLabel" name="label">
         <property name="sizePolicy">
@@ -154,6 +159,27 @@
        </widget>
       </item>
       <item>
+       <widget class="QPushButton" name="cmdFullScreen">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>Fullscreen (F11)</string>
+        </property>
+        <property name="icon">
+         <iconset>
+          <normalon>:/main/icons/Fullscreen-64.png</normalon>
+         </iconset>
+        </property>
+        <property name="shortcut">
+         <string>F11</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="Line" name="line_3">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
@@ -166,7 +192,7 @@
          <string>Live (F12)</string>
         </property>
         <property name="icon">
-         <iconset resource="../../resources.qrc">
+         <iconset resource="resources.qrc">
           <normaloff>:/main/icons/Live.png</normaloff>:/main/icons/Live.png</iconset>
         </property>
         <property name="iconSize">
@@ -192,7 +218,7 @@
   </widget>
  </widget>
  <resources>
-  <include location="../../resources.qrc"/>
+  <include location="resources.qrc"/>
  </resources>
  <connections/>
 </ui>

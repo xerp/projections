@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'toolbox.ui'
 #
-# Created: Mon Sep 22 09:16:47 2014
-#      by: PyQt4 UI code generator 4.10.3
+# Created: Tue Sep 23 17:16:17 2014
+#      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -26,7 +26,13 @@ except AttributeError:
 class Ui_dockProjectionsTools(object):
     def setupUi(self, dockProjectionsTools):
         dockProjectionsTools.setObjectName(_fromUtf8("dockProjectionsTools"))
-        dockProjectionsTools.resize(844, 75)
+        dockProjectionsTools.resize(844, 78)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(dockProjectionsTools.sizePolicy().hasHeightForWidth())
+        dockProjectionsTools.setSizePolicy(sizePolicy)
+        dockProjectionsTools.setMaximumSize(QtCore.QSize(524287, 78))
         dockProjectionsTools.setFeatures(QtGui.QDockWidget.DockWidgetMovable)
         dockProjectionsTools.setAllowedAreas(QtCore.Qt.RightDockWidgetArea)
         dockProjectionsTools.setWindowTitle(_fromUtf8("Projection Tools"))
@@ -36,11 +42,6 @@ class Ui_dockProjectionsTools(object):
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
         self.horizontalLayout_4 = QtGui.QHBoxLayout()
         self.horizontalLayout_4.setObjectName(_fromUtf8("horizontalLayout_4"))
-        self.line = QtGui.QFrame(self.dockWidgetContents)
-        self.line.setFrameShape(QtGui.QFrame.VLine)
-        self.line.setFrameShadow(QtGui.QFrame.Sunken)
-        self.line.setObjectName(_fromUtf8("line"))
-        self.horizontalLayout_4.addWidget(self.line)
         self.label = QtGui.QLabel(self.dockWidgetContents)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
@@ -95,15 +96,23 @@ class Ui_dockProjectionsTools(object):
         self.cmdMainView.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.cmdMainView.setObjectName(_fromUtf8("cmdMainView"))
         self.horizontalLayout_4.addWidget(self.cmdMainView)
+        self.cmdFullScreen = QtGui.QPushButton(self.dockWidgetContents)
+        self.cmdFullScreen.setEnabled(False)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/main/icons/Fullscreen-64.png")), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        self.cmdFullScreen.setIcon(icon)
+        self.cmdFullScreen.setCheckable(True)
+        self.cmdFullScreen.setObjectName(_fromUtf8("cmdFullScreen"))
+        self.horizontalLayout_4.addWidget(self.cmdFullScreen)
         self.line_3 = QtGui.QFrame(self.dockWidgetContents)
         self.line_3.setFrameShape(QtGui.QFrame.VLine)
         self.line_3.setFrameShadow(QtGui.QFrame.Sunken)
         self.line_3.setObjectName(_fromUtf8("line_3"))
         self.horizontalLayout_4.addWidget(self.line_3)
         self.cmdLive = QtGui.QPushButton(self.dockWidgetContents)
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/main/icons/Live.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.cmdLive.setIcon(icon)
+        icon1 = QtGui.QIcon()
+        icon1.addPixmap(QtGui.QPixmap(_fromUtf8(":/main/icons/Live.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.cmdLive.setIcon(icon1)
         self.cmdLive.setIconSize(QtCore.QSize(28, 28))
         self.cmdLive.setCheckable(True)
         self.cmdLive.setAutoRepeat(False)
@@ -123,6 +132,8 @@ class Ui_dockProjectionsTools(object):
         self.cmdColorScreen.setText(_translate("dockProjectionsTools", "ColorScreen", None))
         self.cmdMainView.setText(_translate("dockProjectionsTools", "Image View (F10)", None))
         self.cmdMainView.setShortcut(_translate("dockProjectionsTools", "F10", None))
+        self.cmdFullScreen.setText(_translate("dockProjectionsTools", "Fullscreen (F11)", None))
+        self.cmdFullScreen.setShortcut(_translate("dockProjectionsTools", "F11", None))
         self.cmdLive.setText(_translate("dockProjectionsTools", "Live (F12)", None))
         self.cmdLive.setShortcut(_translate("dockProjectionsTools", "F12", None))
 

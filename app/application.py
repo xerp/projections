@@ -3,61 +3,86 @@ import time
 import threading
 import sys
 
-from PyQt4 import QtCore, QtGui
-from PyQt4.QtCore import Qt
-from functools import partial
-
-from modules import bible, songs
-from resources import resources, song_manage
-from helpers import get_projections_font, get_images_view, set_alignment, ProjectionError, ImagesViewModel
-from helpers import get_songs_completer, artists_model,remove_pycs
-from components import SongBody
 from ConfigParser import ConfigParser
 
-from modules.core import toolbox
+from PyQt4 import QtCore, QtGui
+from PyQt4.QtCore import Qt
+#from functools import partial
 
-conf = ConfigParser()
-conf.read('config.ini')
+from modules.core import toolbox, statusbar, previewer, controls
 
+#from modules import bible, songs
+#from helpers import get_projections_font, get_images_view, set_alignment, ProjectionError, ImagesViewModel
+#from helpers import get_songs_completer, artists_model,remove_pycs
+#from components import SongBody
 
 def main():
     app = QtGui.QApplication(sys.argv)
-    toolboxWidget = toolbox.Toolbox()
-    toolboxWidget.show()
-    #frame = Principal()
-    #frame.show()
+    frame = Application()
+    frame.show()
     #remove_pycs()
     sys.exit(app.exec_())
 
 
-# class Principal(QtGui.QFrame):
-#     in_live = False
-#     direct_live = False
-#     default_frame_size = None
-
-#     slides = []
-#     slide_length = len(slides)
-#     slide_position = 0
+class Application(QtGui.QFrame):
+    default_frame_size = None
 #     selected_song = None
 
-#     def __init__(self):
-#         QtGui.QFrame.__init__(self)
-#         self.__window = resources.Ui_frmPrincipal()
-#         self.__window.setupUi(self)
+    def __init__(self):
+        QtGui.QFrame.__init__(self)
 
-#         self.full_screen = FullScreenWindow(self)
+        self.config = ConfigParser()
+        self.config.read('config.ini')
 
-#         self.set_handlers()
-#         self.window_config()
+        self.configure_core_modules()
+        self.window_config()
 
-#     def window_config(self):
 
-#         self.setWindowTitle("{0} Manager (beta)".format(conf.get('GENERAL', 'TITLE')))
+    def configure_core_modules(self):
+        vBoxMainLayout = QtGui.QVBoxLayout()
+        
+        #ToolBox
+        self.__toolbox = toolbox.ToolBox()
+        vBoxMainLayout.addWidget(self.__toolbox)
+
+        #Splitter
+        splitter = QtGui.QSplitter(self)
+
+        #Previewer
+        self.__previewer = previewer.Previewer()
+        splitter.addWidget(self.__previewer)
+
+        #Controls
+        self.__controls = controls.Controls()
+        splitter.addWidget(self.__controls)
+        self.__controls.set_images()
+
+        splitter.setSizes([700,400])
+        vBoxMainLayout.addWidget(splitter)
+        
+        #StatusBar
+        self.__statusbar = statusbar.StatusBar()
+        vBoxMainLayout.addWidget(self.__statusbar)
+        
+        self.setLayout(vBoxMainLayout)
+
+    def window_config(self):
+
+        self.setWindowTitle("{0} Manager (beta)".format(self.config.get('GENERAL', 'TITLE')))
+
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/main/icons/video-projector.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.setWindowIcon(icon)
+
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Preferred)
+        sizePolicy.setHeightForWidth(self.sizePolicy().hasHeightForWidth())
+        self.setSizePolicy(sizePolicy)
+
+        self.resize(900,600)
+
 
 #         self.__window.txtPreview.setFont(get_projections_font(dict(conf.items('FONT_PREVIEW'))))
 
-#         self.__window.cmdColorScreen.setText('{0} (F9)'.format(conf.get('LIVE', 'DEFAULT_COLOR').upper()))
-#         self.__window.cmdColorScreen.setShortcut("F9")
 
 #         self.__window.txtSearch.setPlaceholderText("Search in bible (F3)")
 
@@ -68,28 +93,11 @@ def main():
 
 #         self.set_status('Ready')
 
-#         app = QtGui.QApplication.instance()
-#         screens = app.desktop().numScreens()
-
-#         self.__window.cbLiveIn.addItems(map(lambda s: 'Screen {0}'.format(s), range(1, screens + 1)))
-
-#         if screens >= conf.getint('LIVE', 'DEFAULT_SCREEN'):
-#             self.__window.cbLiveIn.setCurrentIndex(conf.getint('LIVE', 'DEFAULT_SCREEN') - 1)
+#         
 
 #         self.default_frame_size = self.size()
 
-#         try:
-#             images = get_images_view()
-#             model = ImagesViewModel(images, self.__window.cbImagesView)
-#             self.__window.cbImagesView.setModel(model)
 
-#             try:
-#                 self.__window.cbImagesView.setCurrentIndex(images.index(conf.get('GENERAL', 'DEFAULT_IMAGE')))
-#             except Exception:
-#                 pass
-
-#         except Exception, e:
-#             self.set_status(str(e), True)
 
 #     def set_handlers(self):
 
@@ -450,136 +458,6 @@ def main():
 #     def closeEvent(self, e):
 #         self.full_screen.set_visible(False)
 #         self.full_screen.hide()
-
-
-# class FullScreenWindow(QtGui.QFrame):
-#     size = QtCore.QSize(400, 400)
-#     screen_geometry = None
-
-#     def __init__(self, parent):
-#         QtGui.QFrame.__init__(self)
-#         self.parent = parent
-
-#         self.init_objects()
-#         self.init_component()
-
-#     def init_objects(self):
-#         self.main_layout = QtGui.QGridLayout(self)
-#         self.image = QtGui.QLabel()
-#         self.lblLive = QtGui.QTextEdit(self)
-
-#     def init_component(self):
-#         self.setWindowTitle('{0} Live Window (beta)'.format(conf.get('GENERAL', 'TITLE')))
-#         self.setWindowFlags(Qt.CustomizeWindowHint or Qt.WindowStaysOnTopHint)
-#         self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-
-#         self.lblLive.setLineWrapMode(QtGui.QTextEdit.WidgetWidth)
-
-#         self.lblLive.setReadOnly(True)
-#         self.lblLive.setVisible(True)
-
-#         self.main_layout.addWidget(self.lblLive)
-
-#         self.image.setScaledContents(False)
-
-#         self.reset()
-
-#     def closeEvent(self, e):
-#         self.parent.set_in_live(False)
-
-#     def set_visible(self, visible, screen=1):
-#         app = QtGui.QApplication.instance()
-
-#         self.screen_geometry = app.desktop().screenGeometry(screen)
-
-#         geometry = self.geometry()
-#         geometry.setX(self.screen_geometry.x())
-#         geometry.setY(self.screen_geometry.y())
-#         self.setGeometry(geometry)
-
-#         self.reset()
-#         self.show() if visible else self.hide()
-
-#     def reset(self):
-#         self.set_full_screen(False)
-#         self.setFixedSize(self.size)
-
-#     def __add_child(self, child):
-#         child.setVisible(True)
-#         self.main_layout.addWidget(child)
-
-#     def __remove_children(self):
-#         widgets = ['image', 'lblLive']
-
-#         for widget in widgets:
-#             obj = getattr(self, widget)
-
-#             obj.setVisible(False)
-#             self.main_layout.removeWidget(obj)
-
-#     def set_full_screen(self, full_screen):
-#         try:
-#             self.setFixedSize(self.screen_geometry.size() if full_screen else self.size)
-#         except Exception:
-#             raise ProjectionError('window must be visible before full_screen')
-
-#     def set_color(self, color=QtGui.QColor(conf.get('LIVE', 'DEFAULT_COLOR'))):
-#         self.__remove_children()
-
-#         palette = self.palette()
-#         palette.setColor(self.backgroundRole(), color)
-#         self.setPalette(palette)
-
-#     def set_image(self, image_file):
-#         self.set_color()
-#         self.main_layout.setContentsMargins(0, 0, 0, 0)
-
-#         if not image_file:
-#             raise ProjectionError('error occurred trying to loading image')
-
-#         image = QtGui.QImage()
-#         image.load(image_file)
-
-#         if image.isNull():
-#             raise ProjectionError(
-#                 'image view not found [ path:{image} ]'.format(image=image_file[:20]))
-
-#         image = image.scaled(self.screen_geometry.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
-
-#         self.image.setPixmap(QtGui.QPixmap.fromImage(image))
-#         self.image.setAlignment(Qt.AlignCenter)
-
-#         self.__add_child(self.image)
-
-#     def set_text(self, text, font_size=None,
-#                  text_color=conf.get('LIVE', 'DEFAULT_TEXT_COLOR'),
-#                  background_color=conf.get('LIVE', 'DEFAULT_BACKGROUND_COLOR'),
-#                  justification=Qt.AlignCenter):
-#         self.set_color()
-
-#         palette = self.lblLive.palette()
-#         palette.setColor(QtGui.QPalette.Base, QtGui.QColor(background_color))
-#         palette.setColor(QtGui.QPalette.Text, QtGui.QColor(text_color))
-#         self.lblLive.setPalette(palette)
-
-#         text_live_margin = dict(conf.items('TEXT_LIVE_MARGIN'))
-#         self.main_layout.setContentsMargins(float(text_live_margin['left']), float(text_live_margin['top']),
-#                                             float(text_live_margin['right']), float(text_live_margin['bottom']))
-
-#         font = get_projections_font(dict(conf.items('FONT_LIVE')))
-
-#         if font_size:
-#             font.setPointSize(font_size)
-
-#         self.lblLive.setCurrentFont(font)
-#         self.lblLive.setText(text)
-
-#         set_alignment(self.lblLive, justification)
-
-#         self.__add_child(self.lblLive)
-
-#         if self.lblLive.verticalScrollBar().isVisible():
-#             self.set_text(text, font_size - 2, text_color, background_color, justification)
 
 
 # class SongManagement(QtGui.QDialog):
