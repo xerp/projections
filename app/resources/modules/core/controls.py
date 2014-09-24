@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'controls.ui'
 #
-# Created: Tue Sep 23 14:32:49 2014
-#      by: PyQt4 UI code generator 4.10.4
+# Created: Wed Sep 24 08:37:07 2014
+#      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -96,7 +96,7 @@ class Ui_projectionsControls(object):
         self.saCmdSlides.setWidgetResizable(True)
         self.saCmdSlides.setObjectName(_fromUtf8("saCmdSlides"))
         self.scrollAreaWidgetContents_2 = QtGui.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 645, 156))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 647, 155))
         self.scrollAreaWidgetContents_2.setObjectName(_fromUtf8("scrollAreaWidgetContents_2"))
         self.gridLayout_2 = QtGui.QGridLayout(self.scrollAreaWidgetContents_2)
         self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
@@ -154,7 +154,7 @@ class Ui_projectionsControls(object):
         self.gridLayout_3.addLayout(self.gridLayout, 2, 0, 1, 1)
         self.saModuleOptions = QtGui.QScrollArea(self.dockWidgetContents)
         self.saModuleOptions.setEnabled(True)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.saModuleOptions.sizePolicy().hasHeightForWidth())
@@ -162,8 +162,10 @@ class Ui_projectionsControls(object):
         self.saModuleOptions.setWidgetResizable(True)
         self.saModuleOptions.setObjectName(_fromUtf8("saModuleOptions"))
         self.scrollAreaWidgetContents_3 = QtGui.QWidget()
-        self.scrollAreaWidgetContents_3.setGeometry(QtCore.QRect(0, 0, 647, 292))
+        self.scrollAreaWidgetContents_3.setGeometry(QtCore.QRect(0, 0, 649, 294))
         self.scrollAreaWidgetContents_3.setObjectName(_fromUtf8("scrollAreaWidgetContents_3"))
+        self.horizontalLayout = QtGui.QHBoxLayout(self.scrollAreaWidgetContents_3)
+        self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
         self.saModuleOptions.setWidget(self.scrollAreaWidgetContents_3)
         self.gridLayout_3.addWidget(self.saModuleOptions, 1, 0, 1, 1)
         projectionsControls.setWidget(self.dockWidgetContents)

@@ -170,8 +170,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>645</width>
-           <height>156</height>
+           <width>647</width>
+           <height>155</height>
           </rect>
          </property>
          <layout class="QGridLayout" name="gridLayout_2">
@@ -288,7 +288,7 @@
        <bool>true</bool>
       </property>
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
@@ -301,10 +301,11 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>647</width>
-         <height>292</height>
+         <width>649</width>
+         <height>294</height>
         </rect>
        </property>
+       <layout class="QHBoxLayout" name="horizontalLayout"/>
       </widget>
      </widget>
     </item>

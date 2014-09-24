@@ -3,24 +3,24 @@ from PyQt4.QtCore import Qt
 
 import app.modules.utils as utils
 
-class FullScreenWindow(utils.AbstractModule,QtGui.QFrame):
+class LiveViewer(QtGui.QFrame,utils.AbstractModule):
     size = QtCore.QSize(400, 400)
     screen_geometry = None
 
     def __init__(self, parent):
-        QtGui.QFrame.__init__(self)
-        self.parent = parent
+        utils.AbstractModule.__init__(self,parent,QtGui.QFrame)
 
-        self.init_objects()
-        self.init_component()
 
-    def init_objects(self):
+    def instance_variable(self):
+        utils.AbstractModule.instance_variable(self)
+
         self.main_layout = QtGui.QGridLayout(self)
         self.image = QtGui.QLabel()
         self.lblLive = QtGui.QTextEdit(self)
 
-    def init_component(self):
-        self.setWindowTitle('{0} Live Window (beta)'.format(conf.get('GENERAL', 'TITLE')))
+    def config_components(self):
+
+        self.setWindowTitle('{0} Live Window (beta)'.format(self.config.get('GENERAL', 'TITLE')))
         self.setWindowFlags(Qt.CustomizeWindowHint or Qt.WindowStaysOnTopHint)
         self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
 
@@ -34,9 +34,10 @@ class FullScreenWindow(utils.AbstractModule,QtGui.QFrame):
         self.image.setScaledContents(False)
 
         self.reset()
+        
 
     def closeEvent(self, e):
-        self.parent.set_in_live(False)
+        self.parent.live(False)
 
     def set_visible(self, visible, screen=1):
         app = QtGui.QApplication.instance()
@@ -72,9 +73,12 @@ class FullScreenWindow(utils.AbstractModule,QtGui.QFrame):
         try:
             self.setFixedSize(self.screen_geometry.size() if full_screen else self.size)
         except Exception:
-            raise ProjectionError('window must be visible before full_screen')
+            raise utils.ProjectionError('window must be visible before full_screen')
 
-    def set_color(self, color=QtGui.QColor(conf.get('LIVE', 'DEFAULT_COLOR'))):
+    def set_color(self, color=None):
+
+        color = QtGui.QColor(self.config.get('LIVE', 'DEFAULT_COLOR')) if not color else color
+
         self.__remove_children()
 
         palette = self.palette()
@@ -86,13 +90,13 @@ class FullScreenWindow(utils.AbstractModule,QtGui.QFrame):
         self.main_layout.setContentsMargins(0, 0, 0, 0)
 
         if not image_file:
-            raise ProjectionError('error occurred trying to loading image')
+            raise utils.ProjectionError('error occurred trying to loading image')
 
         image = QtGui.QImage()
         image.load(image_file)
 
         if image.isNull():
-            raise ProjectionError(
+            raise utils.ProjectionError(
                 'image view not found [ path:{image} ]'.format(image=image_file[:20]))
 
         image = image.scaled(self.screen_geometry.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
@@ -103,9 +107,13 @@ class FullScreenWindow(utils.AbstractModule,QtGui.QFrame):
         self.__add_child(self.image)
 
     def set_text(self, text, font_size=None,
-                 text_color=conf.get('LIVE', 'DEFAULT_TEXT_COLOR'),
-                 background_color=conf.get('LIVE', 'DEFAULT_BACKGROUND_COLOR'),
+                 text_color=None,
+                 background_color=None,
                  justification=Qt.AlignCenter):
+
+        text_color = self.config.get('LIVE', 'DEFAULT_TEXT_COLOR') if not text_color else text_color
+        background_color = self.config.get('LIVE', 'DEFAULT_BACKGROUND_COLOR') if not background_color else background_color
+
         self.set_color()
 
         palette = self.lblLive.palette()

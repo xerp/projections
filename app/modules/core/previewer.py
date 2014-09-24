@@ -5,5 +5,5 @@ import app.modules.utils as utils
 
 class Previewer(QtGui.QTextEdit,utils.AbstractModule):
 
-    def __init__(self):
-        utils.AbstractModule.__init__(self,QtGui.QTextEdit)
+    def __init__(self,parent):
+        utils.AbstractModule.__init__(self,parent,QtGui.QTextEdit)
