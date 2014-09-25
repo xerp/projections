@@ -105,10 +105,13 @@ class BibleOptions(utils.AbstractModule):
         self._controls.add_module_options(self)
         self._controls.configure_search_box(self.__bible_search)
 
+        self._controls.set_enable_slides(self.config.getboolean('BIBLE', 'search_forward'))
+
         self._statusbar.set_status('Bible module loaded successfully')
 
     def __search_forward(self,value):
         self._widget.sbForwardLimit.setEnabled(value == 2)
+        self._controls.set_enable_slides(value == 2)
 
     def __next_search(self):
 
@@ -181,13 +184,13 @@ class BibleOptions(utils.AbstractModule):
         search_text = self._controls.search_box_text()
         result = ''
 
-        self.__configure_navigations(search_text)
 
         if self._widget.cbSearchForward.isChecked():
             search_text = '{0}-'.format(search_text)
 
         try:
             result = self.__search_verse(search_text)
+            self.__configure_navigations(search_text)
         except BibleError, e:
             self._statusbar.set_status(str(e), True)
 
@@ -196,6 +199,6 @@ class BibleOptions(utils.AbstractModule):
         self._controls.set_slides(result, DELIMITER,self._widget.sbForwardLimit.value())
 
         if self._toolbox.direct_live:
-            self._liveViewer.set_text(self.slides[self._controls.slide_position],self._controls.live_font())
+            self._liveViewer.set_text(self._controls.slides[self._controls.slide_position],self._controls.live_font())
         
         self._controls.clear_search_box()

@@ -110,7 +110,7 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
     def __previous_slide(self):
 
         self.slide_position -= 1
-        self.__liveViewer.set_text(self.slides[self.slide_position],self._widget.sLiveFont.value())
+        self._liveViewer.set_text(self.slides[self.slide_position],self._widget.sLiveFont.value())
 
         self._widget.cmdNext.setEnabled(True)
         self._widget.cmdPrevious.setEnabled(False if self.slide_position == 0 else True)
@@ -118,7 +118,7 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
     def __next_slide(self):
 
         self.slide_position += 1
-        self.__liveViewer.set_text(self.slides[self.slide_position],self._widget.sLiveFont.value())
+        self._liveViewer.set_text(self.slides[self.slide_position],self._widget.sLiveFont.value())
 
         self._widget.cmdPrevious.setEnabled(True)
         self._widget.cmdNext.setEnabled(False if self.slide_position == (self.slide_length - 1) else True)
@@ -126,7 +126,7 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
     def __slide_click(self, button_num):
 
         self.slide_position = button_num - 1
-        self.__liveViewer.set_text(self.slides[self.slide_position],self._widget.sLiveFont.value())
+        self._liveViewer.set_text(self.slides[self.slide_position],self._widget.sLiveFont.value())
 
         self._widget.sLiveFont.setValue(
             int(dict(self.config.items('FONT_LIVE')).get('size', self.config.get('LIVE', 'DEFAULT_FONT_SIZE'))))
@@ -194,6 +194,11 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
 
     def selected_image(self):
         return self._widget.cbImagesView.model().selected()
+
+    def set_enable_slides(self,enable):
+        self._widget.cmdNext.setVisible(enable)
+        self._widget.cmdPrevious.setVisible(enable)
+        self._widget.saCmdSlides.setVisible(enable)
 
     def set_slides(self, whole_text, delimiter, limit = 1):
 

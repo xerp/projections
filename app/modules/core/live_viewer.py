@@ -2,6 +2,7 @@ from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import Qt
 
 import app.modules.utils as utils
+from app.lib.helpers import get_projections_font
 
 class LiveViewer(QtGui.QFrame,utils.AbstractModule):
     size = QtCore.QSize(400, 400)
@@ -117,11 +118,11 @@ class LiveViewer(QtGui.QFrame,utils.AbstractModule):
         palette.setColor(QtGui.QPalette.Text, QtGui.QColor(text_color))
         self.lblLive.setPalette(palette)
 
-        text_live_margin = dict(conf.items('TEXT_LIVE_MARGIN'))
+        text_live_margin = dict(self.config.items('TEXT_LIVE_MARGIN'))
         self.main_layout.setContentsMargins(float(text_live_margin['left']), float(text_live_margin['top']),
                                             float(text_live_margin['right']), float(text_live_margin['bottom']))
 
-        font = get_projections_font(dict(conf.items('FONT_LIVE')))
+        font = get_projections_font(dict(self.config.items('FONT_LIVE')))
 
         if font_size:
             font.setPointSize(font_size)
@@ -129,7 +130,7 @@ class LiveViewer(QtGui.QFrame,utils.AbstractModule):
         self.lblLive.setCurrentFont(font)
         self.lblLive.setText(text)
 
-        set_alignment(self.lblLive, justification)
+        #set_alignment(self.lblLive, justification)
 
         self.__add_child(self.lblLive)
 
