@@ -1,0 +1,37 @@
+{% extends "general.html" %}
+
+{% block content %}
+	<style type="text/css">
+			#passage{
+				text-align:center;
+				font-size: {{font_size}}pt;
+			}
+			#church_name, #bible_version{
+				position: absolute;
+			}
+			#church_name{
+				bottom: 0;
+				left:0;
+				font-size: 25pt;
+			}
+			#church_name b{
+				color: red;
+			}
+			#bible_version{
+				bottom: 0;
+				right:0;
+				font-size: 18pt;
+			}
+
+		</style>
+	{% for passage in passages %}
+		{% if not loop.first %}
+			<br>
+		{% endif%}
+    	<div id="passage">{{passage}}</div>
+    	<footer>
+			<span id="church_name"><b>I</b>glesia <b>E</b>vangélica <b>E</b>l <b>R</b>enuevo</span>
+			<span id="bible_version">({{bible_version}})</span>
+		</footer>	
+	{% endfor %}
+{% endblock %}

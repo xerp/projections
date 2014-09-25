@@ -182,6 +182,7 @@ class BibleOptions(utils.AbstractModule):
 
         self._controls.set_search_box_text(text)
         search_text = self._controls.search_box_text()
+        template = self.template('bible')
         result = ''
 
 
@@ -196,7 +197,13 @@ class BibleOptions(utils.AbstractModule):
 
         self._previewer.set_text(result)
 
-        self._controls.set_slides(result, DELIMITER,self._widget.sbForwardLimit.value())
+        result = template.render(
+            passages=result.split(DELIMITER),
+            font_size=self.config.getint('LIVE','default_font_size'),
+            bible_version=self.config.get('BIBLE','default_bible')
+            )
+
+        self._controls.set_slides(result, '<br>', self._widget.sbForwardLimit.value())
 
         if self._toolbox.direct_live:
             self._liveViewer.set_text(self._controls.slides[self._controls.slide_position],self._controls.live_font())

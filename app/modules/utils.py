@@ -1,6 +1,7 @@
 from ConfigParser import ConfigParser
 
 from PyQt4 import QtCore, QtGui
+from jinja2 import Environment, FileSystemLoader
 
 
 class ProjectionError(Exception):
@@ -49,6 +50,12 @@ class AbstractModule(QtGui.QWidget):
     def set_dependents(self,modules):
         for module_name, module in modules.iteritems():
             self.set_dependent(module_name,module)
+
+    def template(self,module):
+        path = self.config.get('GENERAL','template_path')
+        env = Environment(loader=FileSystemLoader(path))
+        return env.get_template('{0}.html'.format(module))
+
 
     def config_components(self):
         pass

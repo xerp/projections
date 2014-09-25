@@ -1,8 +1,11 @@
 from PyQt4 import QtCore, QtGui
-from PyQt4.QtCore import Qt
+from PyQt4.QtCore import Qt, QUrl
+from PyQt4.QtWebKit import QWebView
 
 import app.modules.utils as utils
 from app.lib.helpers import get_projections_font
+
+
 
 class LiveViewer(QtGui.QFrame,utils.AbstractModule):
     size = QtCore.QSize(400, 400)
@@ -17,7 +20,7 @@ class LiveViewer(QtGui.QFrame,utils.AbstractModule):
 
         self.main_layout = QtGui.QGridLayout(self)
         self.image = QtGui.QLabel()
-        self.lblLive = QtGui.QTextEdit(self)
+        self.lblLive = QWebView()#QtGui.QTextEdit(self)
 
     def config_components(self):
 
@@ -25,9 +28,9 @@ class LiveViewer(QtGui.QFrame,utils.AbstractModule):
         self.setWindowFlags(Qt.CustomizeWindowHint or Qt.WindowStaysOnTopHint)
         self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
 
-        self.lblLive.setLineWrapMode(QtGui.QTextEdit.WidgetWidth)
+        #self.lblLive.setLineWrapMode(QtGui.QTextEdit.WidgetWidth)
 
-        self.lblLive.setReadOnly(True)
+        #self.lblLive.setReadOnly(True)
         self.lblLive.setVisible(True)
 
         self.main_layout.addWidget(self.lblLive)
@@ -103,36 +106,36 @@ class LiveViewer(QtGui.QFrame,utils.AbstractModule):
 
         self.__add_child(self.image)
 
-    def set_text(self, text, font_size=None,
-                 text_color=None,
-                 background_color=None,
-                 justification=Qt.AlignCenter):
+    def set_text(self, html, font_size=None):
 
-        text_color = self.config.get('LIVE', 'DEFAULT_TEXT_COLOR') if not text_color else text_color
-        background_color = self.config.get('LIVE', 'DEFAULT_BACKGROUND_COLOR') if not background_color else background_color
+        self.main_layout.setContentsMargins(0,0,0,0)
 
-        self.set_color()
+        self.lblLive.setHtml(html)
 
-        palette = self.lblLive.palette()
-        palette.setColor(QtGui.QPalette.Base, QtGui.QColor(background_color))
-        palette.setColor(QtGui.QPalette.Text, QtGui.QColor(text_color))
-        self.lblLive.setPalette(palette)
+        # text_color = self.config.get('LIVE', 'DEFAULT_TEXT_COLOR') if not text_color else text_color
+        # background_color = self.config.get('LIVE', 'DEFAULT_BACKGROUND_COLOR') if not background_color else background_color
 
-        text_live_margin = dict(self.config.items('TEXT_LIVE_MARGIN'))
-        self.main_layout.setContentsMargins(float(text_live_margin['left']), float(text_live_margin['top']),
-                                            float(text_live_margin['right']), float(text_live_margin['bottom']))
 
-        font = get_projections_font(dict(self.config.items('FONT_LIVE')))
+        # palette = self.lblLive.palette()
+        # palette.setColor(QtGui.QPalette.Base, QtGui.QColor(background_color))
+        # palette.setColor(QtGui.QPalette.Text, QtGui.QColor(text_color))
+        # self.lblLive.setPalette(palette)
 
-        if font_size:
-            font.setPointSize(font_size)
+        #text_live_margin = dict(self.config.items('TEXT_LIVE_MARGIN'))
+        
 
-        self.lblLive.setCurrentFont(font)
-        self.lblLive.setText(text)
+        # font = get_projections_font(dict(self.config.items('FONT_LIVE')))
 
-        #set_alignment(self.lblLive, justification)
+        # if font_size:
+        #     font.setPointSize(font_size)
+
+        # self.lblLive.setCurrentFont(font)
+        # self.lblLive.setText(text)
+
+        # #set_alignment(self.lblLive, justification)
 
         self.__add_child(self.lblLive)
 
-        if self.lblLive.verticalScrollBar().isVisible():
-            self.set_text(text, font_size - 2, text_color, background_color, justification)
+        #if self.lblLive.verticalScrollBar().isVisible():
+         #   print 'paso'
+          #  self.set_text(text, font_size - 2)
