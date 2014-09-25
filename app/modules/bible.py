@@ -95,7 +95,6 @@ class BibleOptions(utils.AbstractModule):
         self._widget.sbForwardLimit.setValue(self.config.getint('BIBLE', 'forward_limit'))
 
         self.callback('search_forward',self.__search_forward)
-
         self.callback('previous_chapter',self.__previous_chapter)
         self.callback('next_chapter',self.__next_chapter)
         self.callback('previous_verse',self.__previous_verse)
@@ -113,36 +112,37 @@ class BibleOptions(utils.AbstractModule):
 
     def __next_search(self):
 
-        text = str(self.__current_search).split(' ')[::-2]
+        text = self.__current_search.split(' ')[0:-1]
         text = ' '.join(text)
         next_search = '{0} {1}:{2}'.format(text,self.__current_chapter,self.__current_verse)
-        print next_search
+
         return next_search
 
     def __previous_chapter(self):
         if self.__current_chapter > 1:
 
             self.__current_chapter -= 1
-            self.__next_search()
+            self.__bible_search(self.__next_search())
 
     def __next_chapter(self):
 
         self.__current_chapter += 1
-        self.__next_search()
+        self.__bible_search(self.__next_search())
 
     def __previous_verse(self):
         if self.__current_verse > 1:
 
             self.__current_verse -= 1
-            self.__next_search()
+            self.__bible_search(self.__next_search())
 
     def __next_verse(self):
 
         self.__current_verse += 1
-        self.__next_search()
+        self.__bible_search(self.__next_search())
 
     def __configure_navigations(self,text):
 
+        text = str(text)
         #If text search contains , or - navigation is disable
         disable_navigation = re.match('.*[,-]+.*', text)
         active = False if disable_navigation else True
@@ -160,8 +160,8 @@ class BibleOptions(utils.AbstractModule):
                 verse = values[1] if values[1] else 1
 
                 self.__current_search = text
-                self.__current_chapter = chapter
-                self.__current_verse = verse
+                self.__current_chapter = int(chapter)
+                self.__current_verse = int(verse)
             except Exception:
                 pass
 

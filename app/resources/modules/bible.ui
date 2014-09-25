@@ -26,6 +26,9 @@
       <layout class="QGridLayout" name="gridLayout">
        <item row="2" column="1">
         <widget class="QPushButton" name="cmdNextChapter">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
            <horstretch>0</horstretch>
@@ -61,6 +64,9 @@
        </item>
        <item row="2" column="0">
         <widget class="QPushButton" name="cmdPrevChapter">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
            <horstretch>0</horstretch>
@@ -93,6 +99,9 @@
        </item>
        <item row="3" column="1">
         <widget class="QPushButton" name="cmdNextVerse">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
            <horstretch>0</horstretch>
@@ -122,6 +131,9 @@
        </item>
        <item row="3" column="0">
         <widget class="QPushButton" name="cmdPrevVerse">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
            <horstretch>0</horstretch>

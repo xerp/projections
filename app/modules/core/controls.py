@@ -147,12 +147,12 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
         return self._widget.txtSearch.text()
 
     def set_search_box_text(self,text = None):
-        
+
         if text:
             self._widget.txtSearch.setText(text)
 
     def clear_search_box(self):
-        self.set_search_box_text()
+        self._widget.txtSearch.setText('')
 
     def live_font(self):
         return self._widget.sLiveFont.value()

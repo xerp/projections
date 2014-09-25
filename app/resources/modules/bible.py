@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'bible.ui'
 #
-# Created: Thu Sep 25 13:23:17 2014
+# Created: Thu Sep 25 18:22:42 2014
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -39,6 +39,7 @@ class Ui_bibleOptions(object):
         self.gridLayout = QtGui.QGridLayout()
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.cmdNextChapter = QtGui.QPushButton(bibleOptions)
+        self.cmdNextChapter.setEnabled(False)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -53,6 +54,7 @@ class Ui_bibleOptions(object):
         self.cmdNextChapter.setObjectName(_fromUtf8("cmdNextChapter"))
         self.gridLayout.addWidget(self.cmdNextChapter, 2, 1, 1, 1)
         self.cmdPrevChapter = QtGui.QPushButton(bibleOptions)
+        self.cmdPrevChapter.setEnabled(False)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -64,6 +66,7 @@ class Ui_bibleOptions(object):
         self.cmdPrevChapter.setObjectName(_fromUtf8("cmdPrevChapter"))
         self.gridLayout.addWidget(self.cmdPrevChapter, 2, 0, 1, 1)
         self.cmdNextVerse = QtGui.QPushButton(bibleOptions)
+        self.cmdNextVerse.setEnabled(False)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -76,6 +79,7 @@ class Ui_bibleOptions(object):
         self.cmdNextVerse.setObjectName(_fromUtf8("cmdNextVerse"))
         self.gridLayout.addWidget(self.cmdNextVerse, 3, 1, 1, 1)
         self.cmdPrevVerse = QtGui.QPushButton(bibleOptions)
+        self.cmdPrevVerse.setEnabled(False)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
