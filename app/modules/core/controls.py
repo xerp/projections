@@ -3,6 +3,7 @@ from PyQt4.QtCore import Qt
 
 import app.resources.modules.core.controls as ui_resource
 import app.modules.utils as utils
+from functools import partial
 
 from app.lib.helpers import get_images_view, ImagesViewModel,get_screens
 
@@ -11,7 +12,10 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
     __controls = {
         'live_font': {'sLiveFont':['sliderMoved(int)','valueChanged(int)']},
         'refresh_images':{'cmdRefreshImageView':'clicked()'},
-        'refresh_screens':{'cmdRefreshLiveScreens':'clicked()'}
+        'previous_slide':{'cmdPrevious':'clicked()'},
+        'next_slide':{'cmdNext':'clicked()'},
+        'refresh_screens':{'cmdRefreshLiveScreens':'clicked()'},
+        'search':{'txtSearch':'returnPressed()'}
     }
 
     def __init__(self,parent):
@@ -33,9 +37,14 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
         self.module_options_panel.setVisible(False)
         self._widget.txtSearch.setVisible(False)
 
+        self._widget.sLiveFont.setValue(
+             int(dict(self.config.items('FONT_LIVE')).get('size', self.config.getint('LIVE', 'DEFAULT_FONT_SIZE'))))
+
         self.callback('refresh_images',self.__set_images)
         self.callback('refresh_screens',self.__set_live_screens)
         self.callback('live_font',self.__live_font)
+        self.callback('previous_slide',self.__previous_slide)
+        self.callback('next_slide',self.__next_slide)
 
 
     def __set_live_screens(self):
@@ -46,15 +55,6 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
 
         if screens >= self.config.getint('LIVE', 'DEFAULT_SCREEN'):
             self._widget.cbLiveScreens.setCurrentIndex(self.config.getint('LIVE', 'DEFAULT_SCREEN') - 1)
-
-    def __seeker(self):
-        self.__remove_buttons_slides()
-
-        if self.in_live and self.slide_length > 1:
-            self.__set_buttons_slides(self.slide_length)
-
-            self._widget.cmdPrevious.setEnabled(False)
-            self._widget.cmdNext.setEnabled(True)
 
     def __remove_buttons_slides(self):
 
@@ -75,7 +75,7 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
             button.setMaximumSize(QtCore.QSize(30, 30))
             button.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
 
-            #FIXME button.clicked.connect(partial(self.onBtnSlide_clicked, slide))
+            button.clicked.connect(partial(self.__slide_click, slide))
 
             items = self._widget.cmdSlides.count()
             row = items / cols
@@ -101,18 +101,61 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
 
         if self._toolbox.in_live:
             try:
-                pass #self.__liveViewer.set_text(self.slides[self.slide_position], value)
+                self._liveViewer.set_text(self.slides[self.slide_position], value)
             except IndexError:
                 pass
 
         self._statusbar.set_status('Font size: {0} point(s)'.format(value), time_to_hide=2)
 
-    def configure_search_box(self):
+    def __previous_slide(self):
+
+        self.slide_position -= 1
+        self.__liveViewer.set_text(self.slides[self.slide_position],self._widget.sLiveFont.value())
+
+        self._widget.cmdNext.setEnabled(True)
+        self._widget.cmdPrevious.setEnabled(False if self.slide_position == 0 else True)
+
+    def __next_slide(self):
+
+        self.slide_position += 1
+        self.__liveViewer.set_text(self.slides[self.slide_position],self._widget.sLiveFont.value())
+
+        self._widget.cmdPrevious.setEnabled(True)
+        self._widget.cmdNext.setEnabled(False if self.slide_position == (self.slide_length - 1) else True)
+
+    def __slide_click(self, button_num):
+
+        self.slide_position = button_num - 1
+        self.__liveViewer.set_text(self.slides[self.slide_position],self._widget.sLiveFont.value())
+
+        self._widget.sLiveFont.setValue(
+            int(dict(self.config.items('FONT_LIVE')).get('size', self.config.get('LIVE', 'DEFAULT_FONT_SIZE'))))
+
+        self._widget.cmdNext.setEnabled(False if self.slide_position == (self.slide_length - 1) else True)
+        self._widget.cmdPrevious.setEnabled(False if self.slide_position == 0 else True)
+
+    def configure_search_box(self,callback = None):
         self._widget.txtSearch.setVisible(True)
 
         self._widget.txtSearch.selectAll()
         self._widget.txtSearch.setFocus()
 
+        if callback:
+            self.callback('search',callback)
+
+    def search_box_text(self):
+        return self._widget.txtSearch.text()
+
+    def set_search_box_text(self,text = None):
+        
+        if text:
+            self._widget.txtSearch.setText(text)
+
+    def clear_search_box(self):
+        self.set_search_box_text()
+
+    def live_font(self):
+        return self._widget.sLiveFont.value()
 
     def add_module_options(self,widget):
         vBoxMainLayout = QtGui.QVBoxLayout()
@@ -122,17 +165,48 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
         self.module_options_panel.setLayout(vBoxMainLayout)
         self.module_options_panel.setVisible(True)
 
+    def hide_module_options(self):
+        self.module_options_panel.setVisible(False)
+
+    def hide_search_box(self):
+        self._widget.txtSearch.setVisible(False)
+
     def configure(self):
 
         try:
 
             self.__set_images()
 
-            self._widget.sLiveFont.setValue(
-             int(dict(self.config.items('FONT_LIVE')).get('size', self.config.getint('LIVE', 'DEFAULT_FONT_SIZE'))))
-
         except Exception, e:
             self._statusbar.set_status(e.message,True,5)
+
+    def seeker(self):
+        self.__remove_buttons_slides()
+
+        if self._toolbox.in_live and self.slide_length > 1:
+            self.__set_buttons_slides(self.slide_length)
+
+            self._widget.cmdPrevious.setEnabled(False)
+            self._widget.cmdNext.setEnabled(True)
+
+    def selected_screen(self):
+        return self._widget.cbLiveScreens.currentIndex() + 1
+
+    def selected_image(self):
+        return self._widget.cbImagesView.model().selected()
+
+    def set_slides(self, whole_text, delimiter, limit = 1):
+
+        if limit > 1:
+            splitted = whole_text.split(delimiter)[:limit]
+        else:
+            splitted = whole_text.split(delimiter)
+
+        self.slides = filter(lambda s: s and s != '(END)', splitted)
+        self.slide_length = len(self.slides)
+        self.slide_position = 0
+
+        self.seeker()
 
     def set_live(self,in_live):
         self._widget.cbLiveScreens.setEnabled(not in_live)
@@ -141,99 +215,10 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
             self._widget.cmdPrevious.setEnabled(False)
             self._widget.cmdNext.setEnabled(False)
 
-        self.__seeker
-
-    def selected_screen(self):
-        return self._widget.cbLiveScreens.currentIndex() + 1
-
-    def selected_image(self):
-        return self._widget.cbImagesView.model().selected()
+        self.seeker()
 
     def keyPressEvent(self, e):
         
         if e.key() == Qt.Key_F3:
             self._widget.txtSearch.selectAll()
             self._widget.txtSearch.setFocus()
-
-
-
-    #     def set_slides(self, whole_text, delimiter, limit=conf.getint('BIBLE', 'FORWARD_LIMIT')):
-
-#         if self.__window.chkSearchForward.isChecked():
-#             splitted = whole_text.split(delimiter)[:limit]
-#         else:
-#             splitted = whole_text.split(delimiter)
-
-#         self.slides = filter(lambda s: s and s != '(END)', splitted)
-#         self.slide_length = len(self.slides)
-#         self.slide_position = 0
-
-#         self.set_seeker()
-
-    #     def txtSearch_enter_pressed(self):
-#         text = self.__window.txtSearch.text()
-#         result = ''
-#         delimiter = ''
-
-#         self.set_status('Ready')
-
-#         if self.__window.rbBible.isChecked():
-#             if self.__window.chkSearchForward.isChecked():
-#                 text = '{0}-'.format(text)
-
-#             delimiter = bible.DELIMITER
-#             try:
-#                 result = bible.search_verse(text)
-#             except bible.BibleError, e:
-#                 self.set_status(str(e), True)
-
-#         else:
-#             delimiter = songs.DELIMITER
-
-#             try:
-#                 self.selected_song = self.__window.txtSearch.completer().model().selected()
-#                 result = self.selected_song.body
-
-#                 self.__window.cmdEditSong.setEnabled(True)
-#                 self.__window.cmdDeleteSong.setEnabled(True)
-#             except songs.SongError, e:
-#                 self.set_status(str(e), True)
-
-#         self.set_slides(result, delimiter)
-
-#         self.__window.txtPreview.setText(result)
-
-#         if self.direct_live:
-#             self.full_screen.set_text(self.slides[self.slide_position],
-#                                       self.__window.sLiveFont.value())
-
-
-#     def cmdPrevious_clicked(self):
-
-#         self.slide_position -= 1
-#         self.full_screen.set_text(self.slides[self.slide_position],
-#                                   self.__window.sLiveFont.value())
-
-#         self.__window.cmdNext.setEnabled(True)
-#         self.__window.cmdPrevious.setEnabled(False if self.slide_position == 0 else True)
-
-#     def cmdNext_clicked(self):
-
-#         self.slide_position += 1
-#         self.full_screen.set_text(self.slides[self.slide_position],
-#                                   self.__window.sLiveFont.value())
-
-#         self.__window.cmdPrevious.setEnabled(True)
-#         self.__window.cmdNext.setEnabled(False if self.slide_position == (self.slide_length - 1) else True)
-
-#     def onBtnSlide_clicked(self, button_num):
-
-#         self.slide_position = button_num - 1
-#         self.full_screen.set_text(self.slides[self.slide_position],
-#                                   self.__window.sLiveFont.value())
-
-#         self.__window.sLiveFont.setValue(
-#             int(dict(conf.items('FONT_LIVE')).get('size', conf.get('LIVE', 'DEFAULT_FONT_SIZE'))))
-
-#         self.__window.cmdNext.setEnabled(False if self.slide_position == (self.slide_length - 1) else True)
-#         self.__window.cmdPrevious.setEnabled(False if self.slide_position == 0 else True)

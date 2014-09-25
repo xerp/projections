@@ -16,13 +16,13 @@ def remove_pycs():
             if fi[-3:] == 'pyc':
                 os.remove(os.path.join(root,fi))
 
-# def get_projections_font(font_properties):
-#     font = QtGui.QFont(font_properties.get('name', 'arial'))
-#     font.setPointSize(int(font_properties.get('size', conf.getint('LIVE', 'DEFAULT_FONT_SIZE'))))
-#     font.setBold(bool(font_properties.get('bold', False)))
-#     font.setWeight(int(font_properties.get('weight', 75)))
+def get_projections_font(font_properties):
+    font = QtGui.QFont(font_properties.get('name', 'arial'))
+    font.setPointSize(int(font_properties.get('size', conf.getint('LIVE', 'DEFAULT_FONT_SIZE'))))
+    font.setBold(bool(font_properties.get('bold', False)))
+    font.setWeight(int(font_properties.get('weight', 75)))
 
-#     return font
+    return font
 
 def get_screens():
     app = QtGui.QApplication.instance()
@@ -98,6 +98,13 @@ class AbstractProjectionLinealDataModel(QtCore.QAbstractListModel):
         except (AttributeError,IndexError):
             pass
 
+class ImagesViewModel(AbstractProjectionLinealDataModel):
+    def data(self, index, role=Qt.DisplayRole):
+        if index.isValid() and role == Qt.DisplayRole:
+            image = self.data_list[index.row()]
+
+            return image.split(os.sep)[-1].split('.')[0]
+
 
 # class ArtistDataModel(AbstractProjectionLinealDataModel):
 #     def data(self, index, role=Qt.DisplayRole):
@@ -124,11 +131,3 @@ class AbstractProjectionLinealDataModel(QtCore.QAbstractListModel):
 #             return filter(lambda s: s.title_and_artist == text, self.data_list)[0]
 #         except (TypeError, IndexError):
 #             raise songs.SongError('song not found')
-
-
-class ImagesViewModel(AbstractProjectionLinealDataModel):
-    def data(self, index, role=Qt.DisplayRole):
-        if index.isValid() and role == Qt.DisplayRole:
-            image = self.data_list[index.row()]
-
-            return image.split(os.sep)[-1].split('.')[0]

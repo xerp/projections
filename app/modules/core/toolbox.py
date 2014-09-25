@@ -1,11 +1,12 @@
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import Qt
 
-import app.modules
+import pkgutil
+import importlib
 import app.resources.modules.core.toolbox as ui_resource
 import app.modules.utils as utils
 
-MODULES_TO_EXCLUDE = ['core','utils','songs']
+MODULES_TO_EXCLUDE = ['utils',]
 
 class ToolBox(QtGui.QDockWidget,utils.AbstractModule):
 
@@ -13,9 +14,10 @@ class ToolBox(QtGui.QDockWidget,utils.AbstractModule):
         'color': {'cmdColorScreen':'clicked()'},
         'live':{'cmdLive':'toggled(bool)'},
         'fullscreen':{'cmdFullScreen':'toggled(bool)'},
-        'go_live':{'cmdGotoLive':'clicked()'},
+        'go_to_live':{'cmdGotoLive':'clicked()'},
         'direct_live':{'cmdDirectToLive':'toggled(bool)'},
-        'image':{'cmdMainView':'clicked()'} 
+        'image':{'cmdMainView':'clicked()'},
+        'options' : {'cbOptions': 'currentIndexChanged(const QString&)'} 
     }
 
     def __init__(self,parent):
@@ -38,12 +40,17 @@ class ToolBox(QtGui.QDockWidget,utils.AbstractModule):
         self.callback('image',self.__image_view)
         self.callback('color',self.__color_view)
         self.callback('fullscreen',self.__full_screen)
+        self.callback('options',self.__option_changed)
+        self.callback('direct_live',self.__direct_to_live)
+        self.callback('go_to_live',self.__go_to_live)
+
 
     def __set_modules(self):
 
-        modules = app.modules.__dict__
-        modules = filter(lambda m: '__' not in m and m not in MODULES_TO_EXCLUDE,modules)
-        modules.insert(0,'bible')
+        modules = filter(lambda mod: 'app.modules.' in mod and 'core' not in mod,
+            map(lambda (m,n,i): n ,pkgutil.walk_packages('app.modules')))
+        modules = map(lambda mod: mod.split('.')[-1].capitalize(),modules)
+        modules = filter(lambda mod: mod.lower() not in MODULES_TO_EXCLUDE,modules)
 
         self._widget.cbOptions.addItems(modules)
 
@@ -71,11 +78,33 @@ class ToolBox(QtGui.QDockWidget,utils.AbstractModule):
         self._liveViewer.set_full_screen(active)
         self._statusbar.set_full_screen_status(active)
 
+    def __option_changed(self,text):
+        self.configure_selected_module()
+
+    def __direct_to_live(self, active):
+        self.direct_live = active
+        self._statusbar.set_status('Direct live {0}'.format('on' if active else 'off'))
+
+    def __go_to_live(self):
+        text = self._previewer.toPlainText()
+
+        if text:
+            self._liveViewer.set_text(self._controls.slides[self._controls.slide_position],self._controls.live_font())
+            self._controls.seeker()
+
+        self._statusbar.set_status('View refreshed')
 
     def configure_selected_module(self):
 
-        module = __import__('app.modules.bible').modules.bible
-        module.configure_options(self._controls)
+        module = self._widget.cbOptions.currentText()
+        module = importlib.import_module('app.modules.{0}'.format(str(module).lower()))
+
+        try:
+            module.configure_options(self._controls, self._statusbar, self._previewer, self._liveViewer, self)
+        except AttributeError, e:
+            self._controls.hide_module_options()
+            self._controls.hide_search_box()
+            self._statusbar.set_status('{0} module dont have options'.format(module.__name__.split('.')[-1]),time_to_hide=5)
 
 
     def set_live(self,in_live):
@@ -98,37 +127,3 @@ class ToolBox(QtGui.QDockWidget,utils.AbstractModule):
 
         self._liveViewer.set_visible(self.in_live, self._controls.selected_screen())
         self._liveViewer.set_color(Qt.red)
-
-        # self.__window.txtPreview.setFont(get_projections_font(dict(conf.items('FONT_PREVIEW'))))
-        # self.__window.txtSearch.setPlaceholderText("Search in bible (F3)")
-
-
-    #     def rbBible_clicked(self):
-#         self.__window.txtSearch.setPlaceholderText('Search in bible (F3)')
-#         self.__window.txtSearch.setCompleter(None)
-
-#         self.__window.txtSearch.selectAll()
-#         self.__window.txtSearch.setFocus()
-
-#         self.__window.cmdEditSong.setEnabled(False)
-#         self.__window.cmdDeleteSong.setEnabled(False)
-#         self.selected_song = None
-
-#         self.set_status('Bible search')
-
-    #     def cmdDirectToLive_toggled(self, active):
-#         self.direct_live = active
-#         self.set_status('Direct live {0}'.format('on' if active else 'off'))
-
-#     def cmdGotoLive_clicked(self):
-#         text = self.__window.txtPreview.toPlainText()
-
-#         if text:
-#             self.full_screen.set_text(self.slides[self.slide_position],
-#                                       self.__window.sLiveFont.value())
-
-#             if self.in_live:
-#                 self.set_seeker()
-
-#         self.set_status('View refreshed')
-

@@ -34,10 +34,6 @@ class LiveViewer(QtGui.QFrame,utils.AbstractModule):
         self.image.setScaledContents(False)
 
         self.reset()
-        
-
-    def closeEvent(self, e):
-        self.parent.live(False)
 
     def set_visible(self, visible, screen=1):
         app = QtGui.QApplication.instance()

@@ -82,7 +82,8 @@ class Application(QtGui.QFrame):
         self.__toolbox.set_dependents({
             'controls':self.__controls,
             'statusbar':self.__statusbar,
-            'liveViewer':self.__liveViewer
+            'liveViewer':self.__liveViewer,
+            'previewer' : self.__previewer
             })
 
         #Configure Controls

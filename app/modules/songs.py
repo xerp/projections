@@ -1,5 +1,3 @@
-__author__ = 'santiago.depedro'
-
 import app.lib.orm as orm
 
 from sqlalchemy import Column, Integer, String, Text, ForeignKey
