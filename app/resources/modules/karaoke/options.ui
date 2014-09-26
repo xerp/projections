@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Form</class>
- <widget class="QWidget" name="Form">
+ <class>options</class>
+ <widget class="QWidget" name="options">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>542</width>
-    <height>343</height>
+    <width>308</width>
+    <height>338</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,32 +17,7 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout">
-       <item>
-        <widget class="QPushButton" name="pushButton_3">
-         <property name="text">
-          <string>PushButton</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pushButton_2">
-         <property name="text">
-          <string>PushButton</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pushButton">
-         <property name="text">
-          <string>PushButton</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <widget class="QTableWidget" name="tableWidget">
+      <widget class="QTableWidget" name="lstSongs">
        <property name="gridStyle">
         <enum>Qt::SolidLine</enum>
        </property>
@@ -57,7 +32,7 @@
        </attribute>
        <column>
         <property name="text">
-         <string>Name</string>
+         <string>Song</string>
         </property>
        </column>
        <column>
@@ -67,10 +42,49 @@
        </column>
       </widget>
      </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QPushButton" name="cmdAddSong">
+         <property name="text">
+          <string>Add song</string>
+         </property>
+         <property name="icon">
+          <iconset resource="../core/resources.qrc">
+           <normaloff>:/main/icons/add-16.png</normaloff>:/main/icons/add-16.png</iconset>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="cmdEditSong">
+         <property name="text">
+          <string>Edit song</string>
+         </property>
+         <property name="icon">
+          <iconset resource="../core/resources.qrc">
+           <normaloff>:/main/icons/edit-16.png</normaloff>:/main/icons/edit-16.png</iconset>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="cmdDeleteSong">
+         <property name="text">
+          <string>Delete song</string>
+         </property>
+         <property name="icon">
+          <iconset resource="../core/resources.qrc">
+           <normaloff>:/main/icons/delete-16.png</normaloff>:/main/icons/delete-16.png</iconset>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
     </layout>
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../core/resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>songManagement</class>
+ <widget class="QWizard" name="songManagement">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>667</width>
+    <height>522</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Wizard</string>
+  </property>
+  <property name="modal">
+   <bool>true</bool>
+  </property>
+  <property name="wizardStyle">
+   <enum>QWizard::AeroStyle</enum>
+  </property>
+  <property name="options">
+   <set>QWizard::NoBackButtonOnStartPage</set>
+  </property>
+  <widget class="QWizardPage" name="wizardPage1">
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <property name="sizeConstraint">
+       <enum>QLayout::SetMaximumSize</enum>
+      </property>
+      <item>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="font">
+           <font>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Title</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1" colspan="7">
+         <widget class="QLineEdit" name="txtTitle"/>
+        </item>
+        <item row="6" column="7">
+         <widget class="QToolButton" name="cmdDeleteArtist">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="../core/resources.qrc">
+            <normaloff>:/main/icons/delete-16.png</normaloff>:/main/icons/delete-16.png</iconset>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="5">
+         <widget class="QToolButton" name="cmdAddArtist">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="../core/resources.qrc">
+            <normaloff>:/main/icons/add-16.png</normaloff>:/main/icons/add-16.png</iconset>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="6">
+         <widget class="QToolButton" name="cmdEditArtist">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="../core/resources.qrc">
+            <normaloff>:/main/icons/edit-16.png</normaloff>:/main/icons/edit-16.png</iconset>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_2">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="font">
+           <font>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Artist</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0" colspan="5">
+         <widget class="QLineEdit" name="txtSearchArtist">
+          <property name="placeholderText">
+           <string>Search for name...</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QListWidget" name="lstArtists"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWizardPage" name="wizardPage2">
+   <layout class="QVBoxLayout" name="verticalLayout_4">
+    <item>
+     <widget class="QLabel" name="label_3">
+      <property name="font">
+       <font>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Body</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QTextEdit" name="txtSongBody"/>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <tabstops>
+  <tabstop>txtTitle</tabstop>
+  <tabstop>txtSearchArtist</tabstop>
+  <tabstop>cmdAddArtist</tabstop>
+  <tabstop>cmdEditArtist</tabstop>
+  <tabstop>cmdDeleteArtist</tabstop>
+  <tabstop>txtSongBody</tabstop>
+ </tabstops>
+ <resources>
+  <include location="../core/resources.qrc"/>
+ </resources>
+ <connections/>
+</ui>
