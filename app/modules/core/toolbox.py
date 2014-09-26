@@ -99,12 +99,19 @@ class ToolBox(QtGui.QDockWidget,utils.AbstractModule):
         module = self._widget.cbOptions.currentText()
         module = importlib.import_module('app.modules.{0}'.format(str(module).lower()))
 
-        try:
-            module.configure_options(self._controls, self._statusbar, self._previewer, self._liveViewer, self)
-        except AttributeError, e:
-            self._controls.hide_module_options()
-            self._controls.hide_search_box()
-            self._statusbar.set_status('{0} module dont have options'.format(module.__name__.split('.')[-1]),time_to_hide=5)
+        # try:
+        self._controls.reset()
+        module.configure_options(
+            controls=self._controls,
+            statusbar=self._statusbar, 
+            previewer=self._previewer, 
+            liveViewer=self._liveViewer, 
+            toolbox=self)
+
+        # except AttributeError, e:
+        #     self._controls.hide_module_options()
+        #     self._controls.hide_search_box()
+        #     self._statusbar.set_status('{0} module dont have options'.format(module.__name__.split('.')[-1]),time_to_hide=5)
 
 
     def set_live(self,in_live):

@@ -1,200 +1,253 @@
-import app.lib.orm as orm
+from PyQt4 import QtCore, QtGui
+from PyQt4.QtCore import Qt
 
-from sqlalchemy import Column, Integer, String, Text, ForeignKey
-from sqlalchemy.orm import relationship
-from ConfigParser import ConfigParser
+import app.resources.modules.karaoke.options as ui_opts_resource
+import app.resources.modules.karaoke.management as ui_manage_resource
+import app.modules.utils as utils
 
-conf = ConfigParser()
-conf.read('config.ini')
+# import app.lib.orm as orm
 
-__ADAPTER = orm.Adapter(conf.get('SONG', 'DB_PATH'), orm.SQLITE)
+# from sqlalchemy import Column, Integer, String, Text, ForeignKey
+# from sqlalchemy.orm import relationship
+# from ConfigParser import ConfigParser
+
+# conf = ConfigParser()
+# conf.read('config.ini')
+
+#__ADAPTER = orm.Adapter(conf.get('SONG', 'DB_PATH'), orm.SQLITE)
+
 DELIMITER = '\n\n'
 
+def configure_options(**kwargs):
+    options = KaraokeOptions(kwargs['controls'].module_options_panel)
+    options.set_dependents(kwargs)
+    options.configure()
 
-class Artist(orm.BaseTable):
-    __tablename__ = 'Artist'
+    return options
 
-    id = Column(Integer, primary_key=True)
-    first_name = Column(String(50))
-    last_name = Column(String(50))
-    songs = relationship("Song", backref="Artist")
+class KaraokeOptions(utils.ApplicationModule):
 
-    @property
-    def full_name(self):
-        return self.first_name + ' ' + self.last_name if self.last_name else self.first_name
+    __controls = {
+        'add_song':{'cmdAddSong':'clicked()'}
+    }
 
+    def __init__(self,parent):
+        utils.ApplicationModule.__init__(self,parent,None,ui_opts_resource.Ui_options(),self.__controls)
 
-class Song(orm.BaseTable):
-    __tablename__ = 'Song'
+    def config_components(self):
+        self.callback('add_song',self.__add_song)
 
-    id = Column(Integer, primary_key=True)
-    __id_artist = Column('id_artist', Integer, ForeignKey('Artist.id'))
-    artist = relationship('Artist')
-    title = Column(String(100))
-    body = Column(Text)
+    def configure(self):
 
-    @property
-    def title_and_artist(self):
-        return '{title} - {artist}'.format(title=self.title, artist=self.artist.full_name)
+        self._controls.add_module_options(self)
+        self._controls.configure_search_box(self.__search_song)
 
+        self._statusbar.set_status('Song module loaded successfully')
 
-class SongError(Exception):
-    pass
+    def __search_song(self):
+        print 'search_song:TODO'
 
+    def __add_song(self):
+        songManagement = SongManagement(self,'Add Song')
+        songManagement.show()
 
-def get_songs(title=None):
-    query, session = __ADAPTER.get_query(Song)
+class SongManagement(QtGui.QWizard,utils.ApplicationModule):
 
-    if title:
-        query = query.filter(Song.title.like('%{0}%'.format(title)))
+    def __init__(self,parent,title):
+        self.__windowTitle = title
+        utils.ApplicationModule.__init__(self,parent,QtGui.QWizard,ui_manage_resource.Ui_songManagement())
 
-    return query.all()
+    def config_components(self):
+        self.setWindowTitle(self.__windowTitle)
 
+    def configure(self):
+        pass
 
-def get_artists():
-    query, session = __ADAPTER.get_query(Artist)
 
-    return query.all()
+# class Artist(orm.BaseTable):
+#     __tablename__ = 'Artist'
 
+#     id = Column(Integer, primary_key=True)
+#     first_name = Column(String(50))
+#     last_name = Column(String(50))
+#     songs = relationship("Song", backref="Artist")
 
-def artist_exist(artist, edit=False):
-    query, session = __ADAPTER.get_query(Artist)
+#     @property
+#     def full_name(self):
+#         return self.first_name + ' ' + self.last_name if self.last_name else self.first_name
 
-    query = query.filter(Artist.first_name == artist.first_name)
 
-    if artist.last_name:
-        query = query.filter(Artist.last_name == artist.last_name)
+# class Song(orm.BaseTable):
+#     __tablename__ = 'Song'
 
-    if edit:
-        query = query.filter(Artist.id != artist.id)
+#     id = Column(Integer, primary_key=True)
+#     __id_artist = Column('id_artist', Integer, ForeignKey('Artist.id'))
+#     artist = relationship('Artist')
+#     title = Column(String(100))
+#     body = Column(Text)
 
-    artists = query.all()
+#     @property
+#     def title_and_artist(self):
+#         return '{title} - {artist}'.format(title=self.title, artist=self.artist.full_name)
 
-    return len(artists) != 0
 
+# class SongError(Exception):
+#     pass
 
-def song_exist(song, edit=False):
-    query, session = __ADAPTER.get_query(Song)
 
-    query = query.filter(Song.title == song.title)
+# def get_songs(title=None):
+#     query, session = __ADAPTER.get_query(Song)
 
-    if song.artist:
-        query = query.filter(
-            Artist.first_name == song.artist.first_name,
-            Artist.last_name == song.artist.last_name,
-        )
+#     if title:
+#         query = query.filter(Song.title.like('%{0}%'.format(title)))
 
-    if edit:
-        query = query.filter(Song.id != song.id)
+#     return query.all()
 
-    songs = query.all()
 
-    return len(songs) != 0
+# def get_artists():
+#     query, session = __ADAPTER.get_query(Artist)
 
+#     return query.all()
 
-def artist_has_song(artist):
-    query, session = __ADAPTER.get_query(Song)
 
-    query = query.join(Artist).filter(Artist.id == artist.id)
+# def artist_exist(artist, edit=False):
+#     query, session = __ADAPTER.get_query(Artist)
 
-    songs = query.all()
+#     query = query.filter(Artist.first_name == artist.first_name)
 
-    return len(songs) != 0
+#     if artist.last_name:
+#         query = query.filter(Artist.last_name == artist.last_name)
 
+#     if edit:
+#         query = query.filter(Artist.id != artist.id)
 
-def insert_song(song):
-    if not song.title or not song.body or not song.artist:
-        raise SongError('title, artist and body of song are required')
+#     artists = query.all()
 
-    song.title = song.title.capitalize()
-    song.body = song.body.upper()
+#     return len(artists) != 0
 
-    if song_exist(song):
-        raise SongError('song already exist')
 
-    query, session = __ADAPTER.get_query(Song)
+# def song_exist(song, edit=False):
+#     query, session = __ADAPTER.get_query(Song)
 
-    session.merge(song.artist, load=False)
-    session.add(song)
-    session.commit()
+#     query = query.filter(Song.title == song.title)
 
-    return True
+#     if song.artist:
+#         query = query.filter(
+#             Artist.first_name == song.artist.first_name,
+#             Artist.last_name == song.artist.last_name,
+#         )
 
+#     if edit:
+#         query = query.filter(Song.id != song.id)
 
-def edit_song(song):
-    if not song.title or not song.body or not song.artist:
-        raise SongError('title, artist and body of song are required')
+#     songs = query.all()
 
-    song_to_edit, session = __ADAPTER.get(Song, song.id)
+#     return len(songs) != 0
 
-    song_to_edit.title = song.title.capitalize()
-    song_to_edit.body = song.body.upper()
 
-    if song_exist(song, True):
-        raise SongError('song already exist')
+# def artist_has_song(artist):
+#     query, session = __ADAPTER.get_query(Song)
 
-    session.commit()
+#     query = query.join(Artist).filter(Artist.id == artist.id)
 
-    return True
+#     songs = query.all()
 
+#     return len(songs) != 0
 
-def delete_song(song):
-    song, session = __ADAPTER.get(Song, song.id)
 
-    session.delete(song)
-    session.commit()
+# def insert_song(song):
+#     if not song.title or not song.body or not song.artist:
+#         raise SongError('title, artist and body of song are required')
 
-    return True
+#     song.title = song.title.capitalize()
+#     song.body = song.body.upper()
 
+#     if song_exist(song):
+#         raise SongError('song already exist')
 
-def insert_artist(artist):
-    if not artist.first_name:
-        raise SongError('first name of artist are required')
+#     query, session = __ADAPTER.get_query(Song)
 
-    artist.first_name = artist.first_name.capitalize()
+#     session.merge(song.artist, load=False)
+#     session.add(song)
+#     session.commit()
 
-    if artist.last_name:
-        artist.last_name = artist.last_name.capitalize()
+#     return True
 
-    if artist_exist(artist):
-        raise SongError('artist already exist')
 
-    query, session = __ADAPTER.get_query(Artist)
+# def edit_song(song):
+#     if not song.title or not song.body or not song.artist:
+#         raise SongError('title, artist and body of song are required')
 
-    session.add(artist)
-    session.commit()
+#     song_to_edit, session = __ADAPTER.get(Song, song.id)
 
-    return True
+#     song_to_edit.title = song.title.capitalize()
+#     song_to_edit.body = song.body.upper()
 
+#     if song_exist(song, True):
+#         raise SongError('song already exist')
 
-def edit_artist(artist):
-    if not artist.first_name:
-        raise SongError('first name of artist are required')
+#     session.commit()
 
-    artist_to_edit, session = __ADAPTER.get(Artist, artist.id)
+#     return True
 
-    artist_to_edit.first_name = artist.first_name.capitalize()
 
-    if artist.last_name:
-        artist_to_edit.last_name = artist.last_name.capitalize()
+# def delete_song(song):
+#     song, session = __ADAPTER.get(Song, song.id)
 
-    if artist_exist(artist, True):
-        raise SongError('artist already exist')
+#     session.delete(song)
+#     session.commit()
 
-    session.commit()
+#     return True
 
-    return True
 
-def delete_artist(artist):
-    artist, session = __ADAPTER.get(Artist, artist.id)
+# def insert_artist(artist):
+#     if not artist.first_name:
+#         raise SongError('first name of artist are required')
 
-    if artist_has_song(artist):
-        raise SongError('cant delete artist, has songs associated')
+#     artist.first_name = artist.first_name.capitalize()
 
-    session.delete(artist)
-    session.commit()
+#     if artist.last_name:
+#         artist.last_name = artist.last_name.capitalize()
 
-    return True
+#     if artist_exist(artist):
+#         raise SongError('artist already exist')
+
+#     query, session = __ADAPTER.get_query(Artist)
+
+#     session.add(artist)
+#     session.commit()
+
+#     return True
+
+
+# def edit_artist(artist):
+#     if not artist.first_name:
+#         raise SongError('first name of artist are required')
+
+#     artist_to_edit, session = __ADAPTER.get(Artist, artist.id)
+
+#     artist_to_edit.first_name = artist.first_name.capitalize()
+
+#     if artist.last_name:
+#         artist_to_edit.last_name = artist.last_name.capitalize()
+
+#     if artist_exist(artist, True):
+#         raise SongError('artist already exist')
+
+#     session.commit()
+
+#     return True
+
+# def delete_artist(artist):
+#     artist, session = __ADAPTER.get(Artist, artist.id)
+
+#     if artist_has_song(artist):
+#         raise SongError('cant delete artist, has songs associated')
+
+#     session.delete(artist)
+#     session.commit()
+
+#     return True
 
 #     selected_song = None
 #     def cmdAddSong_clicked(self):

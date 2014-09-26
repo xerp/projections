@@ -46,17 +46,10 @@ def _bible_search(type_search, key_search):
     else:
         return result
 
-def configure_options(*args):
+def configure_options(**kwargs):
 
-    options = BibleOptions(args[0].module_options_panel)
-    options.set_dependents({
-        'controls' :args[0],
-        'statusbar' :args[1],
-        'previewer' : args[2],
-        'liveViewer' : args[3],
-        'toolbox' : args[4]
-        })
-
+    options = BibleOptions(kwargs['controls'].module_options_panel)
+    options.set_dependents(kwargs)
     options.configure()
 
     return options
@@ -71,7 +64,7 @@ class SearchNotFound(BibleError):
 
         super(SearchNotFound, self).__init__('{0} {1} not found in bible'.format(type_search, key))
 
-class BibleOptions(utils.AbstractModule):
+class BibleOptions(utils.ApplicationModule):
 
     __controls = {
         'search_forward': {'cbSearchForward':'stateChanged(int)'},
@@ -82,10 +75,7 @@ class BibleOptions(utils.AbstractModule):
     }
 
     def __init__(self,parent):
-        utils.AbstractModule.__init__(self,parent,None,ui_resource.Ui_bibleOptions(),self.__controls)
-
-    def instance_variable(self):
-        utils.AbstractModule.instance_variable(self)
+        utils.ApplicationModule.__init__(self,parent,None,ui_resource.Ui_bibleOptions(),self.__controls)
 
     def config_components(self):
         search_forward = self.config.getboolean('BIBLE', 'search_forward')

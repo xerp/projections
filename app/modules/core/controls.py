@@ -158,11 +158,8 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
         return self._widget.sLiveFont.value()
 
     def add_module_options(self,widget):
-        vBoxMainLayout = QtGui.QVBoxLayout()
 
-        vBoxMainLayout.addWidget(widget)
-
-        self.module_options_panel.setLayout(vBoxMainLayout)
+        self.module_options_panel.setWidget(widget)
         self.module_options_panel.setVisible(True)
 
     def hide_module_options(self):
@@ -170,6 +167,11 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
 
     def hide_search_box(self):
         self._widget.txtSearch.setVisible(False)
+
+    def reset(self):
+        self.set_enable_slides(True)
+        self._widget.txtSearch.setVisible(False)
+        self.clear_search_box()
 
     def configure(self):
 

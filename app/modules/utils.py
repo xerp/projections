@@ -12,7 +12,10 @@ class AbstractModule(QtGui.QWidget):
     def __init__(self,parent, type_class = None, resource = None, controls_to_callback={}):
 
         type_class = type_class if type_class else QtGui.QWidget
-        type_class.__init__(self)
+        if not issubclass(type_class,QtGui.QDialog):
+            type_class.__init__(self)
+        else:
+            type_class.__init__(self,parent)
 
         if resource:
             self._widget = resource
@@ -51,12 +54,17 @@ class AbstractModule(QtGui.QWidget):
         for module_name, module in modules.iteritems():
             self.set_dependent(module_name,module)
 
+
+    def config_components(self):
+        pass
+
+class ApplicationModule(AbstractModule):
+
     def template(self,module):
         path = self.config.get('GENERAL','template_path')
         env = Environment(loader=FileSystemLoader(path))
         return env.get_template('{0}.html'.format(module))
 
-
-    def config_components(self):
+    def configure(self):
         pass
 

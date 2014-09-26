@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'bible.ui'
 #
-# Created: Thu Sep 25 18:22:42 2014
+# Created: Fri Sep 26 17:29:57 2014
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -40,7 +40,7 @@ class Ui_bibleOptions(object):
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.cmdNextChapter = QtGui.QPushButton(bibleOptions)
         self.cmdNextChapter.setEnabled(False)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.MinimumExpanding)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.cmdNextChapter.sizePolicy().hasHeightForWidth())
@@ -55,7 +55,7 @@ class Ui_bibleOptions(object):
         self.gridLayout.addWidget(self.cmdNextChapter, 2, 1, 1, 1)
         self.cmdPrevChapter = QtGui.QPushButton(bibleOptions)
         self.cmdPrevChapter.setEnabled(False)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.cmdPrevChapter.sizePolicy().hasHeightForWidth())
@@ -67,7 +67,7 @@ class Ui_bibleOptions(object):
         self.gridLayout.addWidget(self.cmdPrevChapter, 2, 0, 1, 1)
         self.cmdNextVerse = QtGui.QPushButton(bibleOptions)
         self.cmdNextVerse.setEnabled(False)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.cmdNextVerse.sizePolicy().hasHeightForWidth())
@@ -80,7 +80,7 @@ class Ui_bibleOptions(object):
         self.gridLayout.addWidget(self.cmdNextVerse, 3, 1, 1, 1)
         self.cmdPrevVerse = QtGui.QPushButton(bibleOptions)
         self.cmdPrevVerse.setEnabled(False)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.cmdPrevVerse.sizePolicy().hasHeightForWidth())

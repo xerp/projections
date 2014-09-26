@@ -57,6 +57,9 @@
        </item>
        <item>
         <widget class="QPushButton" name="cmdEditSong">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="text">
           <string>Edit song</string>
          </property>
@@ -68,6 +71,9 @@
        </item>
        <item>
         <widget class="QPushButton" name="cmdDeleteSong">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="text">
           <string>Delete song</string>
          </property>
