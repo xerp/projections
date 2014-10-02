@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'options.ui'
 #
-# Created: Fri Sep 26 17:34:10 2014
+# Created: Thu Oct 02 18:47:57 2014
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,22 +26,27 @@ except AttributeError:
 class Ui_options(object):
     def setupUi(self, options):
         options.setObjectName(_fromUtf8("options"))
-        options.resize(308, 338)
+        options.resize(324, 333)
         self.verticalLayout_2 = QtGui.QVBoxLayout(options)
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
         self.verticalLayout = QtGui.QVBoxLayout()
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.lstSongs = QtGui.QTableWidget(options)
+        self.lstSongs.setProperty("showDropIndicator", False)
+        self.lstSongs.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
+        self.lstSongs.setShowGrid(False)
         self.lstSongs.setGridStyle(QtCore.Qt.SolidLine)
-        self.lstSongs.setColumnCount(2)
+        self.lstSongs.setColumnCount(3)
         self.lstSongs.setObjectName(_fromUtf8("lstSongs"))
         self.lstSongs.setRowCount(0)
         item = QtGui.QTableWidgetItem()
         self.lstSongs.setHorizontalHeaderItem(0, item)
         item = QtGui.QTableWidgetItem()
         self.lstSongs.setHorizontalHeaderItem(1, item)
-        self.lstSongs.horizontalHeader().setStretchLastSection(True)
-        self.lstSongs.verticalHeader().setStretchLastSection(False)
+        item = QtGui.QTableWidgetItem()
+        self.lstSongs.setHorizontalHeaderItem(2, item)
+        self.lstSongs.horizontalHeader().setVisible(False)
+        self.lstSongs.verticalHeader().setVisible(False)
         self.verticalLayout.addWidget(self.lstSongs)
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
@@ -74,8 +79,10 @@ class Ui_options(object):
     def retranslateUi(self, options):
         options.setWindowTitle(_translate("options", "Form", None))
         item = self.lstSongs.horizontalHeaderItem(0)
-        item.setText(_translate("options", "Song", None))
+        item.setText(_translate("options", "ID", None))
         item = self.lstSongs.horizontalHeaderItem(1)
+        item.setText(_translate("options", "Song", None))
+        item = self.lstSongs.horizontalHeaderItem(2)
         item.setText(_translate("options", "Artist", None))
         self.cmdAddSong.setText(_translate("options", "Add song", None))
         self.cmdEditSong.setText(_translate("options", "Edit song", None))

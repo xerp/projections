@@ -1,20 +1,16 @@
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import Qt
 
+import app.lib.orm as orm
 import app.resources.modules.karaoke.options as ui_opts_resource
 import app.resources.modules.karaoke.management as ui_manage_resource
 import app.modules.utils as utils
 
-# import app.lib.orm as orm
+from sqlalchemy import Column, Integer, String, Text, ForeignKey
+from sqlalchemy import or_
+from sqlalchemy.orm import relationship
+from ConfigParser import ConfigParser
 
-# from sqlalchemy import Column, Integer, String, Text, ForeignKey
-# from sqlalchemy.orm import relationship
-# from ConfigParser import ConfigParser
-
-# conf = ConfigParser()
-# conf.read('config.ini')
-
-#__ADAPTER = orm.Adapter(conf.get('SONG', 'DB_PATH'), orm.SQLITE)
 
 DELIMITER = '\n\n'
 
@@ -25,17 +21,40 @@ def configure_options(**kwargs):
 
     return options
 
+class SongError(Exception):
+    pass
+
+
 class KaraokeOptions(utils.ApplicationModule):
 
     __controls = {
-        'add_song':{'cmdAddSong':'clicked()'}
+        'add_song':{'cmdAddSong':'clicked()'},
+        'delete_song':{'cmdDeleteSong':'clicked()'},
+        'edit_song':{'cmdEditSong':'clicked()'},
+        'song_selected':{'lstSongs':'itemClicked (QTableWidgetItem*)'},
+        'show_song':{'lstSongs':'itemDoubleClicked (QTableWidgetItem*)'}
     }
 
     def __init__(self,parent):
         utils.ApplicationModule.__init__(self,parent,None,ui_opts_resource.Ui_options(),self.__controls)
+        self.__ADAPTER = orm.Adapter(self.config.get('GENERAL', 'DB_PATH'), orm.SQLITE)
 
     def config_components(self):
+
+        #Table configuration
+        self._widget.lstSongs.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
+        self._widget.lstSongs.horizontalHeader().setResizeMode(1, QtGui.QHeaderView.Stretch)
+        self._widget.lstSongs.clear()
+        self._widget.lstSongs.hideColumn(0)
+        self._widget.lstSongs.hideColumn(1)
+        self._widget.lstSongs.hideColumn(2)
+
+
         self.callback('add_song',self.__add_song)
+        self.callback('delete_song',self.__delete_song)
+        self.callback('edit_song',self.__edit_song)
+        self.callback('song_selected',self.__song_selected)
+        self.callback('show_song',self.__show_song)
 
     def configure(self):
 
@@ -44,70 +63,171 @@ class KaraokeOptions(utils.ApplicationModule):
 
         self._statusbar.set_status('Song module loaded successfully')
 
+
+    def keyPressEvent(self, e):
+        
+        if e.key() in [Qt.Key_Enter,Qt.Key_Return]:
+            item = self._widget.lstSongs.currentItem()
+
+            if item:
+                self.__show_song(item)
+
+    def __set_table_data(self,songs):
+
+        def __set_row(*cells):
+            row = self._widget.lstSongs.rowCount()
+            self._widget.lstSongs.insertRow(row)
+
+            for cell in cells:
+                self._widget.lstSongs.setItem(row,cell.column,cell)
+
+        self._widget.lstSongs.setRowCount(0)
+        if songs:
+            for song in songs:
+                __set_row(
+                    SongTableRow(0,song.id),
+                    SongTableRow(1,song.title),
+                    SongTableRow(2,song.artist.full_name))
+
+            self._widget.lstSongs.showColumn(1)
+            self._widget.lstSongs.showColumn(2)
+
+            self._widget.lstSongs.resizeColumnsToContents()
+        else:
+            self._widget.lstSongs.hideColumn(1)
+            self._widget.lstSongs.hideColumn(2)
+
     def __search_song(self):
-        print 'search_song:TODO'
+        search_text = self._controls.search_box_text()
+
+        songs = self.__songs_db(search_text)
+        self.__set_table_data(songs)
+
+        self._controls.clear_search_box()
 
     def __add_song(self):
         songManagement = SongManagement(self,'Add Song')
         songManagement.show()
 
+    def __edit_song(self):
+        idItem = self._widget.lstSongs.item(self._widget.lstSongs.currentItem().row(),0)
+
+        songManagement = SongManagement(self,'Edit Song',self.__song_db(int(idItem.text())))
+        songManagement.show()
+
+    def __delete_song(self):
+        idItem = self._widget.lstSongs.item(self._widget.lstSongs.currentItem().row(),0)
+
+        self.__delete_song_db(int(idItem.text()))
+        self._widget.lstSongs.removeRow(self._widget.lstSongs.currentItem().row())
+
+        self._widget.cmdEditSong.setEnabled(False)
+        self._widget.cmdDeleteSong.setEnabled(False)
+
+    def __song_selected(self,item):
+
+        self._widget.cmdEditSong.setEnabled(True)
+        self._widget.cmdDeleteSong.setEnabled(True)
+
+    def __show_song(self,item):
+        idItem = self._widget.lstSongs.item(item.row(),0)
+
+        song = self.__song_db(int(idItem.text()))
+        self._previewer.set_text(song.body)
+
+    def __songs_db(self,criteria):
+        query, session = self.__ADAPTER.get_query(Song)
+
+        query = query.join(Song.artist).filter(
+            (Artist.first_name.like('%{0}%'.format(criteria)))
+            | (Artist.last_name.like('%{0}%'.format(criteria)))
+            | (Song.title.like('%{0}%'.format(criteria)))
+            | (Song.body.like('%{0}%'.format(criteria))))
+
+        return query.all()
+
+    def __song_db(self,idSong):
+        query, session = self.__ADAPTER.get_query(Song)
+
+        song =  query.filter(Song.id == idSong).one()
+        session.merge(song.artist, load=True)
+        session.close()
+
+        return song
+
+    def __delete_song_db(self,idSong):
+        query, session = self.__ADAPTER.get_query(Song)
+
+        song = query.filter(Song.id == idSong).one()
+
+        session.delete(song)
+        session.commit()
+        session.close()
+
+        return True
+
+
 class SongManagement(QtGui.QWizard,utils.ApplicationModule):
 
-    def __init__(self,parent,title):
+    def __init__(self,parent,title,song = None):
         self.__windowTitle = title
+        self.__song = song;
         utils.ApplicationModule.__init__(self,parent,QtGui.QWizard,ui_manage_resource.Ui_songManagement())
 
     def config_components(self):
         self.setWindowTitle(self.__windowTitle)
 
-    def configure(self):
-        pass
+        #Song Configure
+        if self.__song:
+            self.setWindowTitle('{0} - ({1})'.format(self.__windowTitle, self.__song.title_and_artist))
+
+            self._widget.txtTitle.setText(self.__song.title)
+            self._widget.txtSongBody.setText(self.__song.body)
 
 
-# class Artist(orm.BaseTable):
-#     __tablename__ = 'Artist'
+class SongTableRow(QtGui.QTableWidgetItem):
 
-#     id = Column(Integer, primary_key=True)
-#     first_name = Column(String(50))
-#     last_name = Column(String(50))
-#     songs = relationship("Song", backref="Artist")
+    def __init__(self,column,songPropertyValue):
+        QtGui.QTableWidgetItem.__init__(self,str(songPropertyValue))
 
-#     @property
-#     def full_name(self):
-#         return self.first_name + ' ' + self.last_name if self.last_name else self.first_name
+        self.setFlags(QtCore.Qt.ItemIsSelectable| QtCore.Qt.ItemIsEnabled)
+        self.column = column
 
-
-# class Song(orm.BaseTable):
-#     __tablename__ = 'Song'
-
-#     id = Column(Integer, primary_key=True)
-#     __id_artist = Column('id_artist', Integer, ForeignKey('Artist.id'))
-#     artist = relationship('Artist')
-#     title = Column(String(100))
-#     body = Column(Text)
-
-#     @property
-#     def title_and_artist(self):
-#         return '{title} - {artist}'.format(title=self.title, artist=self.artist.full_name)
+    def __repr__(self):
+        return '<%s>' % self.text()
 
 
-# class SongError(Exception):
-#     pass
+class Artist(orm.BaseTable):
+    __tablename__ = 'Artist'
+
+    id = Column(Integer, primary_key=True)
+    first_name = Column(String(50))
+    last_name = Column(String(50))
+    songs = relationship("Song", backref="Artist")
+
+    @property
+    def full_name(self):
+        return self.first_name + ' ' + self.last_name if self.last_name else self.first_name
+
+    def __repr__(self):
+        return '<%s>' % self.full_name
 
 
-# def get_songs(title=None):
-#     query, session = __ADAPTER.get_query(Song)
+class Song(orm.BaseTable):
+    __tablename__ = 'Song'
 
-#     if title:
-#         query = query.filter(Song.title.like('%{0}%'.format(title)))
+    id = Column(Integer, primary_key=True)
+    __id_artist = Column('id_artist', Integer, ForeignKey('Artist.id'))
+    artist = relationship('Artist')
+    title = Column(String(100))
+    body = Column(Text)
 
-#     return query.all()
+    @property
+    def title_and_artist(self):
+        return '{title} - {artist}'.format(title=self.title, artist=self.artist.full_name)
 
-
-# def get_artists():
-#     query, session = __ADAPTER.get_query(Artist)
-
-#     return query.all()
+    def __repr__(self):
+        return self.title_and_artist
 
 
 # def artist_exist(artist, edit=False):

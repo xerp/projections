@@ -202,9 +202,9 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
         self._widget.cmdPrevious.setVisible(enable)
         self._widget.saCmdSlides.setVisible(enable)
 
-    def set_slides(self, whole_text, delimiter, limit = 1):
+    def set_slides(self, whole_text, delimiter, limit = None):
 
-        if limit > 1:
+        if limit:
             splitted = whole_text.split(delimiter)[:limit]
         else:
             splitted = whole_text.split(delimiter)
