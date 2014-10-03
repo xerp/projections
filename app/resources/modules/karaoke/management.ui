@@ -20,7 +20,7 @@
    <enum>QWizard::AeroStyle</enum>
   </property>
   <property name="options">
-   <set>QWizard::NoBackButtonOnStartPage</set>
+   <set>QWizard::NoBackButtonOnStartPage|QWizard::NoDefaultButton</set>
   </property>
   <widget class="QWizardPage" name="wizardPage1">
    <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -50,11 +50,21 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="1" colspan="7">
+        <item row="6" column="0" colspan="5">
+         <widget class="QLineEdit" name="txtSearchArtist">
+          <property name="placeholderText">
+           <string>Search for name...</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1" colspan="8">
          <widget class="QLineEdit" name="txtTitle"/>
         </item>
-        <item row="6" column="7">
+        <item row="6" column="8">
          <widget class="QToolButton" name="cmdDeleteArtist">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string/>
           </property>
@@ -64,7 +74,7 @@
           </property>
          </widget>
         </item>
-        <item row="6" column="5">
+        <item row="6" column="6">
          <widget class="QToolButton" name="cmdAddArtist">
           <property name="text">
            <string/>
@@ -75,14 +85,24 @@
           </property>
          </widget>
         </item>
-        <item row="6" column="6">
+        <item row="6" column="7">
          <widget class="QToolButton" name="cmdEditArtist">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string/>
           </property>
           <property name="icon">
            <iconset resource="../core/resources.qrc">
             <normaloff>:/main/icons/edit-16.png</normaloff>:/main/icons/edit-16.png</iconset>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1" colspan="3">
+         <widget class="QLabel" name="lblArtistName">
+          <property name="text">
+           <string/>
           </property>
          </widget>
         </item>
@@ -105,10 +125,14 @@
           </property>
          </widget>
         </item>
-        <item row="6" column="0" colspan="5">
-         <widget class="QLineEdit" name="txtSearchArtist">
-          <property name="placeholderText">
-           <string>Search for name...</string>
+        <item row="6" column="5">
+         <widget class="QToolButton" name="cmdSearchArtist">
+          <property name="text">
+           <string>...</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../core/resources.qrc">
+            <normaloff>:/main/icons/Go forward.png</normaloff>:/main/icons/Go forward.png</iconset>
           </property>
          </widget>
         </item>
@@ -117,7 +141,40 @@
      </layout>
     </item>
     <item>
-     <widget class="QListWidget" name="lstArtists"/>
+     <widget class="QTableWidget" name="lstArtists">
+      <property name="showGrid">
+       <bool>false</bool>
+      </property>
+      <property name="gridStyle">
+       <enum>Qt::NoPen</enum>
+      </property>
+      <attribute name="horizontalHeaderVisible">
+       <bool>false</bool>
+      </attribute>
+      <attribute name="horizontalHeaderStretchLastSection">
+       <bool>true</bool>
+      </attribute>
+      <attribute name="verticalHeaderVisible">
+       <bool>false</bool>
+      </attribute>
+      <column>
+       <property name="text">
+        <string>ID</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Name</string>
+       </property>
+      </column>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="lblStatus">
+      <property name="text">
+       <string>lblStatus</string>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -145,9 +202,11 @@
  <tabstops>
   <tabstop>txtTitle</tabstop>
   <tabstop>txtSearchArtist</tabstop>
-  <tabstop>cmdAddArtist</tabstop>
+  <tabstop>cmdSearchArtist</tabstop>
+  <tabstop>lstArtists</tabstop>
   <tabstop>cmdEditArtist</tabstop>
   <tabstop>cmdDeleteArtist</tabstop>
+  <tabstop>cmdAddArtist</tabstop>
   <tabstop>txtSongBody</tabstop>
  </tabstops>
  <resources>

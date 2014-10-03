@@ -3,7 +3,6 @@ import os
 from PyQt4 import QtGui, QtCore
 from PyQt4.QtCore import Qt
 
-import app.modules.songs as songs
 from ConfigParser import ConfigParser
 
 conf = ConfigParser()
@@ -39,44 +38,23 @@ def get_images_view(directories=conf.get('GENERAL', 'IMAGES_DIRS')):
 
     return images_views
 
+def set_alignment(text_edit, desired_alignment):
+    #Make sure the cursor is at the start of the text field
+    text_edit.moveCursor(QtGui.QTextCursor.Start)
 
-# def get_songs_completer(txt_search):
-#     so = songs.get_songs()
+    last_position = -1
+    curr_position = text_edit.textCursor().position()
 
-#     completer = QtGui.QCompleter(txt_search)
-#     completer.setModel(SongsDataModel(so, completer))
-#     completer.setCaseSensitivity(Qt.CaseInsensitive)
-#     completer.setCompletionRole(Qt.DisplayRole)
+    while last_position != curr_position:
+        text_edit.setAlignment(desired_alignment)
+        text_edit.moveCursor(QtGui.QTextCursor.Down)
+        last_position = curr_position
+        curr_position = text_edit.textCursor().position()
 
-#     completer.popup().setStyleSheet("background-color: red;color:white")
-
-#     return completer
-
-
-# def artists_model(cb_artist):
-#     artists = songs.get_artists()
-
-#     model = ArtistDataModel(artists, cb_artist)
-#     cb_artist.setModel(model)
-
-#     return model
+    #Move to the end of the text field in preparation for whatever comes next
+    text_edit.moveCursor(QtGui.QTextCursor.End)
 
 
-# def set_alignment(text_edit, desired_alignment):
-#     #Make sure the cursor is at the start of the text field
-#     text_edit.moveCursor(QtGui.QTextCursor.Start)
-
-#     last_position = -1
-#     curr_position = text_edit.textCursor().position()
-
-#     while last_position != curr_position:
-#         text_edit.setAlignment(desired_alignment)
-#         text_edit.moveCursor(QtGui.QTextCursor.Down)
-#         last_position = curr_position
-#         curr_position = text_edit.textCursor().position()
-
-#     #Move to the end of the text field in preparation for whatever comes next
-#     text_edit.moveCursor(QtGui.QTextCursor.End)
 
 
 class AbstractProjectionLinealDataModel(QtCore.QAbstractListModel):

@@ -100,6 +100,7 @@ class ToolBox(QtGui.QDockWidget,utils.AbstractModule):
         module = importlib.import_module('app.modules.{0}'.format(str(module).lower()))
 
         # try:
+        self._statusbar.set_status('TODO:configure_selected_module')
         self._controls.reset()
         module.configure_options(
             controls=self._controls,
