@@ -1,16 +1,12 @@
 <html>
   <head>
+    <meta charset="{{'{{charset}}'}}">
     <style type="text/css">
-    	body{
-    		background-color: black;
-    		color: white;
-    	}
-    	#content{
-    		margin-top: 10%;
-    	}
+    	{% include "general.css" %}
     </style>
   </head>
   <body>
+  		{% include "header.html" %}
   		<div id="content">{% block content %}{% endblock %}</div>
   </body>
 </html>

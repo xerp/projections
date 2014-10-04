@@ -2,36 +2,27 @@
 
 {% block content %}
 	<style type="text/css">
-			#passage{
-				text-align:center;
-				font-size: {{font_size}}pt;
-			}
-			#church_name, #bible_version{
-				position: absolute;
-			}
-			#church_name{
-				bottom: 0;
-				left:0;
-				font-size: 25pt;
-			}
-			#church_name b{
-				color: red;
-			}
-			#bible_version{
-				bottom: 0;
-				right:0;
-				font-size: 18pt;
-			}
-
-		</style>
+		body {
+			background: url('{{image}}') no-repeat center center fixed;
+		}	
+		h1{
+			color:white;
+			font-size: {{'{{font_size -5}}'}}pt;
+		}	
+		.passage{
+			text-align:center;
+			font-size: {{'{{font_size}}'}}pt;
+		}
+		h1,.passage{
+			text-shadow: 0.1em 0.1em 0.2em black;
+		}
+	</style>
+	<ul>
 	{% for passage in passages %}
-		{% if not loop.first %}
-			<br>
-		{% endif%}
-    	<div id="passage">{{passage}}</div>
-    	<footer>
-			<span id="church_name"><b>I</b>glesia <b>E</b>vangélica <b>E</b>l <b>R</b>enuevo</span>
-			<span id="bible_version">({{bible_version}})</span>
-		</footer>	
+    	<li>
+    		<h1>{{passage.reference}}</h1>
+    		<div class="passage">{{passage.text}}</div>
+    	</li>
 	{% endfor %}
+	</ul>
 {% endblock %}

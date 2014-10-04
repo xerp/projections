@@ -46,7 +46,6 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
         self.callback('previous_slide',self.__previous_slide)
         self.callback('next_slide',self.__next_slide)
 
-
     def __set_live_screens(self):
         screens = get_screens()
 
@@ -101,7 +100,7 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
 
         if self._toolbox.in_live:
             try:
-                self._liveViewer.set_text(self.slides[self.slide_position], value)
+                self._liveViewer.set_font_size(value)
             except IndexError:
                 pass
 
@@ -157,6 +156,9 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
     def live_font(self):
         return self._widget.sLiveFont.value()
 
+    def set_slide_callback(self,callback):
+        setattr(self,'slide_callback',callback)
+
     def add_module_options(self,widget):
 
         self.module_options_panel.setWidget(widget)
@@ -185,6 +187,9 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
     def seeker(self):
         self.__remove_buttons_slides()
 
+        self._widget.cmdPrevious.setEnabled(False)
+        self._widget.cmdNext.setEnabled(False)
+        
         if self._toolbox.in_live and self.slide_length > 1:
             self.__set_buttons_slides(self.slide_length)
 
@@ -202,14 +207,20 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
         self._widget.cmdPrevious.setVisible(enable)
         self._widget.saCmdSlides.setVisible(enable)
 
-    def set_slides(self, whole_text, delimiter, limit = None):
+    def set_slides(self, whole_text,**kwarg):
 
-        if limit:
-            splitted = whole_text.split(delimiter)[:limit]
-        else:
-            splitted = whole_text.split(delimiter)
+        try:
+            self.slides = self.slide_callback(whole_text,**kwarg)
+        except AttributeError:
+            if 'delimiter' in kwarg and 'limit' in kwarg:
+                splitted = whole_text.split(kwarg['delimiter'])[:kwarg['limit']]
+            elif 'delimiter' in kwarg:
+                splitted = whole_text.split(kwarg['delimiter'])
+            else:
+                splitted = whole_text
 
-        self.slides = filter(lambda s: s and s != '(END)', splitted)
+            self.slides = filter(lambda s: s, splitted)
+
         self.slide_length = len(self.slides)
         self.slide_position = 0
 
@@ -229,3 +240,9 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
         if e.key() == Qt.Key_F3:
             self._widget.txtSearch.selectAll()
             self._widget.txtSearch.setFocus()
+
+        if e.key() ==   Qt.Key_Plus:
+            self._widget.sLiveFont.setValue(self.live_font() + 3)
+
+        if e.key() ==   Qt.Key_Minus:
+            self._widget.sLiveFont.setValue(self.live_font() - 3)

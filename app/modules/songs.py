@@ -59,6 +59,7 @@ class KaraokeOptions(utils.ApplicationModule):
 
         self._controls.add_module_options(self)
         self._controls.configure_search_box(self.__search_song)
+        self._controls.set_slide_callback(self.__set_slides)
 
         self._statusbar.set_status('Song module loaded successfully')
 
@@ -135,11 +136,32 @@ class KaraokeOptions(utils.ApplicationModule):
         self._widget.cmdEditSong.setEnabled(True)
         self._widget.cmdDeleteSong.setEnabled(True)
 
+    def __set_slides(self,text,**kwargs):
+        template = self.template('song')
+        splitted = text.split(DELIMITER)
+        slides = []
+
+        image = '{0}/{1}/{2}'.format(
+            self.config.get('GENERAL','images_dirs'),
+            self.config.get('LIVE','backgrounds_dir'),
+            self.config.get('SONG','background_image')
+            )
+
+        for slide in splitted:
+            slides.append(template.render(slide=slide,image=image,slide_info=kwargs['title_and_artist']))
+
+        return slides
+
     def __show_song(self,item):
         idItem = self._widget.lstSongs.item(item.row(),0)
 
         song = self.__song_db(int(idItem.text()))
         self._previewer.set_text(song.body)
+
+        self._controls.set_slides(song.body,title_and_artist=song.titleAndArtist)
+
+        if self._toolbox.direct_live:
+            self._toolbox.go_to_live()
 
     def __songs_db(self,criteria):
         query, session = self.__ADAPTER.get_query(Song)
@@ -352,8 +374,7 @@ class SongManagement(QtGui.QWizard,utils.ApplicationModule):
             self.set_status(e.message,True)
 
     def __save_song(self,*args):
-        print args
-        pass
+        self.rejected()
 
     def __artists_db(self,criteria):
         query, session = self.__ADAPTER.get_query(Artist)
@@ -527,24 +548,3 @@ class Song(orm.BaseTable):
 
     def __repr__(self):
         return self.titleAndArtist
-
-
-        #         song = songs.Song() if self.mode == self.SONG_ADD_MODE else self.__song
-
-#         song.title = unicode(self.__window.txtTitle.text().toUtf8(), 'utf-8')
-#         song.body = unicode(self.txtBody.toPlainText().toUtf8(), 'utf-8')
-
-#         try:
-#             song.artist = self.__window.cbArtist.model().selected()
-#         except AssertionError:
-#             pass
-
-#         try:
-#             if self.mode == self.SONG_ADD_MODE:
-#                 songs.insert_song(song)
-#             else:
-#                 songs.edit_song(song)
-
-#             self.hide()
-#         except songs.SongError, e:
-#             self.set_status(str(e))

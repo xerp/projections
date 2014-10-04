@@ -42,7 +42,7 @@ class ToolBox(QtGui.QDockWidget,utils.AbstractModule):
         self.callback('fullscreen',self.__full_screen)
         self.callback('options',self.__option_changed)
         self.callback('direct_live',self.__direct_to_live)
-        self.callback('go_to_live',self.__go_to_live)
+        self.callback('go_to_live',self.go_to_live)
 
 
     def __set_modules(self):
@@ -85,14 +85,28 @@ class ToolBox(QtGui.QDockWidget,utils.AbstractModule):
         self.direct_live = active
         self._statusbar.set_status('Direct live {0}'.format('on' if active else 'off'))
 
-    def __go_to_live(self):
+    def go_to_live(self):
+
         text = self._previewer.toPlainText()
 
         if text:
-            self._liveViewer.set_text(self._controls.slides[self._controls.slide_position],self._controls.live_font())
-            self._controls.seeker()
+            try:
+                returnedText,encode = self.go_to_live_callback(text)
+                self._liveViewer.set_text(returnedText,self._controls.live_font(),encode)    
+            except AttributeError:
+                self._liveViewer.set_text(self._controls.slides[self._controls.slide_position],self._controls.live_font())
+                self._controls.seeker()
 
         self._statusbar.set_status('View refreshed')
+
+    def set_go_to_live_callback(self,callback):
+        setattr(self,'go_to_live_callback',callback)
+
+    def reset(self):
+        try:
+            del(self.go_to_live_callback)
+        except Exception:
+            pass
 
     def configure_selected_module(self):
 
@@ -100,15 +114,16 @@ class ToolBox(QtGui.QDockWidget,utils.AbstractModule):
         module = importlib.import_module('app.modules.{0}'.format(str(module).lower()))
 
         # try:
-        self._statusbar.set_status('TODO:configure_selected_module')
         self._controls.reset()
+        self._previewer.reset()
+        self.reset()
         module.configure_options(
             controls=self._controls,
             statusbar=self._statusbar, 
             previewer=self._previewer, 
             liveViewer=self._liveViewer, 
             toolbox=self)
-
+        self._statusbar.set_status('TODO:configure_selected_module')
         # except AttributeError, e:
         #     self._controls.hide_module_options()
         #     self._controls.hide_search_box()

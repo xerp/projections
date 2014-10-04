@@ -1,10 +1,10 @@
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import Qt, QUrl
-from PyQt4.QtWebKit import QWebView
+from PyQt4.QtWebKit import QWebView,QWebSettings
 
 import app.modules.utils as utils
 from app.lib.helpers import get_projections_font
-
+from jinja2 import Template
 
 
 class LiveViewer(QtGui.QFrame,utils.AbstractModule):
@@ -20,20 +20,18 @@ class LiveViewer(QtGui.QFrame,utils.AbstractModule):
 
         self.main_layout = QtGui.QGridLayout(self)
         self.image = QtGui.QLabel()
-        self.lblLive = QWebView()#QtGui.QTextEdit(self)
+        self.lblLive = QWebView()
 
     def config_components(self):
 
         self.setWindowTitle('{0} Live Window (beta)'.format(self.config.get('GENERAL', 'TITLE')))
         self.setWindowFlags(Qt.CustomizeWindowHint or Qt.WindowStaysOnTopHint)
         self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-
-        #self.lblLive.setLineWrapMode(QtGui.QTextEdit.WidgetWidth)
-
-        #self.lblLive.setReadOnly(True)
         self.lblLive.setVisible(True)
 
         self.main_layout.addWidget(self.lblLive)
+        self.lblLive.page().settings().setAttribute(QWebSettings.LocalContentCanAccessRemoteUrls,True)
+        self.lblLive.page().settings().setAttribute(QWebSettings.LocalContentCanAccessFileUrls,True)
 
         self.image.setScaledContents(False)
 
@@ -68,6 +66,9 @@ class LiveViewer(QtGui.QFrame,utils.AbstractModule):
 
             obj.setVisible(False)
             self.main_layout.removeWidget(obj)
+
+    def __set_html_text(self,path):
+        self.lblLive.load(QUrl.fromLocalFile(path))
 
     def set_full_screen(self, full_screen):
         try:
@@ -106,36 +107,30 @@ class LiveViewer(QtGui.QFrame,utils.AbstractModule):
 
         self.__add_child(self.image)
 
-    def set_text(self, html, font_size=None):
-
+    def set_text(self, html, font_size,encode='utf-8'):
+        self.set_color()
         self.main_layout.setContentsMargins(0,0,0,0)
-
-        self.lblLive.setHtml(html)
-
-        # text_color = self.config.get('LIVE', 'DEFAULT_TEXT_COLOR') if not text_color else text_color
-        # background_color = self.config.get('LIVE', 'DEFAULT_BACKGROUND_COLOR') if not background_color else background_color
-
-
-        # palette = self.lblLive.palette()
-        # palette.setColor(QtGui.QPalette.Base, QtGui.QColor(background_color))
-        # palette.setColor(QtGui.QPalette.Text, QtGui.QColor(text_color))
-        # self.lblLive.setPalette(palette)
-
-        #text_live_margin = dict(self.config.items('TEXT_LIVE_MARGIN'))
         
-
-        # font = get_projections_font(dict(self.config.items('FONT_LIVE')))
-
-        # if font_size:
-        #     font.setPointSize(font_size)
-
-        # self.lblLive.setCurrentFont(font)
-        # self.lblLive.setText(text)
-
-        # #set_alignment(self.lblLive, justification)
-
         self.__add_child(self.lblLive)
 
-        #if self.lblLive.verticalScrollBar().isVisible():
-         #   print 'paso'
-          #  self.set_text(text, font_size - 2)
+        self.lastEncode = encode
+        self.lastTemplate = Template(html)
+        self.set_font_size(font_size)
+
+
+        #FIXME
+        #if self.lblLive.page().currentFrame().scrollBarMaximum(Qt.Vertical) > 0:
+         #   self.set_text(html,font_size - 10)
+
+    def set_font_size(self,font_size):
+
+        filePath = "{0}/last_live.html".format(self.config.get('GENERAL','template_path'))
+
+        file = open(filePath, "w")
+        file.write(
+            self.lastTemplate.render(
+                charset=self.lastEncode,
+                font_size=font_size if font_size > 0 else 10).encode(self.lastEncode))
+        file.close()
+
+        self.__set_html_text(filePath)

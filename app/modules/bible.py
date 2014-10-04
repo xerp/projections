@@ -93,9 +93,10 @@ class BibleOptions(utils.ApplicationModule):
     def configure(self):
 
         self._controls.add_module_options(self)
+        self._controls.set_enable_slides(False)
         self._controls.configure_search_box(self.__bible_search)
 
-        self._controls.set_enable_slides(self.config.getboolean('BIBLE', 'search_forward'))
+        self._toolbox.set_go_to_live_callback(self.__go_to_live)
 
         self._statusbar.set_status('Bible module loaded successfully')
 
@@ -172,12 +173,7 @@ class BibleOptions(utils.ApplicationModule):
 
         self._controls.set_search_box_text(text)
         search_text = self._controls.search_box_text()
-        template = self.template('bible')
         result = ''
-
-
-        if self._widget.cbSearchForward.isChecked():
-            search_text = '{0}-'.format(search_text)
 
         try:
             result = self.__search_verse(search_text)
@@ -187,15 +183,32 @@ class BibleOptions(utils.ApplicationModule):
 
         self._previewer.set_text(result)
 
-        result = template.render(
-            passages=result.split(DELIMITER),
-            font_size=self.config.getint('LIVE','default_font_size'),
-            bible_version=self.config.get('BIBLE','default_bible')
-            )
-
-        self._controls.set_slides(result, '<br>', self._widget.sbForwardLimit.value())
-
         if self._toolbox.direct_live:
-            self._liveViewer.set_text(self._controls.slides[self._controls.slide_position],self._controls.live_font())
+            self._toolbox.go_to_live()
         
         self._controls.clear_search_box()
+
+    def __go_to_live(self,text):
+        text = unicode(text,'latin')
+        template = self.template('bible')
+
+        passages = map(lambda p: Passage(p),filter(lambda s: s and s != '(END)', text.split(DELIMITER)))
+        image = '{0}/{1}/{2}'.format(
+            self.config.get('GENERAL','images_dirs'),
+            self.config.get('LIVE','backgrounds_dir'),
+            self.config.get('BIBLE','background_image')
+            )
+        result = template.render(
+            passages=passages,
+            image=image,
+            slide_info=self.config.get('BIBLE','default_bible')
+            )
+
+        return result,'latin'
+
+class Passage:
+
+    def __init__(self,text):
+        text = text.split(':')
+        self.reference = u'{book_chapter}:{verse}'.format(book_chapter=text[0],verse=text[1])
+        self.text = u''.join(text[2::]).strip()
