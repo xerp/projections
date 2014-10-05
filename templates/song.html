@@ -1,17 +1,5 @@
 {% extends "general.html" %}
 
 {% block content %}
-	<style type="text/css">
-		body {
-			background: url('{{image}}') no-repeat center center fixed;
-		}
-		#slide{
-			text-align:center;
-			color: white;
-			text-shadow: 0.1em 0.1em 0.4em black;
-			font-size: {{'{{font_size}}'}}pt;
-		}
-	</style>
-
-    <div id="slide">{{slide}}</div>
+    <div class="centered view">{{slide}}</div>
 {% endblock %}

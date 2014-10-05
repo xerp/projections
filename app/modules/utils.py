@@ -60,10 +60,19 @@ class AbstractModule(QtGui.QWidget):
 
 class ApplicationModule(AbstractModule):
 
+    def _live_config(self):
+        config={}
+
+        config['text_shadow_color'] = self.config.get('LIVE','default_text_shadow_color')
+        config['background_color'] = self.config.get('LIVE','default_background_color')
+        config['text_color'] = self.config.get('LIVE','default_text_color')
+
+        return config
+
     def template(self,module):
         path = self.config.get('GENERAL','template_path')
         env = Environment(loader=FileSystemLoader(path))
-        return env.get_template('{0}.html'.format(module))
+        return env.get_template('{0}.html'.format(module)), self._live_config()
 
     def configure(self):
         pass

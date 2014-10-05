@@ -90,10 +90,10 @@ class ToolBox(QtGui.QDockWidget,utils.AbstractModule):
         text = self._previewer.toPlainText()
 
         if text:
-            try:
+            if hasattr(self,'go_to_live_callback'):
                 returnedText,encode = self.go_to_live_callback(text)
-                self._liveViewer.set_text(returnedText,self._controls.live_font(),encode)    
-            except AttributeError:
+                self._liveViewer.set_text(returnedText,self._controls.live_font(),encode)
+            else:
                 self._liveViewer.set_text(self._controls.slides[self._controls.slide_position],self._controls.live_font())
                 self._controls.seeker()
 
@@ -113,21 +113,20 @@ class ToolBox(QtGui.QDockWidget,utils.AbstractModule):
         module = self._widget.cbOptions.currentText()
         module = importlib.import_module('app.modules.{0}'.format(str(module).lower()))
 
-        # try:
-        self._controls.reset()
-        self._previewer.reset()
-        self.reset()
-        module.configure_options(
-            controls=self._controls,
-            statusbar=self._statusbar, 
-            previewer=self._previewer, 
-            liveViewer=self._liveViewer, 
-            toolbox=self)
-        self._statusbar.set_status('TODO:configure_selected_module')
-        # except AttributeError, e:
-        #     self._controls.hide_module_options()
-        #     self._controls.hide_search_box()
-        #     self._statusbar.set_status('{0} module dont have options'.format(module.__name__.split('.')[-1]),time_to_hide=5)
+        if hasattr(module, 'configure_options'):
+            self._controls.reset()
+            self._previewer.reset()
+            self.reset()
+            module.configure_options(
+                controls=self._controls,
+                statusbar=self._statusbar, 
+                previewer=self._previewer, 
+                liveViewer=self._liveViewer, 
+                toolbox=self)
+        else:
+            self._controls.hide_module_options()
+            self._controls.hide_search_box()
+            self._statusbar.set_status('{0} module dont have options'.format(module.__name__.split('.')[-1]),time_to_hide=5)
 
 
     def set_live(self,in_live):

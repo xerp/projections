@@ -1,27 +1,11 @@
 {% extends "general.html" %}
 
 {% block content %}
-	<style type="text/css">
-		body {
-			background: url('{{image}}') no-repeat center center fixed;
-		}	
-		h1{
-			color:white;
-			font-size: {{'{{font_size -5}}'}}pt;
-		}	
-		.passage{
-			text-align:center;
-			font-size: {{'{{font_size}}'}}pt;
-		}
-		h1,.passage{
-			text-shadow: 0.1em 0.1em 0.2em black;
-		}
-	</style>
 	<ul>
 	{% for passage in passages %}
     	<li>
-    		<h1>{{passage.reference}}</h1>
-    		<div class="passage">{{passage.text}}</div>
+    		<h1 class="title view">{{passage.reference}}</h1>
+    		<div class="view centered">{{passage.text}}</div>
     	</li>
 	{% endfor %}
 	</ul>

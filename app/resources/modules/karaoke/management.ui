@@ -20,7 +20,7 @@
    <enum>QWizard::AeroStyle</enum>
   </property>
   <property name="options">
-   <set>QWizard::NoBackButtonOnStartPage|QWizard::NoDefaultButton</set>
+   <set>QWizard::HaveCustomButton1|QWizard::NoBackButtonOnStartPage|QWizard::NoDefaultButton</set>
   </property>
   <widget class="QWizardPage" name="wizardPage1">
    <layout class="QVBoxLayout" name="verticalLayout_2">

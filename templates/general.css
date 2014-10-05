@@ -1,14 +1,33 @@
-
-body{
-	background-color: black;
-	background-size: cover; 
-	color: white;
-}
-
 #content{
 	margin: 10% 5% 5% 5%;
 }
 
 li{
 	list-style: none;
+}
+
+body{
+	background-size: cover;
+	color: white;
+	background-color: {{background_color}};
+
+	{% if image: %}
+		background: url('{{image}}') no-repeat center center fixed;
+	{% endif %}
+}
+
+
+.centered{
+	text-align: center;
+	vertical-align: middle;
+}
+
+.title{
+	font-size: {{'{{font_size -5}}'}}pt;
+}
+
+.view{
+	color: {{text_color}};
+	text-shadow: 0.1em 0.1em 0.4em {{text_shadow_color}};
+	font-size: {{'{{font_size}}'}}pt;
 }

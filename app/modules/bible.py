@@ -67,7 +67,6 @@ class SearchNotFound(BibleError):
 class BibleOptions(utils.ApplicationModule):
 
     __controls = {
-        'search_forward': {'cbSearchForward':'stateChanged(int)'},
         'previous_chapter':{'cmdPrevChapter':'clicked()'},
         'next_chapter':{'cmdNextChapter':'clicked()'},
         'previous_verse':{'cmdPrevVerse':'clicked()'},
@@ -78,13 +77,7 @@ class BibleOptions(utils.ApplicationModule):
         utils.ApplicationModule.__init__(self,parent,None,ui_resource.Ui_bibleOptions(),self.__controls)
 
     def config_components(self):
-        search_forward = self.config.getboolean('BIBLE', 'search_forward')
-        self._widget.cbSearchForward.setChecked(search_forward)
-        self._widget.sbForwardLimit.setEnabled(search_forward)
 
-        self._widget.sbForwardLimit.setValue(self.config.getint('BIBLE', 'forward_limit'))
-
-        self.callback('search_forward',self.__search_forward)
         self.callback('previous_chapter',self.__previous_chapter)
         self.callback('next_chapter',self.__next_chapter)
         self.callback('previous_verse',self.__previous_verse)
@@ -99,10 +92,6 @@ class BibleOptions(utils.ApplicationModule):
         self._toolbox.set_go_to_live_callback(self.__go_to_live)
 
         self._statusbar.set_status('Bible module loaded successfully')
-
-    def __search_forward(self,value):
-        self._widget.sbForwardLimit.setEnabled(value == 2)
-        self._controls.set_enable_slides(value == 2)
 
     def __next_search(self):
 
@@ -190,19 +179,23 @@ class BibleOptions(utils.ApplicationModule):
 
     def __go_to_live(self,text):
         text = unicode(text,'latin')
-        template = self.template('bible')
+        template,variables = self.template('bible')
 
-        passages = map(lambda p: Passage(p),filter(lambda s: s and s != '(END)', text.split(DELIMITER)))
+        passages = map(lambda p: Passage(p),
+            filter(lambda s: s and s != '(END)',
+             text.split(DELIMITER)))
+        
         image = '{0}/{1}/{2}'.format(
             self.config.get('GENERAL','images_dirs'),
             self.config.get('LIVE','backgrounds_dir'),
             self.config.get('BIBLE','background_image')
             )
-        result = template.render(
-            passages=passages,
-            image=image,
-            slide_info=self.config.get('BIBLE','default_bible')
-            )
+
+        variables['passages'] = passages
+        variables['image'] = image
+        variables['slide_info'] = self.config.get('BIBLE','default_bible')
+
+        result = template.render(variables)
 
         return result,'latin'
 

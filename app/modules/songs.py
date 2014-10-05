@@ -137,7 +137,7 @@ class KaraokeOptions(utils.ApplicationModule):
         self._widget.cmdDeleteSong.setEnabled(True)
 
     def __set_slides(self,text,**kwargs):
-        template = self.template('song')
+        template,variables = self.template('song')
         splitted = text.split(DELIMITER)
         slides = []
 
@@ -147,8 +147,12 @@ class KaraokeOptions(utils.ApplicationModule):
             self.config.get('SONG','background_image')
             )
 
+        variables['image'] = image
+        variables['slide_info'] = kwargs['title_and_artist']
+
         for slide in splitted:
-            slides.append(template.render(slide=slide,image=image,slide_info=kwargs['title_and_artist']))
+            variables['slide'] = slide
+            slides.append(template.render(variables))
 
         return slides
 
@@ -215,6 +219,7 @@ class SongManagement(QtGui.QWizard,utils.ApplicationModule):
     def config_components(self):
         self.setWindowTitle(self.__windowTitle)
         self._widget.lblStatus.setVisible(False)
+        self.button(QtGui.QWizard.FinishButton).clicked.connect(self.__save_song)
         self.setButtonText(QtGui.QWizard.FinishButton,'Save')
 
         setattr(self._widget.lblArtistName,'idArtist',None)
@@ -233,7 +238,6 @@ class SongManagement(QtGui.QWizard,utils.ApplicationModule):
         self.callback('add_artist',self.__add_artist)
         self.callback('edit_artist',self.__edit_artist)
         self.callback('delete_artist',self.__delete_artist)
-        self.button(QtGui.QWizard.FinishButton).clicked.connect(self.__save_song)
 
 
         #Song Configure
@@ -245,7 +249,7 @@ class SongManagement(QtGui.QWizard,utils.ApplicationModule):
             self._widget.lblArtistName.setText(self.__song.artist.fullName)
             self._widget.lblArtistName.idArtist = self.__song.artist.id
 
-        font = get_projections_font(dict(self.config.items('FONT_LIVE')))
+        font = get_projections_font(dict(self.config.items('FONT_PREVIEW')))
         font.setPointSize(self.config.getint('SONG', 'MANAGEMENT_FONT_SIZE'))
         self._widget.txtSongBody.setFont(font)
 
@@ -258,7 +262,6 @@ class SongManagement(QtGui.QWizard,utils.ApplicationModule):
     def set_status(self, status, error=False):
         self._widget.lblStatus.setText(status.capitalize())
         self._widget.lblStatus.setVisible(True)
-
 
     def __set_table_row(self,*cells):
             row = self._widget.lstArtists.rowCount()
@@ -373,8 +376,11 @@ class SongManagement(QtGui.QWizard,utils.ApplicationModule):
         except SongError , e:
             self.set_status(e.message,True)
 
+    def validate(self):
+        return False
+
     def __save_song(self,*args):
-        self.rejected()
+        pass
 
     def __artists_db(self,criteria):
         query, session = self.__ADAPTER.get_query(Artist)

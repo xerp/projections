@@ -37,8 +37,7 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
         self.module_options_panel.setVisible(False)
         self._widget.txtSearch.setVisible(False)
 
-        self._widget.sLiveFont.setValue(
-             int(dict(self.config.items('FONT_LIVE')).get('size', self.config.getint('LIVE', 'DEFAULT_FONT_SIZE'))))
+        self._widget.sLiveFont.setValue(self.config.getint('LIVE', 'DEFAULT_FONT_SIZE'))
 
         self.callback('refresh_images',self.__set_images)
         self.callback('refresh_screens',self.__set_live_screens)
@@ -175,6 +174,11 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
         self._widget.txtSearch.setVisible(False)
         self.clear_search_box()
 
+        try:
+            del(self.slide_callback)
+        except Exception:
+            pass 
+
     def configure(self):
 
         try:
@@ -209,9 +213,9 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
 
     def set_slides(self, whole_text,**kwarg):
 
-        try:
+        if hasattr(self,'slide_callback'):
             self.slides = self.slide_callback(whole_text,**kwarg)
-        except AttributeError:
+        else:
             if 'delimiter' in kwarg and 'limit' in kwarg:
                 splitted = whole_text.split(kwarg['delimiter'])[:kwarg['limit']]
             elif 'delimiter' in kwarg:
