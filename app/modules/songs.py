@@ -7,7 +7,7 @@ import app.resources.modules.karaoke.management as ui_manage_resource
 import app.modules.utils as utils
 
 from app.lib.helpers import get_projections_font, set_alignment
-from sqlalchemy import Column, Integer, String, Text, ForeignKey
+from sqlalchemy import Column, Integer, String, Text, ForeignKey,func
 from sqlalchemy.orm import relationship
 from ConfigParser import ConfigParser
 
@@ -216,6 +216,12 @@ class SongManagement(QtGui.QWizard,utils.ApplicationModule):
         utils.ApplicationModule.__init__(self,parent,QtGui.QWizard,ui_manage_resource.Ui_songManagement(),self.__controls)
         self.__ADAPTER = orm.Adapter(self.config.get('GENERAL', 'DB_PATH'), orm.SQLITE)
 
+    def instance_variable(self):
+        utils.ApplicationModule.instance_variable(self)
+
+        self.__txtSongBody = SongBody(self)
+        self.songBodyPage = utils.ProjectionWizardPage(self,'Song Body')
+
     def config_components(self):
         self.setWindowTitle(self.__windowTitle)
         self._widget.lblStatus.setVisible(False)
@@ -245,17 +251,21 @@ class SongManagement(QtGui.QWizard,utils.ApplicationModule):
             self.setWindowTitle('{0} - ({1})'.format(self.__windowTitle, self.__song.titleAndArtist))
 
             self._widget.txtTitle.setText(self.__song.title)
-            self._widget.txtSongBody.setText(self.__song.body)
+            self.__txtSongBody.setText(self.__song.body)
             self._widget.lblArtistName.setText(self.__song.artist.fullName)
             self._widget.lblArtistName.idArtist = self.__song.artist.id
 
         font = get_projections_font(dict(self.config.items('FONT_PREVIEW')))
         font.setPointSize(self.config.getint('SONG', 'MANAGEMENT_FONT_SIZE'))
-        self._widget.txtSongBody.setFont(font)
+        self.__txtSongBody.setFont(font)
 
-        set_alignment(self._widget.txtSongBody, Qt.AlignCenter)
-        self._widget.txtSongBody.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self._widget.txtSongBody.setAcceptRichText(False)
+        set_alignment(self.__txtSongBody, Qt.AlignCenter)
+        self.__txtSongBody.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.__txtSongBody.setAcceptRichText(False)
+
+        self.songBodyPage.add_widget(self.__txtSongBody)
+        self.songBodyPage.callback('validate',self.__validate_song)
+        self.setPage(2,self.songBodyPage)
 
         self.set_status('Ready')
 
@@ -376,11 +386,40 @@ class SongManagement(QtGui.QWizard,utils.ApplicationModule):
         except SongError , e:
             self.set_status(e.message,True)
 
-    def validate(self):
-        return False
+    def __validate_song(self):
+        
+        song = Song() if not self.__song else self.__song
 
-    def __save_song(self,*args):
-        pass
+        if not self._widget.txtTitle.text() or not self.__txtSongBody.toPlainText() or not self._widget.lblArtistName.text():
+            self.set_status('Song cannot be add [title, artist and body of song are required]')
+            self.back()
+            return False
+
+        song.title = str(self._widget.txtTitle.text())
+        song.artist = self.__artist_db(int(self._widget.lblArtistName.idArtist))
+        song.body = unicode(self.__txtSongBody.toPlainText(),'latin')
+
+        exist = self.__exist_song_db(song,self.__song)
+
+        if exist:
+            self.set_status('Song cannot be add [song already exist]')
+            self.back()
+
+        return not exist
+
+    def __save_song(self):
+
+        song = Song() if not self.__song else self.__song
+
+        song.title = str(self._widget.txtTitle.text())
+        song.artist = self.__artist_db(int(self._widget.lblArtistName.idArtist))
+        song.body = unicode(self.__txtSongBody.toPlainText(),'latin')
+
+        try:
+            self.__save_song_db(song,self.__song)
+        except SongError:
+            pass
+
 
     def __artists_db(self,criteria):
         query, session = self.__ADAPTER.get_query(Artist)
@@ -389,12 +428,19 @@ class SongManagement(QtGui.QWizard,utils.ApplicationModule):
             (Artist.first_name.like('%{0}%'.format(criteria)))
             | (Artist.last_name.like('%{0}%'.format(criteria))))
 
-        return query.all()
+        artists =  query.all()
+        session.close()
+
+        return artists
 
     def __artist_db(self,idArtist):
         query, session = self.__ADAPTER.get_query(Artist)
 
-        return query.filter(Artist.id == idArtist).one()
+        artist = query.filter(Artist.id == idArtist).one()
+        session.close()
+
+        return artist
+
 
     def __add_artist_db(self,artist):
         if not artist.first_name:
@@ -413,6 +459,7 @@ class SongManagement(QtGui.QWizard,utils.ApplicationModule):
         session.add(artist)
         session.commit()
         session.refresh(artist)
+        session.close()
 
         return True
 
@@ -431,6 +478,7 @@ class SongManagement(QtGui.QWizard,utils.ApplicationModule):
             raise SongError('Artist cannot be edit [artist already exist]')
 
         session.commit()
+        session.close()
 
         return True
 
@@ -471,6 +519,7 @@ class SongManagement(QtGui.QWizard,utils.ApplicationModule):
             query = query.filter(Artist.id != artist.id)
 
         artists = query.all()
+        session.close()
 
         return len(artists) != 0
 
@@ -486,30 +535,46 @@ class SongManagement(QtGui.QWizard,utils.ApplicationModule):
 
         query, session = self.__ADAPTER.get_query(Song)
 
-        session.merge(song.artist, load=False)
-        session.add(song)
+        if edit:
+            session.merge(song)
+        else:
+            session.add(song)
+
         session.commit()
+        session.close()
 
         return True
 
     def __exist_song_db(self,song,edit=False):
         query, session = self.__ADAPTER.get_query(Song)
 
-        query = query.filter(Song.title == song.title)
+        query = query.filter(func.lower(Song.title) == song.title.lower())
 
         if song.artist:
-            query = query.filter(
-                Artist.first_name == song.artist.first_name,
-                Artist.last_name == song.artist.last_name,
-            )
+            if song.artist.first_name:
+                query = query.filter(func.lower(Artist.first_name) == song.artist.first_name.lower())
+
+            if song.artist.last_name:
+                query = query.filter(func.lower(Artist.last_name) == song.artist.last_name.lower())
+                
 
         if edit:
             query = query.filter(Song.id != song.id)
 
         songs = query.all()
+        session.close()
 
         return len(songs) != 0
 
+class SongBody(QtGui.QTextEdit):
+    def __init__(self, parent):
+        super(SongBody, self).__init__(parent)
+
+    def keyPressEvent(self, event):
+        super(SongBody, self).keyPressEvent(event)
+
+        if event.matches(QtGui.QKeySequence.Paste):
+            set_alignment(self, Qt.AlignCenter)
 
 class TableRow(QtGui.QTableWidgetItem):
 

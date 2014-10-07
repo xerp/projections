@@ -77,3 +77,25 @@ class ApplicationModule(AbstractModule):
     def configure(self):
         pass
 
+
+class ProjectionWizardPage(QtGui.QWizardPage):
+
+    def __init__(self,wizard,title):
+        QtGui.QWizardPage.__init__(self,wizard)
+        self.setTitle(title)
+        self.__layout = QtGui.QVBoxLayout()
+        self.setLayout(self.__layout)
+        self.callbacks = {}
+
+    def add_widget(self,widget):
+        self.__layout.addWidget(widget)
+
+    def callback(self,event,callback):
+        self.callbacks[event] = callback
+
+    def validatePage(self):
+
+        if 'validate' in self.callbacks:
+            return self.callbacks['validate']()
+        else:
+            return True

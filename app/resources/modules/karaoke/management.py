@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'management.ui'
+# Form implementation generated from reading ui file 'karaoke/management.ui'
 #
-# Created: Fri Oct 03 11:32:46 2014
-#      by: PyQt4 UI code generator 4.10.4
+# Created: Tue Oct  7 06:57:22 2014
+#      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -122,21 +122,6 @@ class Ui_songManagement(object):
         self.lblStatus.setObjectName(_fromUtf8("lblStatus"))
         self.verticalLayout_2.addWidget(self.lblStatus)
         songManagement.addPage(self.wizardPage1)
-        self.wizardPage2 = QtGui.QWizardPage()
-        self.wizardPage2.setObjectName(_fromUtf8("wizardPage2"))
-        self.verticalLayout_4 = QtGui.QVBoxLayout(self.wizardPage2)
-        self.verticalLayout_4.setObjectName(_fromUtf8("verticalLayout_4"))
-        self.label_3 = QtGui.QLabel(self.wizardPage2)
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        self.label_3.setFont(font)
-        self.label_3.setObjectName(_fromUtf8("label_3"))
-        self.verticalLayout_4.addWidget(self.label_3)
-        self.txtSongBody = QtGui.QTextEdit(self.wizardPage2)
-        self.txtSongBody.setObjectName(_fromUtf8("txtSongBody"))
-        self.verticalLayout_4.addWidget(self.txtSongBody)
-        songManagement.addPage(self.wizardPage2)
 
         self.retranslateUi(songManagement)
         QtCore.QMetaObject.connectSlotsByName(songManagement)
@@ -146,10 +131,10 @@ class Ui_songManagement(object):
         songManagement.setTabOrder(self.lstArtists, self.cmdEditArtist)
         songManagement.setTabOrder(self.cmdEditArtist, self.cmdDeleteArtist)
         songManagement.setTabOrder(self.cmdDeleteArtist, self.cmdAddArtist)
-        songManagement.setTabOrder(self.cmdAddArtist, self.txtSongBody)
 
     def retranslateUi(self, songManagement):
         songManagement.setWindowTitle(_translate("songManagement", "Wizard", None))
+        self.wizardPage1.setTitle(_translate("songManagement", "Song Properties", None))
         self.label.setText(_translate("songManagement", "Title", None))
         self.txtSearchArtist.setPlaceholderText(_translate("songManagement", "Search for name...", None))
         self.label_2.setText(_translate("songManagement", "Artist", None))
@@ -159,6 +144,5 @@ class Ui_songManagement(object):
         item = self.lstArtists.horizontalHeaderItem(1)
         item.setText(_translate("songManagement", "Name", None))
         self.lblStatus.setText(_translate("songManagement", "lblStatus", None))
-        self.label_3.setText(_translate("songManagement", "Body", None))
 
 import resources_rc

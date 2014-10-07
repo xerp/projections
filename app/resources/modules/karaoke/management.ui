@@ -20,9 +20,12 @@
    <enum>QWizard::AeroStyle</enum>
   </property>
   <property name="options">
-   <set>QWizard::HaveCustomButton1|QWizard::NoBackButtonOnStartPage|QWizard::NoDefaultButton</set>
+   <set>QWizard::NoBackButtonOnStartPage|QWizard::NoDefaultButton</set>
   </property>
   <widget class="QWizardPage" name="wizardPage1">
+   <property name="title">
+    <string>Song Properties</string>
+   </property>
    <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>
      <layout class="QVBoxLayout" name="verticalLayout">
@@ -178,26 +181,6 @@
     </item>
    </layout>
   </widget>
-  <widget class="QWizardPage" name="wizardPage2">
-   <layout class="QVBoxLayout" name="verticalLayout_4">
-    <item>
-     <widget class="QLabel" name="label_3">
-      <property name="font">
-       <font>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Body</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QTextEdit" name="txtSongBody"/>
-    </item>
-   </layout>
-  </widget>
  </widget>
  <tabstops>
   <tabstop>txtTitle</tabstop>
@@ -207,7 +190,6 @@
   <tabstop>cmdEditArtist</tabstop>
   <tabstop>cmdDeleteArtist</tabstop>
   <tabstop>cmdAddArtist</tabstop>
-  <tabstop>txtSongBody</tabstop>
  </tabstops>
  <resources>
   <include location="../core/resources.qrc"/>

@@ -7,8 +7,11 @@ Created on Dec 11, 2012
 import sqlalchemy as __sql
 import sqlalchemy.orm.session as __sess
 
+
 # Entity Base
 from sqlalchemy.ext.declarative import declarative_base
+
+from sqlalchemy.orm import *
 
 BaseTable = declarative_base()
 SQLITE = 'sqlite'
@@ -30,7 +33,7 @@ def get_session(engine, auto_flush=False, autocommit=False, expire_on_commit=Tru
     session = __sess.sessionmaker(bind=engine, autoflush=auto_flush, autocommit=autocommit,
                                   expire_on_commit=expire_on_commit)
 
-    return session()
+    return scoped_session(session)
 
 
 class Adapter():

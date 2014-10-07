@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'options.ui'
+# Form implementation generated from reading ui file 'karaoke/options.ui'
 #
-# Created: Thu Oct 02 18:47:57 2014
-#      by: PyQt4 UI code generator 4.10.4
+# Created: Tue Oct  7 07:43:57 2014
+#      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -26,7 +26,12 @@ except AttributeError:
 class Ui_options(object):
     def setupUi(self, options):
         options.setObjectName(_fromUtf8("options"))
-        options.resize(324, 333)
+        options.resize(358, 333)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(options.sizePolicy().hasHeightForWidth())
+        options.setSizePolicy(sizePolicy)
         self.verticalLayout_2 = QtGui.QVBoxLayout(options)
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
         self.verticalLayout = QtGui.QVBoxLayout()
