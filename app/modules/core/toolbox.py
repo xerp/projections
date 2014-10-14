@@ -47,12 +47,25 @@ class ToolBox(QtGui.QDockWidget,utils.AbstractModule):
 
     def __set_modules(self):
 
+
         modules = filter(lambda mod: 'app.modules.' in mod and 'core' not in mod,
             map(lambda (m,n,i): n ,pkgutil.walk_packages('app.modules')))
         modules = map(lambda mod: mod.split('.')[-1].capitalize(),modules)
-        modules = filter(lambda mod: mod.lower() not in MODULES_TO_EXCLUDE,modules)
 
+        try:
+            MODULES_TO_EXCLUDE_TEMP = MODULES_TO_EXCLUDE + self.config.get('GENERAL','options_to_exclude').split(',')
+            modules = filter(lambda mod: mod.lower() not in MODULES_TO_EXCLUDE_TEMP,modules)
+        except Exception:
+            modules = filter(lambda mod: mod.lower() not in MODULES_TO_EXCLUDE,modules)
+
+        modules = map(lambda m: m.replace('_',' '),modules)
         self._widget.cbOptions.addItems(modules)
+
+        try:
+            indexDefaultOption = modules.index(self.config.get('GENERAL','default_option').capitalize())
+            self._widget.cbOptions.setCurrentIndex(indexDefaultOption)
+        except Exception:
+            pass
 
 
     def __image_view(self):
@@ -89,13 +102,13 @@ class ToolBox(QtGui.QDockWidget,utils.AbstractModule):
 
         text = self._previewer.toPlainText()
 
-        if text:
-            if hasattr(self,'go_to_live_callback'):
-                returnedText,encode = self.go_to_live_callback(text)
-                self._liveViewer.set_text(returnedText,self._controls.live_font(),encode)
-            else:
-                self._liveViewer.set_text(self._controls.slides[self._controls.slide_position],self._controls.live_font())
-                self._controls.seeker()
+        if hasattr(self,'go_to_live_callback'):
+            kwargs = self.go_to_live_callback(text)
+            if kwargs:
+                getattr(self._liveViewer,'set_{0}'.format(kwargs['method']))(**kwargs)
+        else:
+            self._liveViewer.set_text(self._controls.slides[self._controls.slide_position],self._controls.live_font())
+            self._controls.seeker()
 
         self._statusbar.set_status('View refreshed')
 
@@ -111,6 +124,7 @@ class ToolBox(QtGui.QDockWidget,utils.AbstractModule):
     def configure_selected_module(self):
 
         module = self._widget.cbOptions.currentText()
+        module = module.replace(' ','_')
         module = importlib.import_module('app.modules.{0}'.format(str(module).lower()))
 
         if hasattr(module, 'configure_options'):
@@ -126,7 +140,7 @@ class ToolBox(QtGui.QDockWidget,utils.AbstractModule):
         else:
             self._controls.hide_module_options()
             self._controls.hide_search_box()
-            self._statusbar.set_status('{0} module dont have options'.format(module.__name__.split('.')[-1]),time_to_hide=5)
+            self._statusbar.set_status('{0} module dont have options'.format(module.__name__.split('.')[-1].replace('_',' ')),time_to_hide=5)
 
 
     def set_live(self,in_live):

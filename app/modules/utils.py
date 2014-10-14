@@ -3,6 +3,8 @@ from ConfigParser import ConfigParser
 from PyQt4 import QtCore, QtGui
 from jinja2 import Environment, FileSystemLoader
 
+import app.lib.orm as orm
+
 
 class ProjectionError(Exception):
     pass
@@ -76,6 +78,12 @@ class ApplicationModule(AbstractModule):
 
     def configure(self):
         pass
+
+class ApplicationDBModule(ApplicationModule):
+
+    def instance_variable(self):
+        super(ApplicationDBModule, self).instance_variable()
+        self._DBAdapter = orm.Adapter(self.config.get('GENERAL', 'DB_PATH'), orm.SQLITE)
 
 
 class ProjectionWizardPage(QtGui.QWizardPage):

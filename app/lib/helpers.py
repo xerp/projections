@@ -55,8 +55,6 @@ def set_alignment(text_edit, desired_alignment):
     text_edit.moveCursor(QtGui.QTextCursor.End)
 
 
-
-
 class AbstractProjectionLinealDataModel(QtCore.QAbstractListModel):
     def __init__(self, data_list=[], parent=None):
         QtCore.QAbstractListModel.__init__(self, None)
@@ -78,34 +76,10 @@ class AbstractProjectionLinealDataModel(QtCore.QAbstractListModel):
 
 class ImagesViewModel(AbstractProjectionLinealDataModel):
     def data(self, index, role=Qt.DisplayRole):
-        if index.isValid() and role == Qt.DisplayRole:
+        if index.isValid():
             image = self.data_list[index.row()]
 
-            return image.split(os.sep)[-1].split('.')[0]
-
-
-# class ArtistDataModel(AbstractProjectionLinealDataModel):
-#     def data(self, index, role=Qt.DisplayRole):
-#         if index.isValid() and role == Qt.DisplayRole:
-#             artist = self.data_list[index.row()]
-
-#             return artist.full_name
-
-
-# class SongsDataModel(AbstractProjectionLinealDataModel):
-#     def data(self, index, role=Qt.DisplayRole):
-#         if index.isValid() and role == Qt.DisplayRole:
-#             song = self.data_list[index.row()]
-
-#             try:
-#                 return song.title_and_artist
-#             except Exception:
-#                 pass
-
-#     def selected(self):
-#         text = self.parent().parent().text()
-
-#         try:
-#             return filter(lambda s: s.title_and_artist == text, self.data_list)[0]
-#         except (TypeError, IndexError):
-#             raise songs.SongError('song not found')
+            if role == Qt.DisplayRole:
+                print 'gh'
+            elif role == Qt.DecorationRole:
+                return QtGui.QIcon(image)

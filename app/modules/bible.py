@@ -85,6 +85,7 @@ class BibleOptions(utils.ApplicationModule):
 
     def configure(self):
 
+        self._controls.search_in_history = True
         self._controls.add_module_options(self)
         self._controls.set_enable_slides(False)
         self._controls.configure_search_box(self.__bible_search)
@@ -167,6 +168,8 @@ class BibleOptions(utils.ApplicationModule):
         try:
             result = self.__search_verse(search_text)
             self.__configure_navigations(search_text)
+            if not text:
+                self._controls.add_to_history(search_text)
         except BibleError, e:
             self._statusbar.set_status(str(e), True)
 
@@ -177,8 +180,8 @@ class BibleOptions(utils.ApplicationModule):
         
         self._controls.clear_search_box()
 
-    def __go_to_live(self,text):
-        text = unicode(text,'latin')
+    def __go_to_live(self,previewText):
+        text = unicode(previewText,'latin')
         template,variables = self.template('bible')
 
         passages = map(lambda p: Passage(p),
@@ -197,7 +200,7 @@ class BibleOptions(utils.ApplicationModule):
 
         result = template.render(variables)
 
-        return result,'latin'
+        return {'method':'text','text':result,'font_size':self._controls.live_font(),'encode':'latin'}
 
 class Passage:
 

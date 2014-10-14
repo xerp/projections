@@ -1,6 +1,7 @@
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import Qt
 
+import os
 import app.resources.modules.core.controls as ui_resource
 import app.modules.utils as utils
 from functools import partial
@@ -31,6 +32,10 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
         self.slide_length = len(self.slides)
         self.slide_position = 0
 
+        self.search_in_history = False
+        self.__historyPosition = 0
+        self.__history = []
+
         self.module_options_panel = self._widget.saModuleOptions
 
     def config_components(self):
@@ -44,6 +49,7 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
         self.callback('live_font',self.__live_font)
         self.callback('previous_slide',self.__previous_slide)
         self.callback('next_slide',self.__next_slide)
+
 
     def __set_live_screens(self):
         screens = get_screens()
@@ -82,10 +88,14 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
             self._widget.cmdSlides.addWidget(button, row, col)
 
     def __set_images(self):
+
         try:
+            self._widget.cbImagesView.setInsertPolicy(6)
             images = get_images_view()
-            model = ImagesViewModel(images, self._widget.cbImagesView)
-            self._widget.cbImagesView.setModel(model)
+            for img in images:
+                self._widget.cbImagesView.addItem(QtGui.QIcon(img),img.split(os.sep)[-1].split('.')[0])
+
+            self._widget.cbImagesView.setIconSize(QtCore.QSize(50,50))
 
             try:
                 self._widget.cbImagesView.setCurrentIndex(images.index(self.config.get('GENERAL', 'DEFAULT_IMAGE')))
@@ -93,7 +103,8 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
                 pass
 
         except Exception, e:
-            raise e
+            print e
+
 
     def __live_font(self,value):
 
@@ -173,6 +184,10 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
         self._widget.txtSearch.setVisible(False)
         self.clear_search_box()
 
+        self.search_in_history = False
+        self.__historyPosition = 0
+        self.__history = []
+
         try:
             del(self.slide_callback)
         except Exception:
@@ -229,6 +244,11 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
 
         self.seeker()
 
+    def add_to_history(self,text):
+        if text and text not in self.__history:
+            self.__history.append(text)
+            self.__historyPosition = len(self.__history)
+
     def set_live(self,in_live):
         self._widget.cbLiveScreens.setEnabled(not in_live)
 
@@ -244,8 +264,22 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
             self._widget.txtSearch.selectAll()
             self._widget.txtSearch.setFocus()
 
-        if e.key() ==   Qt.Key_Plus:
+        if e.key() == Qt.Key_Plus:
             self._widget.sLiveFont.setValue(self.live_font() + 3)
 
-        if e.key() ==   Qt.Key_Minus:
+        if e.key() == Qt.Key_Minus:
             self._widget.sLiveFont.setValue(self.live_font() - 3)
+
+        if self.search_in_history:
+            if e.key() == Qt.Key_PageDown:
+                self.__historyPosition += 1
+                try:
+                    self.set_search_box_text(self.__history[self.__historyPosition])
+                except IndexError:
+                    self.__historyPosition = len(self.__history) - 1
+                    self.clear_search_box()
+
+            if e.key() == Qt.Key_PageUp:
+                if self.__history and self.__historyPosition >= 0:
+                    self.__historyPosition -= 1
+                    self.set_search_box_text(self.__history[self.__historyPosition])

@@ -106,12 +106,12 @@ class LiveViewer(QtGui.QFrame,utils.AbstractModule):
         self.__create_html_file(template.render(image=image_file))
         self.__set_html_text()
 
-    def set_text(self, html, font_size,encode='utf-8'):
+    def set_text(self,**kwargs):
         self.set_color()
         
-        self.lastEncode = encode
-        self.lastTemplate = Template(html)
-        self.set_font_size(font_size)
+        self.lastEncode = kwargs['encode']
+        self.lastTemplate = Template(kwargs['text'])
+        self.set_font_size(kwargs['font_size'])
 
 
     def set_font_size(self,font_size):
@@ -121,3 +121,6 @@ class LiveViewer(QtGui.QFrame,utils.AbstractModule):
                 font_size=font_size if font_size > 0 else 10).encode(self.lastEncode))
 
         self.__set_html_text()
+
+    def set_url(self,**kwargs):
+        self.lblLive.load(QUrl(kwargs['url']))

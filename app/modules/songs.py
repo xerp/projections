@@ -24,7 +24,7 @@ class SongError(Exception):
     pass
 
 
-class KaraokeOptions(utils.ApplicationModule):
+class KaraokeOptions(utils.ApplicationDBModule):
 
     __controls = {
         'add_song':{'cmdAddSong':'clicked()'},
@@ -35,8 +35,7 @@ class KaraokeOptions(utils.ApplicationModule):
     }
 
     def __init__(self,parent):
-        utils.ApplicationModule.__init__(self,parent,None,ui_opts_resource.Ui_options(),self.__controls)
-        self.__ADAPTER = orm.Adapter(self.config.get('GENERAL', 'DB_PATH'), orm.SQLITE)
+        utils.ApplicationDBModule.__init__(self,parent,None,ui_opts_resource.Ui_options(),self.__controls)
 
     def config_components(self):
 
@@ -57,6 +56,7 @@ class KaraokeOptions(utils.ApplicationModule):
 
     def configure(self):
 
+        self._controls.search_in_history = True
         self._controls.add_module_options(self)
         self._controls.configure_search_box(self.__search_song)
         self._controls.set_slide_callback(self.__set_slides)
@@ -108,7 +108,9 @@ class KaraokeOptions(utils.ApplicationModule):
         search_text = self._controls.search_box_text()
 
         songs = self.__songs_db(search_text)
-        self.__set_table_data(songs)
+        if songs:
+            self._controls.add_to_history(search_text)
+            self.__set_table_data(songs)
 
         self._controls.clear_search_box()
 
@@ -168,7 +170,7 @@ class KaraokeOptions(utils.ApplicationModule):
             self._toolbox.go_to_live()
 
     def __songs_db(self,criteria):
-        query, session = self.__ADAPTER.get_query(Song)
+        query, session = self._DBAdapter.get_query(Song)
 
         query = query.join(Song.artist).filter(
             (Artist.first_name.like('%{0}%'.format(criteria)))
@@ -179,7 +181,7 @@ class KaraokeOptions(utils.ApplicationModule):
         return query.all()
 
     def __song_db(self,idSong):
-        query, session = self.__ADAPTER.get_query(Song)
+        query, session = self._DBAdapter.get_query(Song)
 
         song =  query.filter(Song.id == idSong).one()
         session.merge(song.artist, load=True)
@@ -188,7 +190,7 @@ class KaraokeOptions(utils.ApplicationModule):
         return song
 
     def __delete_song_db(self,idSong):
-        query, session = self.__ADAPTER.get_query(Song)
+        query, session = self._DBAdapter.get_query(Song)
 
         song = query.filter(Song.id == idSong).one()
 
@@ -199,7 +201,7 @@ class KaraokeOptions(utils.ApplicationModule):
         return True
 
 
-class SongManagement(QtGui.QWizard,utils.ApplicationModule):
+class SongManagement(QtGui.QWizard,utils.ApplicationDBModule):
 
     __controls = {
         'search_artist':{'txtSearchArtist':'returnPressed()'},
@@ -213,11 +215,10 @@ class SongManagement(QtGui.QWizard,utils.ApplicationModule):
     def __init__(self,parent,title,song = None):
         self.__windowTitle = title
         self.__song = song
-        utils.ApplicationModule.__init__(self,parent,QtGui.QWizard,ui_manage_resource.Ui_songManagement(),self.__controls)
-        self.__ADAPTER = orm.Adapter(self.config.get('GENERAL', 'DB_PATH'), orm.SQLITE)
+        utils.ApplicationDBModule.__init__(self,parent,QtGui.QWizard,ui_manage_resource.Ui_songManagement(),self.__controls)
 
     def instance_variable(self):
-        utils.ApplicationModule.instance_variable(self)
+        utils.ApplicationDBModule.instance_variable(self)
 
         self.__txtSongBody = SongBody(self)
         self.songBodyPage = utils.ProjectionWizardPage(self,'Song Body')
@@ -422,7 +423,7 @@ class SongManagement(QtGui.QWizard,utils.ApplicationModule):
 
 
     def __artists_db(self,criteria):
-        query, session = self.__ADAPTER.get_query(Artist)
+        query, session = self._DBAdapter.get_query(Artist)
 
         query = query.filter(
             (Artist.first_name.like('%{0}%'.format(criteria)))
@@ -434,7 +435,7 @@ class SongManagement(QtGui.QWizard,utils.ApplicationModule):
         return artists
 
     def __artist_db(self,idArtist):
-        query, session = self.__ADAPTER.get_query(Artist)
+        query, session = self._DBAdapter.get_query(Artist)
 
         artist = query.filter(Artist.id == idArtist).one()
         session.close()
@@ -454,7 +455,7 @@ class SongManagement(QtGui.QWizard,utils.ApplicationModule):
         if self.__exist_artist_db(artist):
             raise SongError('Artist cannot be add [artist already exist]')
         
-        query, session = self.__ADAPTER.get_query(Artist)
+        query, session = self._DBAdapter.get_query(Artist)
 
         session.add(artist)
         session.commit()
@@ -467,7 +468,7 @@ class SongManagement(QtGui.QWizard,utils.ApplicationModule):
         if not artist.first_name:
             raise SongError('Artist cannot be edit [first name of artist is required]')
 
-        artist_to_edit, session = self.__ADAPTER.get(Artist, artist.id)
+        artist_to_edit, session = self._DBAdapter.get(Artist, artist.id)
 
         artist_to_edit.first_name = artist.first_name.strip().capitalize()
 
@@ -484,7 +485,7 @@ class SongManagement(QtGui.QWizard,utils.ApplicationModule):
 
 
     def __delete_artist_db(self,idArtist):
-        query, session = self.__ADAPTER.get_query(Artist)
+        query, session = self._DBAdapter.get_query(Artist)
 
         artist = query.filter(Artist.id == idArtist).one()
 
@@ -498,7 +499,7 @@ class SongManagement(QtGui.QWizard,utils.ApplicationModule):
             raise SongError('Artist cannot be delete [has songs]')
 
     def __artist_has_song(self,artist):
-        query, session = self.__ADAPTER.get_query(Song)
+        query, session = self._DBAdapter.get_query(Song)
 
         query = query.join(Artist).filter(Artist.id == artist.id)
 
@@ -508,7 +509,7 @@ class SongManagement(QtGui.QWizard,utils.ApplicationModule):
         return len(songs) != 0
 
     def __exist_artist_db(self,artist, edit=False):
-        query, session = self.__ADAPTER.get_query(Artist)
+        query, session = self._DBAdapter.get_query(Artist)
 
         query = query.filter(Artist.first_name == artist.first_name)
 
@@ -533,7 +534,7 @@ class SongManagement(QtGui.QWizard,utils.ApplicationModule):
         if self.__exist_song_db(song,edit):
             raise SongError('Song cannot be add [song already exist]')
 
-        query, session = self.__ADAPTER.get_query(Song)
+        query, session = self._DBAdapter.get_query(Song)
 
         if edit:
             session.merge(song)
@@ -546,7 +547,7 @@ class SongManagement(QtGui.QWizard,utils.ApplicationModule):
         return True
 
     def __exist_song_db(self,song,edit=False):
-        query, session = self.__ADAPTER.get_query(Song)
+        query, session = self._DBAdapter.get_query(Song)
 
         query = query.filter(func.lower(Song.title) == song.title.lower())
 
