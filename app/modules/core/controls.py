@@ -181,6 +181,7 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
 
     def reset(self):
         self.set_enable_slides(True)
+        self.set_enable_live_font_size(True)
         self._widget.txtSearch.setVisible(False)
         self.clear_search_box()
 
@@ -224,6 +225,10 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
         self._widget.cmdNext.setVisible(enable)
         self._widget.cmdPrevious.setVisible(enable)
         self._widget.saCmdSlides.setVisible(enable)
+
+    def set_enable_live_font_size(self,enable):
+        self._widget.sLiveFont.setVisible(enable)
+        self._widget.lblLiveFont.setVisible(enable)
 
     def set_slides(self, whole_text,**kwarg):
 

@@ -1,7 +1,7 @@
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import Qt
 
-
+import re
 import app.resources.modules.web_page as ui_resource
 import app.modules.utils as utils
 
@@ -22,7 +22,6 @@ class WebPageOptions(utils.ApplicationModule):
 
     __controls = {
         'clear_text':{'cmdClearText':'clicked()'},
-        'view_page':{'txtWebPage':'returnPressed()'},
     }
 
     def __init__(self,parent):
@@ -31,13 +30,13 @@ class WebPageOptions(utils.ApplicationModule):
     def config_components(self):
 
         self.callback('clear_text',self.__clear_text)
-        self.callback('view_page',self.__view_page)
 
     def configure(self):
 
         self._controls.search_in_history = True
         self._controls.add_module_options(self)
         self._controls.set_enable_slides(False)
+        self._controls.set_enable_live_font_size(False)
 
         self._toolbox.set_go_to_live_callback(self.__go_to_live)
         self._statusbar.set_status('Web page module loaded successfully')
@@ -54,5 +53,8 @@ class WebPageOptions(utils.ApplicationModule):
         url = str(self._widget.txtWebPage.toPlainText())
 
         if url:
+            if 'http://' not in url and 'https://' not in url:
+                url = 'http://{0}'.format(url)
+                
             self._controls.add_to_history(url)
             return {'method':'url','url':url}

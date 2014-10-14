@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'controls.ui'
 #
-# Created: Fri Sep 26 17:28:02 2014
-#      by: PyQt4 UI code generator 4.10.4
+# Created: Tue Oct 14 09:19:04 2014
+#      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -96,7 +96,7 @@ class Ui_projectionsControls(object):
         self.saCmdSlides.setWidgetResizable(True)
         self.saCmdSlides.setObjectName(_fromUtf8("saCmdSlides"))
         self.scrollAreaWidgetContents_2 = QtGui.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 645, 156))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 647, 155))
         self.scrollAreaWidgetContents_2.setObjectName(_fromUtf8("scrollAreaWidgetContents_2"))
         self.gridLayout_2 = QtGui.QGridLayout(self.scrollAreaWidgetContents_2)
         self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
@@ -118,17 +118,17 @@ class Ui_projectionsControls(object):
         self.cmdRefreshImageView.setObjectName(_fromUtf8("cmdRefreshImageView"))
         self.horizontalLayout_7.addWidget(self.cmdRefreshImageView)
         self.gridLayout.addLayout(self.horizontalLayout_7, 9, 1, 1, 1)
-        self.label = QtGui.QLabel(self.dockWidgetContents)
+        self.lblLiveFont = QtGui.QLabel(self.dockWidgetContents)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
-        self.label.setSizePolicy(sizePolicy)
-        self.label.setLayoutDirection(QtCore.Qt.LeftToRight)
-        self.label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
-        self.label.setIndent(0)
-        self.label.setObjectName(_fromUtf8("label"))
-        self.gridLayout.addWidget(self.label, 8, 0, 1, 1)
+        sizePolicy.setHeightForWidth(self.lblLiveFont.sizePolicy().hasHeightForWidth())
+        self.lblLiveFont.setSizePolicy(sizePolicy)
+        self.lblLiveFont.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.lblLiveFont.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.lblLiveFont.setIndent(0)
+        self.lblLiveFont.setObjectName(_fromUtf8("lblLiveFont"))
+        self.gridLayout.addWidget(self.lblLiveFont, 8, 0, 1, 1)
         self.sLiveFont = QtGui.QSlider(self.dockWidgetContents)
         self.sLiveFont.setMinimum(1)
         self.sLiveFont.setMaximum(100)
@@ -162,7 +162,7 @@ class Ui_projectionsControls(object):
         self.saModuleOptions.setWidgetResizable(True)
         self.saModuleOptions.setObjectName(_fromUtf8("saModuleOptions"))
         self.scrollAreaWidgetContents_3 = QtGui.QWidget()
-        self.scrollAreaWidgetContents_3.setGeometry(QtCore.QRect(0, 0, 647, 292))
+        self.scrollAreaWidgetContents_3.setGeometry(QtCore.QRect(0, 0, 649, 294))
         self.scrollAreaWidgetContents_3.setObjectName(_fromUtf8("scrollAreaWidgetContents_3"))
         self.horizontalLayout = QtGui.QHBoxLayout(self.scrollAreaWidgetContents_3)
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
@@ -184,7 +184,7 @@ class Ui_projectionsControls(object):
         self.cmdNext.setShortcut(_translate("projectionsControls", "Ctrl+Right", None))
         self.cmdRefreshImageView.setToolTip(_translate("projectionsControls", "Refresh Images View List", None))
         self.cmdRefreshImageView.setText(_translate("projectionsControls", "...", None))
-        self.label.setText(_translate("projectionsControls", "Live Font", None))
+        self.lblLiveFont.setText(_translate("projectionsControls", "Live Font", None))
         self.label_3.setText(_translate("projectionsControls", "Live in", None))
         self.label_2.setText(_translate("projectionsControls", "Image View", None))
 
