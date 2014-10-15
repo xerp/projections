@@ -29,8 +29,9 @@ class LiveViewer(QtGui.QFrame,utils.AbstractModule):
         self.setWindowFlags(Qt.CustomizeWindowHint or Qt.WindowStaysOnTopHint)
         self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
 
-        self.lblLive.page().settings().setAttribute(QWebSettings.LocalContentCanAccessRemoteUrls,True)
-        self.lblLive.page().settings().setAttribute(QWebSettings.LocalContentCanAccessFileUrls,True)
+        self.lblLive.settings().setAttribute(QWebSettings.LocalContentCanAccessRemoteUrls,True)
+        self.lblLive.settings().setAttribute(QWebSettings.LocalContentCanAccessFileUrls,True)
+        self.lblLive.settings().setAttribute(QWebSettings.PluginsEnabled,True)
         self.main_layout.addWidget(self.lblLive)
         self.lblLive.setVisible(True)
 
@@ -125,4 +126,5 @@ class LiveViewer(QtGui.QFrame,utils.AbstractModule):
         self.__set_html_text()
 
     def set_url(self,**kwargs):
-        self.lblLive.load(QUrl(kwargs['url']))
+        #self.lblLive.load(QUrl('{0}?rel=0&amp;autoplay=1&amp;controls=0&amp;showinfo=0'.format(kwargs['url'])))
+        #self.lblLive.load(QUrl(kwargs['url']))
