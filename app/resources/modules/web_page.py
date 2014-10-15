@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'web_page.ui'
 #
-# Created: Tue Oct 14 09:09:54 2014
-#      by: PyQt4 UI code generator 4.10.3
+# Created: Wed Oct 15 12:35:23 2014
+#      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -49,13 +49,7 @@ class Ui_Form(object):
         self.verticalLayout.addWidget(self.label)
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
-        self.txtWebPage = QtGui.QPlainTextEdit(Form)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Maximum)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.txtWebPage.sizePolicy().hasHeightForWidth())
-        self.txtWebPage.setSizePolicy(sizePolicy)
-        self.txtWebPage.setMaximumSize(QtCore.QSize(16777215, 60))
+        self.txtWebPage = QtGui.QLineEdit(Form)
         self.txtWebPage.setObjectName(_fromUtf8("txtWebPage"))
         self.horizontalLayout.addWidget(self.txtWebPage)
         self.cmdClearText = QtGui.QToolButton(Form)

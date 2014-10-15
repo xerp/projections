@@ -33,8 +33,7 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
         self.slide_position = 0
 
         self.search_in_history = False
-        self.__historyPosition = 0
-        self.__history = []
+        self.__history = {}
 
         self.module_options_panel = self._widget.saModuleOptions
 
@@ -92,6 +91,7 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
         try:
             self._widget.cbImagesView.setInsertPolicy(6)
             images = get_images_view()
+            setattr(self._widget.cbImagesView,'images',images)
             for img in images:
                 self._widget.cbImagesView.addItem(QtGui.QIcon(img),img.split(os.sep)[-1].split('.')[0])
 
@@ -142,6 +142,21 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
         self._widget.cmdNext.setEnabled(False if self.slide_position == (self.slide_length - 1) else True)
         self._widget.cmdPrevious.setEnabled(False if self.slide_position == 0 else True)
 
+    def __history_control_text(self,text):
+
+        if hasattr(self,'history_control_method'):
+            self.history_control_method(text)
+        else:
+            self.set_search_box_text(text)
+
+
+    def __clear_history_control(self):
+        
+        if hasattr(self,'history_control_method'):
+            self.history_control_method('')
+        else:
+            self._widget.txtSearch.setText('')
+
     def configure_search_box(self,callback = None):
         self._widget.txtSearch.setVisible(True)
 
@@ -186,10 +201,9 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
         self.clear_search_box()
 
         self.search_in_history = False
-        self.__historyPosition = 0
-        self.__history = []
 
         try:
+            del(self.history_control_method)
             del(self.slide_callback)
         except Exception:
             pass 
@@ -219,7 +233,10 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
         return self._widget.cbLiveScreens.currentIndex() + 1
 
     def selected_image(self):
-        return self._widget.cbImagesView.model().selected()
+        image_name = str(self._widget.cbImagesView.currentText())
+        if image_name:
+            return filter(lambda img: img.split(os.sep)[-1].split('.')[0] == image_name,self._widget.cbImagesView.images)[0]
+
 
     def set_enable_slides(self,enable):
         self._widget.cmdNext.setVisible(enable)
@@ -250,9 +267,17 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
         self.seeker()
 
     def add_to_history(self,text):
-        if text and text not in self.__history:
-            self.__history.append(text)
-            self.__historyPosition = len(self.__history)
+        option = self._toolbox.selected_option()
+
+        if option not in self.__history:
+            self.__history[option] = {'position': 0, 'data':[]}
+
+        if text and text not in self.__history[option]['data']:
+            self.__history[option]['data'].append(text)
+            self.__history[option]['position'] = len(self.__history[option]['data'])
+
+    def set_history_control(self,control_method):
+        setattr(self,'history_control_method',control_method)
 
     def set_live(self,in_live):
         self._widget.cbLiveScreens.setEnabled(not in_live)
@@ -276,15 +301,27 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
             self._widget.sLiveFont.setValue(self.live_font() - 3)
 
         if self.search_in_history:
+            option = self._toolbox.selected_option()
             if e.key() == Qt.Key_PageDown:
-                self.__historyPosition += 1
-                try:
-                    self.set_search_box_text(self.__history[self.__historyPosition])
-                except IndexError:
-                    self.__historyPosition = len(self.__history) - 1
-                    self.clear_search_box()
+                if option in self.__history:
+                    self.__history[option]['position'] += 1
+                    try:
+                        position = self.__history[option]['position']
+                        self.__history_control_text(self.__history[option]['data'][position])
+                    except IndexError:
+                        self.__history[option]['position'] = len(self.__history[option]['data'])
+                        self.__clear_history_control()
 
             if e.key() == Qt.Key_PageUp:
-                if self.__history and self.__historyPosition >= 0:
-                    self.__historyPosition -= 1
-                    self.set_search_box_text(self.__history[self.__historyPosition])
+                if option in self.__history:
+                    if self.__history[option]['position'] > 0:
+                        self.__history[option]['position'] -= 1
+                        try:
+                            position = self.__history[option]['position']
+                            self.__history_control_text(self.__history[option]['data'][position])
+                        except IndexError:
+                            self.__history[option]['position'] += 1
+                    else:
+                        self.__history[option]['position'] = 0
+                        position = self.__history[option]['position']
+                        self.__history_control_text(self.__history[option]['data'][position])

@@ -2,6 +2,7 @@ from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import Qt, QUrl
 from PyQt4.QtWebKit import QWebView,QWebSettings
 
+import os
 import app.modules.utils as utils
 from app.lib.helpers import get_projections_font
 from jinja2 import Template
@@ -29,6 +30,7 @@ class LiveViewer(QtGui.QFrame,utils.AbstractModule):
         self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
 
         self.lblLive.page().settings().setAttribute(QWebSettings.LocalContentCanAccessRemoteUrls,True)
+        self.lblLive.page().settings().setAttribute(QWebSettings.LocalContentCanAccessFileUrls,True)
         self.main_layout.addWidget(self.lblLive)
         self.lblLive.setVisible(True)
 
@@ -109,7 +111,7 @@ class LiveViewer(QtGui.QFrame,utils.AbstractModule):
     def set_text(self,**kwargs):
         self.set_color()
         
-        self.lastEncode = kwargs['encode']
+        self.lastEncode = kwargs['encode'] if 'encode' in kwargs else 'UTF-8'
         self.lastTemplate = Template(kwargs['text'])
         self.set_font_size(kwargs['font_size'])
 

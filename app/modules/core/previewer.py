@@ -18,3 +18,5 @@ class Previewer(QtGui.QTextEdit,utils.AbstractModule):
 
     def reset(self):
     	self.set_text('')
+        self.setVisible(True)
+        self.setEnabled(True)

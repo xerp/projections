@@ -107,7 +107,7 @@ class ToolBox(QtGui.QDockWidget,utils.AbstractModule):
             if kwargs:
                 getattr(self._liveViewer,'set_{0}'.format(kwargs['method']))(**kwargs)
         else:
-            self._liveViewer.set_text(self._controls.slides[self._controls.slide_position],self._controls.live_font())
+            self._liveViewer.set_text(text=self._controls.slides[self._controls.slide_position],font_size=self._controls.live_font())
             self._controls.seeker()
 
         self._statusbar.set_status('View refreshed')
@@ -123,7 +123,7 @@ class ToolBox(QtGui.QDockWidget,utils.AbstractModule):
 
     def configure_selected_module(self):
 
-        module = self._widget.cbOptions.currentText()
+        module = self.selected_option()
         module = module.replace(' ','_')
         module = importlib.import_module('app.modules.{0}'.format(str(module).lower()))
 
@@ -142,6 +142,9 @@ class ToolBox(QtGui.QDockWidget,utils.AbstractModule):
             self._controls.hide_search_box()
             self._statusbar.set_status('{0} module dont have options'.format(module.__name__.split('.')[-1].replace('_',' ')),time_to_hide=5)
 
+
+    def selected_option(self):
+        return str(self._widget.cbOptions.currentText())
 
     def set_live(self,in_live):
 
