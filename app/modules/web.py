@@ -2,7 +2,7 @@ from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import Qt
 
 import re
-import app.resources.modules.web_page as ui_resource
+import app.resources.modules.web as ui_resource
 import app.modules.utils as utils
 
 from app.lib.helpers import get_projections_font, set_alignment
