@@ -23,6 +23,7 @@ class WebPageOptions(utils.ApplicationModule):
     __controls = {
         'clear_text':{'cmdClearText':'clicked()'},
         'show_web':{'txtWebPage':'returnPressed()'},
+        'writing_web_page':{'txtWebPage':'textChanged (const QString&)'}
     }
 
     def __init__(self,parent):
@@ -30,8 +31,11 @@ class WebPageOptions(utils.ApplicationModule):
 
     def config_components(self):
 
+        self._widget.youtubeOptions.setVisible(False)
         self.callback('clear_text',self.__clear_text)
         self.callback('show_web',self.__show_web)
+        self.callback('writing_web_page',self.__writing_page)
+
 
     def configure(self):
 
@@ -43,7 +47,12 @@ class WebPageOptions(utils.ApplicationModule):
         self._previewer.setVisible(False)
 
         self._toolbox.set_go_to_live_callback(self.__go_to_live)
+
+        self._widget.txtWebPage.setFocus()
         self._statusbar.set_status('Web page module loaded successfully')
+
+    def __writing_page(self,text):
+        self._widget.youtubeOptions.setVisible('www.youtube' in text)
 
     def __clear_text(self):
         self._widget.txtWebPage.clear()
@@ -63,5 +72,14 @@ class WebPageOptions(utils.ApplicationModule):
 
             if 'http://' not in url and 'https://' not in url:
                 url = 'http://{0}'.format(url)
+
+            if '//www.youtube' in url:
+                url = url.replace('watch?v=','v/')
+
+                autoplay = '1' if self._widget.chkAutoPlay.checkState() == Qt.Checked else '0'
+                controls = '1' if self._widget.chkPlayerControls.checkState() == Qt.Checked else '0'
+
+                url = '{0}?rel=0&amp;autoplay={1}&amp;controls={2}&amp;showinfo=0'.format(
+                    url,autoplay,controls)
                 
             return {'method':'url','url':url}

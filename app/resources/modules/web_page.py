@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'web_page.ui'
 #
-# Created: Wed Oct 15 12:35:23 2014
-#      by: PyQt4 UI code generator 4.10.4
+# Created: Wed Oct 15 04:47:23 2014
+#      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName(_fromUtf8("Form"))
-        Form.resize(400, 104)
+        Form.resize(400, 160)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -65,6 +65,23 @@ class Ui_Form(object):
         self.cmdClearText.setObjectName(_fromUtf8("cmdClearText"))
         self.horizontalLayout.addWidget(self.cmdClearText)
         self.verticalLayout.addLayout(self.horizontalLayout)
+        self.youtubeOptions = QtGui.QGroupBox(Form)
+        self.youtubeOptions.setFlat(False)
+        self.youtubeOptions.setObjectName(_fromUtf8("youtubeOptions"))
+        self.horizontalLayout_3 = QtGui.QHBoxLayout(self.youtubeOptions)
+        self.horizontalLayout_3.setObjectName(_fromUtf8("horizontalLayout_3"))
+        self.horizontalLayout_2 = QtGui.QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
+        self.chkAutoPlay = QtGui.QCheckBox(self.youtubeOptions)
+        self.chkAutoPlay.setChecked(True)
+        self.chkAutoPlay.setObjectName(_fromUtf8("chkAutoPlay"))
+        self.horizontalLayout_2.addWidget(self.chkAutoPlay)
+        self.chkPlayerControls = QtGui.QCheckBox(self.youtubeOptions)
+        self.chkPlayerControls.setChecked(True)
+        self.chkPlayerControls.setObjectName(_fromUtf8("chkPlayerControls"))
+        self.horizontalLayout_2.addWidget(self.chkPlayerControls)
+        self.horizontalLayout_3.addLayout(self.horizontalLayout_2)
+        self.verticalLayout.addWidget(self.youtubeOptions)
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -73,5 +90,8 @@ class Ui_Form(object):
         Form.setWindowTitle(_translate("Form", "Form", None))
         self.label.setText(_translate("Form", "Web Page", None))
         self.cmdClearText.setText(_translate("Form", "...", None))
+        self.youtubeOptions.setTitle(_translate("Form", "Youtube Options", None))
+        self.chkAutoPlay.setText(_translate("Form", "Auto play", None))
+        self.chkPlayerControls.setText(_translate("Form", "Player controls", None))
 
 import resources_rc
