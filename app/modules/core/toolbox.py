@@ -107,8 +107,12 @@ class ToolBox(QtGui.QDockWidget,utils.AbstractModule):
             if kwargs:
                 getattr(self._liveViewer,'set_{0}'.format(kwargs['method']))(**kwargs)
         else:
-            self._liveViewer.set_text(text=self._controls.slides[self._controls.slide_position],font_size=self._controls.live_font())
-            self._controls.seeker()
+            try:
+                kwargs = {'text':self._controls.slides[self._controls.slide_position],'font_size':self._controls.live_font()}
+                self._liveViewer.set_text(**kwargs)
+                self._controls.seeker()
+            except IndexError:
+                pass
 
         self._statusbar.set_status('View refreshed')
 

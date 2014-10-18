@@ -67,6 +67,7 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
 
             if item:
                 item.widget().deleteLater()
+                del(item)
 
     def __set_buttons_slides(self, max_slides):
         self.__remove_buttons_slides()
@@ -119,7 +120,8 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
     def __previous_slide(self):
 
         self.slide_position -= 1
-        self._liveViewer.set_text(self.slides[self.slide_position],self._widget.sLiveFont.value())
+        kwarg = {'text':self.slides[self.slide_position],'font_size':self._widget.sLiveFont.value()}
+        self._liveViewer.set_text(**kwarg)
 
         self._widget.cmdNext.setEnabled(True)
         self._widget.cmdPrevious.setEnabled(False if self.slide_position == 0 else True)
@@ -127,7 +129,8 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
     def __next_slide(self):
 
         self.slide_position += 1
-        self._liveViewer.set_text(self.slides[self.slide_position],self._widget.sLiveFont.value())
+        kwarg = {'text':self.slides[self.slide_position],'font_size':self._widget.sLiveFont.value()}
+        self._liveViewer.set_text(**kwarg)
 
         self._widget.cmdPrevious.setEnabled(True)
         self._widget.cmdNext.setEnabled(False if self.slide_position == (self.slide_length - 1) else True)
@@ -135,7 +138,8 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
     def __slide_click(self, button_num):
 
         self.slide_position = button_num - 1
-        self._liveViewer.set_text(self.slides[self.slide_position],self._widget.sLiveFont.value())
+        kwarg = {'text':self.slides[self.slide_position],'font_size':self._widget.sLiveFont.value()}
+        self._liveViewer.set_text(**kwarg)
 
         self._widget.sLiveFont.setValue(self.config.getint('LIVE', 'DEFAULT_FONT_SIZE'))
 
