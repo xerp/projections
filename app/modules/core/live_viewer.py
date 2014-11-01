@@ -19,7 +19,7 @@ class LiveViewer(QtGui.QFrame,utils.AbstractModule):
     def instance_variable(self):
         utils.AbstractModule.instance_variable(self)
 
-        self.filePath = "{0}/last_live.html".format(self.config.get('GENERAL','template_path'))
+        self.filePath = "{0}/__last_live.html".format(self.config.get('GENERAL','template_path'))
         self.main_layout = QtGui.QGridLayout(self)
         self.lblLive = QWebView()
 

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import Qt
 
@@ -89,7 +91,7 @@ class KaraokeOptions(utils.ApplicationDBModule):
             for song in songs:
                 __set_row(
                     TableRow(0,song.id),
-                    TableRow(1,song.title),
+                    TableRow(1,song.title.encode('latin')),
                     TableRow(2,song.artist.fullName))
 
             self._widget.lstSongs.showColumn(1)
@@ -150,7 +152,7 @@ class KaraokeOptions(utils.ApplicationDBModule):
             )
 
         variables['image'] = image
-        variables['slide_info'] = kwargs['title_and_artist']
+        variables['slide_info'] = unicode(kwargs['title_and_artist'],'latin')
 
         for slide in splitted:
             variables['slide'] = slide
@@ -396,7 +398,7 @@ class SongManagement(QtGui.QWizard,utils.ApplicationDBModule):
             self.back()
             return False
 
-        song.title = str(self._widget.txtTitle.text())
+        song.title = unicode(self._widget.txtTitle.text(),'latin')
         song.artist = self.__artist_db(int(self._widget.lblArtistName.idArtist))
         song.body = unicode(self.__txtSongBody.toPlainText(),'latin')
 
@@ -412,7 +414,7 @@ class SongManagement(QtGui.QWizard,utils.ApplicationDBModule):
 
         song = Song() if not self.__song else self.__song
 
-        song.title = str(self._widget.txtTitle.text())
+        song.title = unicode(self._widget.txtTitle.text(),'latin')
         song.artist = self.__artist_db(int(self._widget.lblArtistName.idArtist))
         song.body = unicode(self.__txtSongBody.toPlainText(),'latin')
 
@@ -616,7 +618,7 @@ class Song(orm.BaseTable):
 
     @property
     def titleAndArtist(self):
-        return '{title} - {artist}'.format(title=self.title, artist=self.artist.fullName)
+        return '{title} - {artist}'.format(title=self.title.encode('latin'), artist=self.artist.fullName)
 
     def __repr__(self):
         return self.titleAndArtist

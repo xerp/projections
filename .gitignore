@@ -90,4 +90,4 @@ Makefile*
 *.qmlproject.user.*
 *.db
 
-templates/last_live.html
+templates/__last_live.html
