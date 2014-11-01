@@ -170,6 +170,7 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
         self._widget.txtSearch.setFocus()
 
         if callback:
+            setattr(self,'search_callback',callback)
             self.callback('search',callback)
 
     def search_box_text(self):
@@ -209,9 +210,10 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
         self.search_in_history = False
 
         try:
+            self.disconnect_callback('search',self.search_callback)
             del(self.history_control_method)
             del(self.slide_callback)
-        except Exception:
+        except Exception,e:
             pass 
 
     def configure(self):

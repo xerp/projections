@@ -14,6 +14,7 @@ from sqlalchemy.orm import relationship
 from ConfigParser import ConfigParser
 
 DELIMITER = '\n\n'
+LINE_DELIMITER='\n'
 
 def configure_options(**kwargs):
     options = KaraokeOptions(kwargs['controls'].module_options_panel)
@@ -155,7 +156,7 @@ class KaraokeOptions(utils.ApplicationDBModule):
         variables['slide_info'] = unicode(kwargs['title_and_artist'],'latin')
 
         for slide in splitted:
-            variables['slide'] = slide
+            variables['lines'] = slide.split(LINE_DELIMITER)
             slides.append(template.render(variables))
 
         return slides
