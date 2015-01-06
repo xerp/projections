@@ -112,6 +112,7 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
         if self._toolbox.in_live:
             try:
                 self._liveViewer.set_font_size(value)
+                print self._liveViewer.maxFontSize
             except IndexError:
                 pass
 
@@ -141,7 +142,7 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
         kwarg = {'text':self.slides[self.slide_position],'font_size':self._widget.sLiveFont.value()}
         self._liveViewer.set_text(**kwarg)
 
-        self._widget.sLiveFont.setValue(self.config.getint('LIVE', 'DEFAULT_FONT_SIZE'))
+        #self._widget.sLiveFont.setValue(self.config.getint('LIVE', 'DEFAULT_FONT_SIZE'))
 
         self._widget.cmdNext.setEnabled(False if self.slide_position == (self.slide_length - 1) else True)
         self._widget.cmdPrevious.setEnabled(False if self.slide_position == 0 else True)

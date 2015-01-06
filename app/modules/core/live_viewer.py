@@ -32,11 +32,20 @@ class LiveViewer(QtGui.QFrame,utils.AbstractModule):
         self.lblLive.settings().setAttribute(QWebSettings.LocalContentCanAccessRemoteUrls,True)
         self.lblLive.settings().setAttribute(QWebSettings.LocalContentCanAccessFileUrls,True)
         self.lblLive.settings().setAttribute(QWebSettings.PluginsEnabled,True)
+        self.lblLive.loadFinished.connect(self.__load_finished)
         self.main_layout.addWidget(self.lblLive)
         self.lblLive.setVisible(True)
 
         self.main_layout.setContentsMargins(0,0,0,0)
         self.reset()
+
+    def __load_finished(self,ok):
+        if self.lblLive.page().mainFrame().scrollBarMaximum(Qt.Vertical) > 0:
+            self.maxFontSize = True
+            self.lastFontSize -= 10
+            self.set_font_size(self.lastFontSize)
+        elif self.lblLive.page().mainFrame().scrollBarMaximum(Qt.Vertical) == 0:
+            self.maxFontSize=False
 
     def __create_html_file(self,html):
         
@@ -114,16 +123,18 @@ class LiveViewer(QtGui.QFrame,utils.AbstractModule):
         
         self.lastEncode = kwargs['encode'] if 'encode' in kwargs else 'UTF-8'
         self.lastTemplate = Template(kwargs['text'])
-        self.set_font_size(kwargs['font_size'])
+        self.lastFontSize = kwargs['font_size']
+        self.set_font_size(self.lastFontSize)
 
 
     def set_font_size(self,font_size):
 
         self.__create_html_file(self.lastTemplate.render(
                 charset=self.lastEncode,
-                font_size=font_size if font_size > 0 else 10).encode(self.lastEncode))
+                font_size=font_size if font_size > 0 else self.lastFontSize).encode(self.lastEncode))
 
         self.__set_html_text()
+
 
     def set_url(self,**kwargs):
         self.lblLive.load(QUrl(kwargs['url']))
