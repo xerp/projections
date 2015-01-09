@@ -41,11 +41,10 @@ class LiveViewer(QtGui.QFrame,utils.AbstractModule):
 
     def __load_finished(self,ok):
         if self.lblLive.page().mainFrame().scrollBarMaximum(Qt.Vertical) > 0:
-            self.maxFontSize = True
-            self.lastFontSize -= 10
+            self.lastFontSize -= self.lblLive.page().mainFrame().scrollBarMaximum(Qt.Vertical)
             self.set_font_size(self.lastFontSize)
         elif self.lblLive.page().mainFrame().scrollBarMaximum(Qt.Vertical) == 0:
-            self.maxFontSize=False
+            pass
 
     def __create_html_file(self,html):
         

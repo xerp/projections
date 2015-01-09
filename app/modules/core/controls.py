@@ -112,7 +112,6 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
         if self._toolbox.in_live:
             try:
                 self._liveViewer.set_font_size(value)
-                print self._liveViewer.maxFontSize
             except IndexError:
                 pass
 

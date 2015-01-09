@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'bible.ui'
 #
-# Created: Sat Oct  4 08:43:27 2014
-#      by: PyQt4 UI code generator 4.10.3
+# Created: Thu Jan  8 22:33:30 2015
+#      by: PyQt4 UI code generator 4.11.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_bibleOptions(object):
     def setupUi(self, bibleOptions):
         bibleOptions.setObjectName(_fromUtf8("bibleOptions"))
-        bibleOptions.resize(387, 149)
+        bibleOptions.resize(817, 440)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -91,6 +91,9 @@ class Ui_bibleOptions(object):
         self.cmdNextChapter.setObjectName(_fromUtf8("cmdNextChapter"))
         self.gridLayout.addWidget(self.cmdNextChapter, 1, 1, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout)
+        self.chkInternetService = QtGui.QCheckBox(bibleOptions)
+        self.chkInternetService.setObjectName(_fromUtf8("chkInternetService"))
+        self.verticalLayout.addWidget(self.chkInternetService)
         self.horizontalLayout.addLayout(self.verticalLayout)
 
         self.retranslateUi(bibleOptions)
@@ -110,5 +113,6 @@ class Ui_bibleOptions(object):
         self.cmdNextChapter.setToolTip(_translate("bibleOptions", "Next Chapter", None))
         self.cmdNextChapter.setText(_translate("bibleOptions", "Next", None))
         self.cmdNextChapter.setShortcut(_translate("bibleOptions", "Ctrl+PgUp", None))
+        self.chkInternetService.setText(_translate("bibleOptions", "Use bible internet service", None))
 
 import resources_rc

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>387</width>
-    <height>149</height>
+    <width>817</width>
+    <height>440</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -165,6 +165,13 @@
         </widget>
        </item>
       </layout>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="chkInternetService">
+       <property name="text">
+        <string>Use bible internet service</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
