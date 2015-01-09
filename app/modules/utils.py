@@ -49,6 +49,22 @@ class AbstractModule(QtGui.QWidget):
                 for button_sig in button_signal:
                     QtCore.QObject.connect(obj, QtCore.SIGNAL(button_sig),callback)
 
+    def disconnect_callback(self,event_name,callback):
+
+        if self.__controls_to_callback:
+            button = self.__controls_to_callback[event_name]
+
+            button_name = button.keys()[0]
+            button_signal = button.values()[0]
+
+            obj = getattr(self._widget,button_name)
+
+            if not isinstance(button_signal, list):
+                QtCore.QObject.disconnect(obj, QtCore.SIGNAL(button_signal),callback)
+            else:
+                for button_sig in button_signal:
+                    QtCore.QObject.disconnect(obj, QtCore.SIGNAL(button_sig),callback)
+
     def set_dependent(self,module_name,module):
         setattr(self,'_{0}'.format(module_name),module)
 

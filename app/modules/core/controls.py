@@ -91,8 +91,10 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
 
         try:
             self._widget.cbImagesView.setInsertPolicy(6)
-            images = get_images_view()
+            images = get_images_view()            
             setattr(self._widget.cbImagesView,'images',images)
+
+            self._widget.cbImagesView.model().clear()
             for img in images:
                 self._widget.cbImagesView.addItem(QtGui.QIcon(img),img.split(os.sep)[-1].split('.')[0])
 
@@ -168,6 +170,7 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
         self._widget.txtSearch.setFocus()
 
         if callback:
+            setattr(self,'search_callback',callback)
             self.callback('search',callback)
 
     def search_box_text(self):
@@ -207,9 +210,10 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
         self.search_in_history = False
 
         try:
+            self.disconnect_callback('search',self.search_callback)
             del(self.history_control_method)
             del(self.slide_callback)
-        except Exception:
+        except Exception,e:
             pass 
 
     def configure(self):
