@@ -26,7 +26,6 @@ def configure_options(**kwargs):
 class SongError(Exception):
     pass
 
-
 class KaraokeOptions(utils.ApplicationDBModule):
 
     __controls = {
@@ -115,7 +114,7 @@ class KaraokeOptions(utils.ApplicationDBModule):
             self._controls.add_to_history(search_text)
             self.__set_table_data(songs)
         else:
-            self._statusbar.set_status('Song not found', error=True, time_to_hide=4)
+            self._statusbar.set_status('Song not found', True, 4)
 
         self._controls.clear_search_box()
 

@@ -1,5 +1,7 @@
 import subprocess
+import os
 import re
+import json
 from ConfigParser import ConfigParser
 
 from PyQt4 import QtCore, QtGui
@@ -12,7 +14,17 @@ conf = ConfigParser()
 conf.read('config.ini')
 
 BIBLE_CONFIG = dict(conf.items('BIBLE'))
-DELIMITER = '\n'
+DELIMITER = '\n' if not conf.getboolean('BIBLE','use_bible_internet_service') else '\n\n'
+
+
+def _call_bible_service(typ,bible_version,criteria):
+    process = subprocess.Popen(['java','-jar','{0}/bible-service.jar'.format(os.path.dirname(os.path.abspath(__file__))),
+    '-{0}'.format(typ),bible_version,criteria],stdout=subprocess.PIPE)
+
+    try:
+        return json.loads(process.communicate()[0].decode('latin'))
+    except ValueError:
+        pass
 
 def _call_command(command, args):
     proc = subprocess.Popen('{0} {1}'.format(command, args),
@@ -20,6 +32,16 @@ def _call_command(command, args):
 
     return proc.stdout.read(), proc.stderr.read()
 
+
+def _search_bible_service(criteria):
+    dic = _call_bible_service('range',BIBLE_CONFIG['bible_version_service'],criteria)
+
+    try:
+        return Passage(dic['text'],dic['reference'])
+    except IndexError:
+        raise BibleError('Search "{0}" not found'.format(criteria))
+    except Exception, e:
+        raise BibleError(e)
 
 def _bible_search(type_search, key_search):
     bible = BIBLE_CONFIG['default_bible']
@@ -70,7 +92,8 @@ class BibleOptions(utils.ApplicationModule):
         'previous_chapter':{'cmdPrevChapter':'clicked()'},
         'next_chapter':{'cmdNextChapter':'clicked()'},
         'previous_verse':{'cmdPrevVerse':'clicked()'},
-        'next_verse':{'cmdNextVerse':'clicked()'}
+        'next_verse':{'cmdNextVerse':'clicked()'},
+        'bible_internet_service':{'chkInternetService':'stateChanged (int)'}
     }
 
     def __init__(self,parent):
@@ -82,6 +105,7 @@ class BibleOptions(utils.ApplicationModule):
         self.callback('next_chapter',self.__next_chapter)
         self.callback('previous_verse',self.__previous_verse)
         self.callback('next_verse',self.__next_verse)
+        self.callback('bible_internet_service',self.__bible_internet_service)
 
     def configure(self):
 
@@ -89,10 +113,15 @@ class BibleOptions(utils.ApplicationModule):
         self._controls.add_module_options(self)
         self._controls.set_enable_slides(False)
         self._controls.configure_search_box(self.__bible_search)
+        self._widget.chkInternetService.setChecked(conf.getboolean('BIBLE','use_bible_internet_service'))
 
         self._toolbox.set_go_to_live_callback(self.__go_to_live)
 
         self._statusbar.set_status('Bible module loaded successfully')
+
+
+    def __bible_internet_service(self,check):
+        DELIMITER = '\n\n' if check else '\n'
 
     def __next_search(self):
 
@@ -166,12 +195,16 @@ class BibleOptions(utils.ApplicationModule):
         result = ''
 
         try:
-            result = self.__search_verse(search_text)
+            if self._widget.chkInternetService.isChecked():
+                result = _search_bible_service(str(search_text))
+                result =u'{0}:{1}'.format(result.reference,result.text)
+            else:
+                result = self.__search_verse(search_text)
             self.__configure_navigations(search_text)
             if not text:
                 self._controls.add_to_history(search_text)
         except BibleError, e:
-            self._statusbar.set_status(str(e), True)
+            self._statusbar.set_status(str(e), True, 2)
 
         self._previewer.set_text(result)
 
@@ -194,9 +227,11 @@ class BibleOptions(utils.ApplicationModule):
             self.config.get('BIBLE','background_image')
             )
 
+        slide_info = self.config.get('BIBLE','bible_version_service' if self._widget.chkInternetService.isChecked() else 'default_bible')
+
         variables['passages'] = passages
         variables['image'] = image
-        variables['slide_info'] = self.config.get('BIBLE','default_bible')
+        variables['slide_info'] =  slide_info
 
         result = template.render(variables)
 
@@ -204,7 +239,11 @@ class BibleOptions(utils.ApplicationModule):
 
 class Passage:
 
-    def __init__(self,text):
-        text = text.split(':')
-        self.reference = u'{book_chapter}:{verse}'.format(book_chapter=text[0],verse=text[1])
-        self.text = u''.join(text[2::]).strip()
+    def __init__(self,text,reference=None):
+        if reference:
+            self.reference = reference
+            self.text = text.strip()
+        else:
+            text = text.split(':')
+            self.reference = u'{book_chapter}:{verse}'.format(book_chapter=text[0],verse=text[1])
+            self.text = u''.join(text[2::]).strip()
