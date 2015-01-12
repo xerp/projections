@@ -39,7 +39,6 @@ class WebPageOptions(utils.ApplicationModule):
 
     def configure(self):
 
-        self._controls.search_in_history = True
         self._controls.set_history_control(self._widget.txtWebPage.setText)
         self._controls.add_module_options(self)
         self._controls.set_enable_slides(False)
@@ -81,5 +80,5 @@ class WebPageOptions(utils.ApplicationModule):
 
                 url = '{0}?rel=0&amp;autoplay={1}&amp;controls={2}&amp;showinfo=0'.format(
                     url,autoplay,controls)
-                
+
             return {'method':'url','url':url}

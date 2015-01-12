@@ -85,7 +85,7 @@ class BibleOptions(utils.ApplicationModule):
 
     def configure(self):
 
-        self._controls.search_in_history = True
+        self._controls.search_in_history(True)
         self._controls.add_module_options(self)
         self._controls.set_enable_slides(False)
         self._controls.configure_search_box(self.__bible_search)
@@ -177,7 +177,7 @@ class BibleOptions(utils.ApplicationModule):
 
         if self._toolbox.direct_live:
             self._toolbox.go_to_live()
-        
+
         self._controls.clear_search_box()
 
     def __go_to_live(self,previewText):
@@ -187,7 +187,7 @@ class BibleOptions(utils.ApplicationModule):
         passages = map(lambda p: Passage(p),
             filter(lambda s: s and s != '(END)',
              text.split(DELIMITER)))
-        
+
         image = '{0}/{1}/{2}'.format(
             self.config.get('GENERAL','images_dirs'),
             self.config.get('LIVE','backgrounds_dir'),

@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="main">
+    <file>../../icons/redo-32.png</file>
+    <file>../../icons/undo-32.png</file>
     <file>../../icons/add-16.png</file>
     <file>../../icons/delete-16.png</file>
     <file>../../icons/edit-16.png</file>

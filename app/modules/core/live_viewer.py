@@ -8,9 +8,10 @@ from app.lib.helpers import get_projections_font
 from jinja2 import Template
 
 
+ZOOM_OUT_STEP = 8
+
 class LiveViewer(QtGui.QFrame,utils.AbstractModule):
-    size = QtCore.QSize(400, 400)
-    screen_geometry = None
+
 
     def __init__(self, parent):
         utils.AbstractModule.__init__(self,parent,QtGui.QFrame)
@@ -20,6 +21,10 @@ class LiveViewer(QtGui.QFrame,utils.AbstractModule):
         utils.AbstractModule.instance_variable(self)
 
         self.filePath = "{0}/__last_live.html".format(self.config.get('GENERAL','template_path'))
+        self.__zoom_out = True
+        self.size = QtCore.QSize(400, 400)
+        self.screen_geometry = None
+
         self.main_layout = QtGui.QGridLayout(self)
         self.lblLive = QWebView()
 
@@ -41,13 +46,17 @@ class LiveViewer(QtGui.QFrame,utils.AbstractModule):
 
     def __load_finished(self,ok):
         if self.lblLive.page().mainFrame().scrollBarMaximum(Qt.Vertical) > 0:
-            self.lastFontSize -= self.lblLive.page().mainFrame().scrollBarMaximum(Qt.Vertical)
+
+            if not self.lastFontSize - ZOOM_OUT_STEP == 0 and self.__zoom_out:
+                self.lastFontSize -= ZOOM_OUT_STEP
+
             self.set_font_size(self.lastFontSize)
+
         elif self.lblLive.page().mainFrame().scrollBarMaximum(Qt.Vertical) == 0:
-            pass
+            self.__zoom_out = False
 
     def __create_html_file(self,html):
-        
+
         file = open(self.filePath, "w")
         file.write(html)
         file.close()
@@ -119,7 +128,8 @@ class LiveViewer(QtGui.QFrame,utils.AbstractModule):
 
     def set_text(self,**kwargs):
         self.set_color()
-        
+
+        self.__zoom_out = True
         self.lastEncode = kwargs['encode'] if 'encode' in kwargs else 'UTF-8'
         self.lastTemplate = Template(kwargs['text'])
         self.lastFontSize = kwargs['font_size']
@@ -130,7 +140,7 @@ class LiveViewer(QtGui.QFrame,utils.AbstractModule):
 
         self.__create_html_file(self.lastTemplate.render(
                 charset=self.lastEncode,
-                font_size=font_size if font_size > 0 else self.lastFontSize).encode(self.lastEncode))
+                font_size=font_size if font_size > 0 else ZOOM_OUT_STEP).encode(self.lastEncode))
 
         self.__set_html_text()
 

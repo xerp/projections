@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'controls.ui'
 #
-# Created: Tue Oct 14 09:19:04 2014
-#      by: PyQt4 UI code generator 4.10.3
+# Created: Mon Jan 12 14:31:13 2015
+#      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -39,7 +39,7 @@ class Ui_projectionsControls(object):
         self.txtSearch.setText(_fromUtf8(""))
         self.txtSearch.setEchoMode(QtGui.QLineEdit.Normal)
         self.txtSearch.setObjectName(_fromUtf8("txtSearch"))
-        self.gridLayout_3.addWidget(self.txtSearch, 0, 0, 1, 1)
+        self.gridLayout_3.addWidget(self.txtSearch, 1, 0, 1, 1)
         self.gridLayout = QtGui.QGridLayout()
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.horizontalLayout_4 = QtGui.QHBoxLayout()
@@ -96,7 +96,7 @@ class Ui_projectionsControls(object):
         self.saCmdSlides.setWidgetResizable(True)
         self.saCmdSlides.setObjectName(_fromUtf8("saCmdSlides"))
         self.scrollAreaWidgetContents_2 = QtGui.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 647, 155))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 645, 137))
         self.scrollAreaWidgetContents_2.setObjectName(_fromUtf8("scrollAreaWidgetContents_2"))
         self.gridLayout_2 = QtGui.QGridLayout(self.scrollAreaWidgetContents_2)
         self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
@@ -151,7 +151,7 @@ class Ui_projectionsControls(object):
         self.label_2.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.label_2.setObjectName(_fromUtf8("label_2"))
         self.gridLayout.addWidget(self.label_2, 9, 0, 1, 1)
-        self.gridLayout_3.addLayout(self.gridLayout, 2, 0, 1, 1)
+        self.gridLayout_3.addLayout(self.gridLayout, 3, 0, 1, 1)
         self.saModuleOptions = QtGui.QScrollArea(self.dockWidgetContents)
         self.saModuleOptions.setEnabled(True)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
@@ -162,12 +162,31 @@ class Ui_projectionsControls(object):
         self.saModuleOptions.setWidgetResizable(True)
         self.saModuleOptions.setObjectName(_fromUtf8("saModuleOptions"))
         self.scrollAreaWidgetContents_3 = QtGui.QWidget()
-        self.scrollAreaWidgetContents_3.setGeometry(QtCore.QRect(0, 0, 649, 294))
+        self.scrollAreaWidgetContents_3.setGeometry(QtCore.QRect(0, 0, 647, 273))
         self.scrollAreaWidgetContents_3.setObjectName(_fromUtf8("scrollAreaWidgetContents_3"))
         self.horizontalLayout = QtGui.QHBoxLayout(self.scrollAreaWidgetContents_3)
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
         self.saModuleOptions.setWidget(self.scrollAreaWidgetContents_3)
-        self.gridLayout_3.addWidget(self.saModuleOptions, 1, 0, 1, 1)
+        self.gridLayout_3.addWidget(self.saModuleOptions, 2, 0, 1, 1)
+        self.horizontalLayout_6 = QtGui.QHBoxLayout()
+        self.horizontalLayout_6.setObjectName(_fromUtf8("horizontalLayout_6"))
+        self.cmdPreviousHistory = QtGui.QPushButton(self.dockWidgetContents)
+        self.cmdPreviousHistory.setText(_fromUtf8(""))
+        icon4 = QtGui.QIcon()
+        icon4.addPixmap(QtGui.QPixmap(_fromUtf8(":/main/icons/undo-32.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.cmdPreviousHistory.setIcon(icon4)
+        self.cmdPreviousHistory.setIconSize(QtCore.QSize(20, 20))
+        self.cmdPreviousHistory.setObjectName(_fromUtf8("cmdPreviousHistory"))
+        self.horizontalLayout_6.addWidget(self.cmdPreviousHistory)
+        self.cmdNextHistory = QtGui.QPushButton(self.dockWidgetContents)
+        self.cmdNextHistory.setText(_fromUtf8(""))
+        icon5 = QtGui.QIcon()
+        icon5.addPixmap(QtGui.QPixmap(_fromUtf8(":/main/icons/redo-32.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.cmdNextHistory.setIcon(icon5)
+        self.cmdNextHistory.setIconSize(QtCore.QSize(20, 20))
+        self.cmdNextHistory.setObjectName(_fromUtf8("cmdNextHistory"))
+        self.horizontalLayout_6.addWidget(self.cmdNextHistory)
+        self.gridLayout_3.addLayout(self.horizontalLayout_6, 0, 0, 1, 1)
         projectionsControls.setWidget(self.dockWidgetContents)
 
         self.retranslateUi(projectionsControls)
@@ -187,5 +206,7 @@ class Ui_projectionsControls(object):
         self.lblLiveFont.setText(_translate("projectionsControls", "Live Font", None))
         self.label_3.setText(_translate("projectionsControls", "Live in", None))
         self.label_2.setText(_translate("projectionsControls", "Image View", None))
+        self.cmdPreviousHistory.setToolTip(_translate("projectionsControls", "Previous History", None))
+        self.cmdNextHistory.setToolTip(_translate("projectionsControls", "Next History", None))
 
 import resources_rc

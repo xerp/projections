@@ -59,7 +59,7 @@ class KaraokeOptions(utils.ApplicationDBModule):
 
     def configure(self):
 
-        self._controls.search_in_history = True
+        self._controls.search_in_history(True)
         self._controls.add_module_options(self)
         self._controls.configure_search_box(self.__search_song)
         self._controls.set_slide_callback(self.__set_slides)
@@ -68,7 +68,7 @@ class KaraokeOptions(utils.ApplicationDBModule):
 
 
     def keyPressEvent(self, e):
-        
+
         if e.key() in [Qt.Key_Enter,Qt.Key_Return]:
             item = self._widget.lstSongs.currentItem()
 
@@ -114,6 +114,8 @@ class KaraokeOptions(utils.ApplicationDBModule):
         if songs:
             self._controls.add_to_history(search_text)
             self.__set_table_data(songs)
+        else:
+            self._statusbar.set_status('Song not found', error=True, time_to_hide=4)
 
         self._controls.clear_search_box()
 
@@ -391,7 +393,7 @@ class SongManagement(QtGui.QWizard,utils.ApplicationDBModule):
             self.set_status(e.message,True)
 
     def __validate_song(self):
-        
+
         song = Song() if not self.__song else self.__song
 
         if not self._widget.txtTitle.text() or not self.__txtSongBody.toPlainText() or not self._widget.lblArtistName.text():
@@ -457,7 +459,7 @@ class SongManagement(QtGui.QWizard,utils.ApplicationDBModule):
 
         if self.__exist_artist_db(artist):
             raise SongError('Artist cannot be add [artist already exist]')
-        
+
         query, session = self._DBAdapter.get_query(Artist)
 
         session.add(artist)
@@ -560,7 +562,7 @@ class SongManagement(QtGui.QWizard,utils.ApplicationDBModule):
 
             if song.artist.last_name:
                 query = query.filter(func.lower(Artist.last_name) == song.artist.last_name.lower())
-                
+
 
         if edit:
             query = query.filter(Song.id != song.id)

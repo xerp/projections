@@ -18,7 +18,7 @@
   </property>
   <widget class="QWidget" name="dockWidgetContents">
    <layout class="QGridLayout" name="gridLayout_3">
-    <item row="0" column="0">
+    <item row="1" column="0">
      <widget class="QLineEdit" name="txtSearch">
       <property name="minimumSize">
        <size>
@@ -46,7 +46,7 @@
       </property>
      </widget>
     </item>
-    <item row="2" column="0">
+    <item row="3" column="0">
      <layout class="QGridLayout" name="gridLayout">
       <item row="10" column="1">
        <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -170,8 +170,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>647</width>
-           <height>155</height>
+           <width>645</width>
+           <height>137</height>
           </rect>
          </property>
          <layout class="QGridLayout" name="gridLayout_2">
@@ -282,7 +282,7 @@
       </item>
      </layout>
     </item>
-    <item row="1" column="0">
+    <item row="2" column="0">
      <widget class="QScrollArea" name="saModuleOptions">
       <property name="enabled">
        <bool>true</bool>
@@ -301,13 +301,57 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>649</width>
-         <height>294</height>
+         <width>647</width>
+         <height>273</height>
         </rect>
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout"/>
       </widget>
      </widget>
+    </item>
+    <item row="0" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout_6">
+      <item>
+       <widget class="QPushButton" name="cmdPreviousHistory">
+        <property name="toolTip">
+         <string>Previous History</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="resources.qrc">
+          <normaloff>:/main/icons/undo-32.png</normaloff>:/main/icons/undo-32.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>20</width>
+          <height>20</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="cmdNextHistory">
+        <property name="toolTip">
+         <string>Next History</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="resources.qrc">
+          <normaloff>:/main/icons/redo-32.png</normaloff>:/main/icons/redo-32.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>20</width>
+          <height>20</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>
