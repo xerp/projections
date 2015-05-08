@@ -6,6 +6,9 @@
     </style>
   </head>
   <body>
+        {% if image: %}
+            <img id="background" src="{{image}}"/>
+        {% endif %}
   		{% include "header.html" %}
   		<div id="content">{% block content %}{% endblock %}</div>
   </body>

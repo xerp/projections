@@ -2,6 +2,14 @@
 	margin: 10% 5% 5% 5%;
 }
 
+#background{
+		top:0;
+		left: 0;
+		position: fixed;
+		min-width:100%;
+		min-height:100%;
+}
+
 li{
 	list-style: none;
 }
@@ -10,10 +18,6 @@ body{
 	background-size: cover;
 	color: white;
 	background-color: {{background_color}};
-
-	{% if image: %}
-		background: url('{{image}}') no-repeat center center fixed;
-	{% endif %}
 }
 
 
