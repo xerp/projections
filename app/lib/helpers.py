@@ -1,11 +1,10 @@
 import os
 import sys
 import subprocess
+from ConfigParser import ConfigParser
 
 from PyQt4 import QtGui, QtCore
 from PyQt4.QtCore import Qt
-
-from ConfigParser import ConfigParser
 
 conf = ConfigParser()
 conf.read('config.ini')
@@ -17,6 +16,7 @@ def get_user_name_home():
 
 def get_user_app_directory():
     user_name_home = get_user_name_home()
+    dir = ''
 
     # Windows
     if sys.platform == 'win32':
@@ -25,7 +25,7 @@ def get_user_app_directory():
     elif sys.platform == 'linux2':
         dir = os.path.join(user_name_home, '.local/share/projections')
 
-    if not os.path.isdir(dir):
+    if dir and not os.path.isdir(dir):
         os.mkdir(dir)
 
     return dir
@@ -36,7 +36,7 @@ def get_app_config_filename():
 
 def get_user_app_config():
     filename = get_app_config_filename()
-    if os.path.isfile(filename):
+    if filename and os.path.isfile(filename):
         config = ConfigParser()
         config.read(filename)
         return config
