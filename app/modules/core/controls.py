@@ -6,13 +6,14 @@ import app.resources.modules.core.controls as ui_resource
 import app.modules.utils as utils
 from functools import partial
 
-from app.lib.helpers import get_images_view, ImagesViewModel,get_screens
+from app.lib.helpers import get_images_view,get_screens,open_directory,is_valid_directory
 
 class Controls(QtGui.QDockWidget,utils.AbstractModule):
 
     __controls = {
         'live_font': {'sLiveFont':['sliderMoved(int)','valueChanged(int)']},
         'refresh_images':{'cmdRefreshImageView':'clicked()'},
+        'open_image_dir':{'cmdOpenImageDirectory':'clicked()'},
         'previous_slide':{'cmdPrevious':'clicked()'},
         'next_slide':{'cmdNext':'clicked()'},
         'refresh_screens':{'cmdRefreshLiveScreens':'clicked()'},
@@ -46,6 +47,7 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
         self._widget.sLiveFont.setValue(self.config.getint('LIVE', 'DEFAULT_FONT_SIZE'))
 
         self.callback('refresh_images',self.__set_images)
+        self.callback('open_image_dir',self.__open_image_dir)
         self.callback('refresh_screens',self.__set_live_screens)
         self.callback('live_font',self.__live_font)
         self.callback('previous_slide',self.__previous_slide)
@@ -112,15 +114,17 @@ class Controls(QtGui.QDockWidget,utils.AbstractModule):
         except Exception, e:
             print e
 
+    def __open_image_dir(self):
+
+        if self.config.get('GENERAL', 'IMAGES_DIRS'):
+            if is_valid_directory(self.config.get('GENERAL', 'IMAGES_DIRS')):
+                open_directory(self.config.get('GENERAL', 'IMAGES_DIRS'))
+            else:
+                self._statusbar.set_status("Image directory doesn't exist",True, time_to_hide=2)
+        else:
+            self._statusbar.set_status("Image directory property isn't set",True, time_to_hide=2)
 
     def __live_font(self,value):
-
-        if self._toolbox.in_live:
-            try:
-                self._liveViewer.set_font_size(value)
-            except IndexError:
-                pass
-
         self._statusbar.set_status('Font size: {0} point(s)'.format(value), time_to_hide=2)
 
     def __previous_slide(self):

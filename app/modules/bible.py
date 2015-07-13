@@ -113,7 +113,9 @@ class BibleOptions(utils.ApplicationModule):
         self._controls.add_module_options(self)
         self._controls.set_enable_slides(False)
         self._controls.configure_search_box(self.__bible_search)
-        self._widget.chkInternetService.setChecked(conf.getboolean('BIBLE','use_bible_internet_service'))
+
+        self._widget.chkInternetService.setVisible(False)
+        #Temporally Commented self._widget.chkInternetService.setChecked(conf.getboolean('BIBLE','use_bible_internet_service'))
 
         self._toolbox.set_go_to_live_callback(self.__go_to_live)
 
