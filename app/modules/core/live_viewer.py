@@ -1,11 +1,12 @@
+import os
+
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import Qt, QUrl
 from PyQt4.QtWebKit import QWebView, QWebSettings
+from jinja2 import Template
 
-import os
 import app.modules.utils as utils
 from app.lib.helpers import get_user_app_directory
-from jinja2 import Template
 
 
 ZOOM_OUT_STEP = 8
@@ -19,7 +20,7 @@ class LiveViewer(QtGui.QFrame, utils.AbstractModule):
     def instance_variable(self):
         utils.AbstractModule.instance_variable(self)
 
-        self.filePath = os.path.join(get_user_app_directory(),'last_live.html')
+        self.filePath = os.path.join(get_user_app_directory(), 'last_live.html')
         self.__zoom_out = True
         self.size = QtCore.QSize(400, 400)
         self.screen_geometry = None
@@ -36,24 +37,11 @@ class LiveViewer(QtGui.QFrame, utils.AbstractModule):
         self.lblLive.settings().setAttribute(QWebSettings.LocalContentCanAccessRemoteUrls, True)
         self.lblLive.settings().setAttribute(QWebSettings.LocalContentCanAccessFileUrls, True)
         self.lblLive.settings().setAttribute(QWebSettings.PluginsEnabled, True)
-        self.lblLive.loadFinished.connect(self.__load_finished)
         self.main_layout.addWidget(self.lblLive)
         self.lblLive.setVisible(True)
 
         self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.reset()
-
-    def __load_finished(self):
-        if self.lblLive.page().mainFrame().scrollBarMaximum(Qt.Vertical) > 0:
-
-            if hasattr(self,'lastFontSize'):
-                if not self.lastFontSize - ZOOM_OUT_STEP == 0 and self.__zoom_out:
-                    self.lastFontSize -= ZOOM_OUT_STEP
-
-                self.set_font_size(self.lastFontSize)
-
-        elif self.lblLive.page().mainFrame().scrollBarMaximum(Qt.Vertical) == 0:
-            self.__zoom_out = False
 
     def __create_html_file(self, html):
 
@@ -135,10 +123,11 @@ class LiveViewer(QtGui.QFrame, utils.AbstractModule):
         self.set_font_size(self.lastFontSize)
 
 
-    def set_font_size(self, font_size):
+    def set_font_size(self, font_size, display_content='none'):
 
         self.__create_html_file(self.lastTemplate.render(
             charset=self.lastEncode,
+            display=display_content,
             font_size=font_size if font_size > 0 else ZOOM_OUT_STEP).encode(self.lastEncode))
 
         self.__set_html_text()

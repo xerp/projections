@@ -4,12 +4,33 @@
     <style type="text/css">
     	{% include "general.css" %}
     </style>
+      <script type="text/javascript">
+          {%
+              include
+              "js/jquery-1.11.3.min.js" %
+          }
+          {%
+              include
+              "js/textfill.js" %
+          }
+
+      </script>
+      <script type="text/javascript">
+          $(document).ready(function () {
+              $('#content').fadeIn();
+              $('#content').textfill('label', "{{'{{font_size - 10}}'}}");
+          });
+      </script>
   </head>
   <body>
         {% if image: %}
             <img id="background" src="{{image}}"/>
         {% endif %}
   		{% include "header.html" %}
-  		<div id="content">{% block content %}{% endblock %}</div>
+        <div class="outer">
+            <div class="middle">
+                <div id="content">{% block content %}{% endblock %}</div>
+            </div>
+        </div>
   </body>
 </html>
