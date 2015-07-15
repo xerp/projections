@@ -29,6 +29,11 @@ li{
 	list-style: none;
 }
 
+hi {
+    color: red;
+    font-weight: bolder;
+}
+
 body{
 	background-size: cover;
 	color: white;
@@ -50,11 +55,11 @@ overflow-x:hidden
 .title{
 
 font-size: {
+
 {
 '{{font_size - 5}}'
 }
 }
-
 pt
 
 ;
