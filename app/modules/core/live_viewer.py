@@ -6,7 +6,7 @@ from PyQt4.QtWebKit import QWebView, QWebSettings
 from jinja2 import Template
 
 import app.modules.utils as utils
-from app.lib.helpers import get_user_app_directory
+from app.lib.helpers import get_user_app_directory, to_unicode, to_str, get_default_encoding
 
 
 ZOOM_OUT_STEP = 8
@@ -21,7 +21,6 @@ class LiveViewer(QtGui.QFrame, utils.AbstractModule):
         utils.AbstractModule.instance_variable(self)
 
         self.filePath = os.path.join(get_user_app_directory(), 'last_live.html')
-        self.__zoom_out = True
         self.size = QtCore.QSize(400, 400)
         self.screen_geometry = None
 
@@ -43,10 +42,10 @@ class LiveViewer(QtGui.QFrame, utils.AbstractModule):
         self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.reset()
 
-    def __create_html_file(self, html):
+    def __create_html_file(self, unicode_html):
 
         file = open(self.filePath, "w")
-        file.write(html)
+        file.write(to_str(unicode_html, 'latin1'))
         file.close()
 
     def __set_html_text(self):
@@ -110,28 +109,20 @@ class LiveViewer(QtGui.QFrame, utils.AbstractModule):
         '''
 
         template = Template(html)
-        self.__create_html_file(template.render(image=image_file))
+        self.__create_html_file(to_unicode(template.render(image=image_file)))
         self.__set_html_text()
 
     def set_text(self, **kwargs):
         self.set_color()
 
-        self.__zoom_out = True
-        self.lastEncode = kwargs['encode'] if 'encode' in kwargs else 'UTF-8'
-        self.lastTemplate = Template(kwargs['text'])
-        self.lastFontSize = kwargs['font_size']
-        self.set_font_size(self.lastFontSize)
+        unicode_last_template = Template(kwargs['item'])
+        font_size = kwargs['font_size']
+        unicode_html_text = unicode_last_template.render(charset=get_default_encoding,
+                                                         font_size=font_size if font_size > 0 else ZOOM_OUT_STEP)
 
-
-    def set_font_size(self, font_size, display_content='none'):
-
-        self.__create_html_file(self.lastTemplate.render(
-            charset=self.lastEncode,
-            display=display_content,
-            font_size=font_size if font_size > 0 else ZOOM_OUT_STEP).encode(self.lastEncode))
-
+        self.__create_html_file(unicode_html_text)
         self.__set_html_text()
 
-
     def set_url(self, **kwargs):
-        self.lblLive.load(QUrl(kwargs['url']))
+        if kwargs['item']:
+            self.lblLive.load(QUrl(kwargs['item']))

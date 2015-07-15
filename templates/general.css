@@ -38,12 +38,8 @@ body{
 	background-size: cover;
 	color: white;
 	background-color: {{background_color}};
-overflow-y:hidden
-
-;
-overflow-x:hidden
-
-;
+    overflow-y:hidden;
+    overflow-x:hidden;
 }
 
 
@@ -53,16 +49,7 @@ overflow-x:hidden
 }
 
 .title{
-
-font-size: {
-
-{
-'{{font_size - 5}}'
-}
-}
-pt
-
-;
+    font-size: {{'{{font_size - 5}}'}}pt;
 }
 
 .view{

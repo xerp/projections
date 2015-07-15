@@ -10,6 +10,18 @@ conf = ConfigParser()
 conf.read('config.ini')
 
 
+def get_default_encoding(pretty=False):
+    return 'UTF-8' if pretty else 'utf8'
+
+
+def to_unicode(text, encoding=get_default_encoding(), errors='strict'):
+    return unicode(text, encoding, errors)
+
+
+def to_str(text, encoding=get_default_encoding(), errors='strict'):
+    return str(text.encode(encoding, errors))
+
+
 def get_user_name_home():
     return os.path.expanduser('~')
 
@@ -33,6 +45,7 @@ def get_user_app_directory():
 
 def get_app_config_filename():
     return os.path.join(get_user_app_directory(), 'app_config.ini')
+
 
 def get_user_app_config():
     filename = get_app_config_filename()
