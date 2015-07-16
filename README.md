@@ -5,6 +5,7 @@ Program to project materials on projector
 
 * Python 2.7
 * Sword
+* Swig
 * Sword python
 * Jinja2
 * SQLAlchemy

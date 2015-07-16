@@ -6,7 +6,7 @@ import app.resources.modules.core.controls as ui_resource
 import app.modules.utils as utils
 from functools import partial
 
-from app.lib.helpers import get_images_view, get_screens, open_directory, is_valid_directory, to_unicode
+from app.lib.helpers import get_images_view, get_screens, open_directory, is_valid_directory
 
 
 class Controls(QtGui.QDockWidget, utils.AbstractModule):
@@ -229,19 +229,15 @@ class Controls(QtGui.QDockWidget, utils.AbstractModule):
     def search_box_text(self):
         return self._widget.txtSearch.text()
 
-
     def set_search_box_text(self, text=None):
         if text:
             self._widget.txtSearch.setText(text)
 
-
     def clear_search_box(self):
         self._widget.txtSearch.setText('')
 
-
     def live_font(self):
         return self._widget.sLiveFont.value()
-
 
     def add_module_options(self, widget):
         self.module_options_panel.setWidget(widget)

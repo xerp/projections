@@ -155,7 +155,7 @@ class Slideable(ProjectionItem):
         pass
 
     def get_slide_length(self):
-        return len(self.get_projection_item())
+        return len(self.get_projection_item()) if self.get_projection_item() else 0
 
     def _set_projection_item(self, item):
         if isinstance(item, list):

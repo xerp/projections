@@ -1,8 +1,7 @@
 import threading
 import time
 
-from PyQt4 import QtCore, QtGui
-from PyQt4.QtCore import Qt
+from PyQt4 import QtGui
 
 import app.resources.modules.core.statusbar as ui_resource
 import app.modules.utils as utils

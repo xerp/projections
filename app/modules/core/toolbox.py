@@ -35,13 +35,14 @@ class ToolBox(QtGui.QDockWidget, utils.AbstractModule):
     def config_components(self):
         self._widget.cmdColorScreen.setText('{0} (F9)'.format(self.config.get('LIVE', 'DEFAULT_COLOR').upper()))
         self._widget.cmdColorScreen.setShortcut('F9')
+        self._widget.cmdFullScreen.setVisible(False)
 
         self.__set_modules()
 
         self.callback('live', self.set_live)
         self.callback('image', self.__image_view)
         self.callback('color', self.__color_view)
-        self.callback('fullscreen', self.__full_screen)
+        # Temporaly commented self.callback('fullscreen', self.__full_screen)
         self.callback('options', self.__option_changed)
         self.callback('direct_live', self.__direct_to_live)
         self.callback('go_to_live', self.go_to_live)

@@ -63,6 +63,7 @@ class LiveViewer(QtGui.QFrame, utils.AbstractModule):
 
         self.reset()
         self.show() if visible else self.hide()
+        self.setFixedSize(self.screen_geometry.size())
 
     def reset(self):
         self.set_full_screen(False)
@@ -109,7 +110,7 @@ class LiveViewer(QtGui.QFrame, utils.AbstractModule):
         '''
 
         template = Template(html)
-        self.__create_html_file(to_unicode(template.render(image=image_file)))
+        self.__create_html_file(template.render(image=image_file))
         self.__set_html_text()
 
     def set_text(self, **kwargs):
