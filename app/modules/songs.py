@@ -2,16 +2,14 @@
 
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import Qt
+from sqlalchemy import Column, Integer, String, Text, ForeignKey, func
+from sqlalchemy.orm import relationship
 
 import app.lib.orm as orm
 import app.resources.modules.karaoke.options as ui_opts_resource
 import app.resources.modules.karaoke.management as ui_manage_resource
 import app.modules.utils as utils
-
 from app.lib.helpers import get_projections_font, set_alignment, to_unicode
-from sqlalchemy import Column, Integer, String, Text, ForeignKey, func
-from sqlalchemy.orm import relationship
-
 
 DELIMITER = '\n\n'
 LINE_DELIMITER = '\n'
@@ -172,7 +170,7 @@ class KaraokeOptions(utils.ApplicationDBModule, utils.Slideable, utils.Searchabl
         self.process_slides(song.body, title_and_artist=song.titleAndArtist)
 
         if self._toolbox.direct_live:
-            self._toolbox.process_projection()
+            self._toolbox.go_to_live()
 
     def __songs_db(self, unicode_criteria):
         query, session = self._DBAdapter.get_query(Song)

@@ -1,11 +1,11 @@
+import os
+from functools import partial
+
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import Qt
 
-import os
 import app.resources.modules.core.controls as ui_resource
 import app.modules.utils as utils
-from functools import partial
-
 from app.lib.helpers import get_images_view, get_screens, open_directory, is_valid_directory
 
 
@@ -337,7 +337,8 @@ class Controls(QtGui.QDockWidget, utils.AbstractModule):
             self._widget.cmdPrevious.setEnabled(False)
             self._widget.cmdNext.setEnabled(False)
 
-        self.seeker()
+        if self._toolbox.selected_module and isinstance(self._toolbox.selected_module,utils.Slideable):
+            self.seeker()
 
 
     def keyPressEvent(self, e):

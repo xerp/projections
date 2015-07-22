@@ -1,14 +1,7 @@
-from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import Qt
 
-import re
 import app.resources.modules.web as ui_resource
 import app.modules.utils as utils
-
-from app.lib.helpers import get_projections_font, set_alignment
-from sqlalchemy import Column, Integer, String, Text, ForeignKey, func
-from sqlalchemy.orm import relationship
-from ConfigParser import ConfigParser
 
 
 def configure_options(**kwargs):
@@ -59,7 +52,7 @@ class WebPageOptions(utils.ApplicationModule, utils.Projectable):
         text = self._widget.txtWebPage.text()
 
         if text and self._toolbox.direct_live:
-            self._toolbox.process_projection()
+            self._toolbox.go_to_live()
 
     def process_projection(self, previewText, **kwargs):
         url = str(self._widget.txtWebPage.text())

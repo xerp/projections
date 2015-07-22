@@ -6,8 +6,8 @@ import re
 import json
 import sys
 from ConfigParser import ConfigParser
-from app.lib.helpers import to_unicode, to_str
 
+from app.lib.helpers import to_unicode, to_str
 import app.resources.modules.bible as ui_resource
 import app.modules.utils as utils
 
@@ -212,7 +212,7 @@ class BibleOptions(utils.ApplicationModule, utils.Projectable, utils.Searchable)
             self._previewer.set_text(self.entire_text)
 
             if self._toolbox.direct_live:
-                self._toolbox.process_projection()
+                self._toolbox.go_to_live()
 
             self._controls.clear_search_box()
         except BibleError, e:
