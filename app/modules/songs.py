@@ -290,7 +290,7 @@ class SongManagement(QtGui.QWizard, utils.ApplicationDBModule):
         if artists:
             for artist in artists:
                 self.__set_table_row(
-                    TableRow(0, artist.id),
+                    TableRow(0, str(artist.id)),
                     TableRow(1, artist.fullName))
 
             self._widget.lstArtists.showColumn(1)
@@ -334,7 +334,7 @@ class SongManagement(QtGui.QWizard, utils.ApplicationDBModule):
             try:
                 self.__add_artist_db(artist)
                 self.__set_table_row(
-                    TableRow(0, artist.id),
+                    TableRow(0, str(artist.id)),
                     TableRow(1, artist.fullName))
 
                 self._widget.lstArtists.setFocus()
@@ -605,7 +605,7 @@ class Artist(orm.BaseTable):
         return self.first_name + ' ' + self.last_name if self.last_name else self.first_name
 
     def __repr__(self):
-        return '<%s>' % self.fullName
+        return '<{0} - {1}>'.format(self.id, self.fullName)
 
 
 class Song(orm.BaseTable):
