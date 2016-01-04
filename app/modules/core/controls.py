@@ -95,7 +95,7 @@ class Controls(QtGui.QDockWidget, utils.AbstractModule):
 
         try:
             self._widget.cbImagesView.setInsertPolicy(6)
-            images = get_images_view()
+            images = get_images_view(self.config.get('GENERAL', 'IMAGES_DIRS'))
             setattr(self._widget.cbImagesView, 'images', images)
 
             self._widget.cbImagesView.model().clear()

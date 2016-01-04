@@ -1,11 +1,12 @@
 import sys
+import os
 
 from ConfigParser import ConfigParser
 
 from PyQt4 import QtGui
 
 from modules.core import toolbox, statusbar, previewer, controls, live_viewer
-from lib.helpers import remove_pycs, get_user_application_geometry,set_user_application_geometry,check_user_database
+from lib.helpers import remove_pycs, get_user_application_geometry,set_user_application_geometry,check_user_database, get_app_config
 
 
 def main():
@@ -20,8 +21,7 @@ class Application(QtGui.QFrame):
     def __init__(self):
         QtGui.QFrame.__init__(self)
 
-        self.config = ConfigParser()
-        self.config.read('config.ini')
+        self.config = get_app_config()
 
         check_user_database()
         self.add_core_modules()

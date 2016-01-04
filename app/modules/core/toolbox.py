@@ -2,6 +2,7 @@ from PyQt4 import QtGui
 from PyQt4.QtCore import Qt
 
 import sys
+import os
 import pkgutil
 import importlib
 import app.resources.modules.core.toolbox as ui_resource
@@ -49,10 +50,10 @@ class ToolBox(QtGui.QDockWidget, utils.AbstractModule):
 
 
     def __set_modules(self):
-
         modules = filter(lambda mod: 'app.modules.' in mod and 'core' not in mod,
                          map(lambda (m, n, i): n, pkgutil.walk_packages('app.modules')))
         modules = map(lambda mod: mod.split('.')[-1].capitalize(), modules)
+        print modules
 
         try:
             MODULES_TO_EXCLUDE_TEMP = MODULES_TO_EXCLUDE + self.config.get('GENERAL', 'options_to_exclude').split(',')
@@ -74,7 +75,6 @@ class ToolBox(QtGui.QDockWidget, utils.AbstractModule):
             self._widget.cbOptions.setCurrentIndex(indexDefaultOption)
         except Exception:
             pass
-
 
     def __image_view(self):
 

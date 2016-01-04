@@ -9,7 +9,7 @@ class Previewer(QtGui.QTextEdit, utils.AbstractModule):
         utils.AbstractModule.__init__(self, parent, QtGui.QTextEdit)
 
     def config_components(self):
-        self.setFont(get_projections_font(dict(self.config.items('FONT_PREVIEW'))))
+        self.setFont(get_projections_font(dict(self.config.items('FONT_PREVIEW')),self.config.getint('LIVE', 'DEFAULT_FONT_SIZE')))
         self.setReadOnly(True)
 
     def set_text(self, text):

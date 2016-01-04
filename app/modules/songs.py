@@ -259,7 +259,7 @@ class SongManagement(QtGui.QWizard, utils.ApplicationDBModule):
             self._widget.lblArtistName.setText(self.__song.artist.fullName)
             self._widget.lblArtistName.idArtist = self.__song.artist.id
 
-        font = get_projections_font(dict(self.config.items('FONT_PREVIEW')))
+        font = get_projections_font(dict(self.config.items('FONT_PREVIEW')),self.config.getint('LIVE', 'DEFAULT_FONT_SIZE'))
         font.setPointSize(self.config.getint('SONG', 'MANAGEMENT_FONT_SIZE'))
         self.__txtSongBody.setFont(font)
 

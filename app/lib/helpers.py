@@ -2,14 +2,11 @@ import os
 import sys
 import subprocess
 import orm
+import shutil
 from ConfigParser import ConfigParser
 
 from PyQt4 import QtGui, QtCore
 from PyQt4.QtCore import Qt
-
-
-conf = ConfigParser()
-conf.read('config.ini')
 
 
 def get_default_encoding(pretty=False):
@@ -24,9 +21,13 @@ def to_str(text, encoding=get_default_encoding(), errors='strict'):
     return str(text.encode(encoding, errors))
 
 
+def get_app_config():
+    config = ConfigParser()
+    config.read(os.environ['config_file'])
+    return config
+
 def get_user_name_home():
     return os.path.expanduser('~')
-
 
 def get_user_app_directory():
     user_name_home = get_user_name_home()
@@ -158,9 +159,9 @@ def remove_pycs():
                 os.remove(os.path.join(root, fi))
 
 
-def get_projections_font(font_properties):
+def get_projections_font(font_properties,default_font_size):
     font = QtGui.QFont(font_properties.get('name', 'arial'))
-    font.setPointSize(int(font_properties.get('size', conf.getint('LIVE', 'DEFAULT_FONT_SIZE'))))
+    font.setPointSize(int(font_properties.get('size',default_font_size)))
     font.setBold(bool(font_properties.get('bold', False)))
     font.setWeight(int(font_properties.get('weight', 75)))
 
@@ -172,8 +173,8 @@ def get_screens():
     return app.desktop().numScreens()
 
 
-def get_images_view():
-    directories = conf.get('GENERAL', 'IMAGES_DIRS').split(',')
+def get_images_view(image_directory):
+    directories = image_directory.split(',')
     images_views = []
     for directory in directories:
         for root, dirs, files in os.walk(directory):

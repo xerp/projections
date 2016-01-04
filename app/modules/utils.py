@@ -31,8 +31,7 @@ class AbstractModule(QtGui.QWidget):
         self.config_components()
 
     def instance_variable(self):
-        self.config = ConfigParser()
-        self.config.read('config.ini')
+        self.config = helpers.get_app_config()
 
     def callback(self, event_name, callback):
 
