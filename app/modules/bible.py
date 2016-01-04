@@ -65,7 +65,7 @@ def _sword_bible_search(unicode_key_search):
         key_module.setLocale(locale)
         bible_module.setKey(key_module)
 
-        unicode_bible_name = to_unicode(bible_module.getDescription())
+        unicode_bible_name = bible
         unicode_module_text = to_unicode(bible_module.getRawEntry())
         unicode_key_name = to_unicode(bible_module.getKeyText())
 

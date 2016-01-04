@@ -5,7 +5,7 @@ from ConfigParser import ConfigParser
 from PyQt4 import QtGui
 
 from modules.core import toolbox, statusbar, previewer, controls, live_viewer
-from lib.helpers import remove_pycs, get_user_application_geometry,set_user_application_geometry
+from lib.helpers import remove_pycs, get_user_application_geometry,set_user_application_geometry,check_user_database
 
 
 def main():
@@ -23,6 +23,7 @@ class Application(QtGui.QFrame):
         self.config = ConfigParser()
         self.config.read('config.ini')
 
+        check_user_database()
         self.add_core_modules()
         self.window_config()
         self.config_core_modules()

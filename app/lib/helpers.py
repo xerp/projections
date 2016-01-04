@@ -1,10 +1,12 @@
 import os
 import sys
 import subprocess
+import orm
 from ConfigParser import ConfigParser
 
 from PyQt4 import QtGui, QtCore
 from PyQt4.QtCore import Qt
+
 
 conf = ConfigParser()
 conf.read('config.ini')
@@ -42,6 +44,40 @@ def get_user_app_directory():
 
     return dir
 
+def get_user_database_file():
+    return os.path.join(get_user_app_directory(),'projections.db')
+
+def exists_user_database():
+    database = get_user_database_file()
+    return database and os.path.isfile(database)
+
+def create_user_database():
+    queries = {'artist_create': '''
+    CREATE TABLE Artist (
+            id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+            first_name VARCHAR(50) NOT NULL,
+            last_name VARCHAR(50) NULL
+    );
+    ''',
+    'song_create':'''
+    CREATE TABLE Song (
+            id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+            id_artist INT NULL,
+            title VARCHAR(100) NOT NULL,
+            body TEXT NOT NULL,
+            CONSTRAINT FK_artist FOREIGN KEY (id_artist) REFERENCES artist (id)
+    );
+    '''}
+
+    engine =  orm.connect_to_engine(get_user_database_file(), orm.SQLITE)
+    session = orm.get_session(engine)
+
+    session.execute(queries['artist_create'])
+    session.execute(queries['song_create'])
+
+def check_user_database():
+    if not exists_user_database():
+        create_user_database();
 
 def get_app_config_filename():
     return os.path.join(get_user_app_directory(), 'app_config.ini')
@@ -136,8 +172,8 @@ def get_screens():
     return app.desktop().numScreens()
 
 
-def get_images_view(directories=conf.get('GENERAL', 'IMAGES_DIRS')):
-    directories = directories.split(',')
+def get_images_view():
+    directories = conf.get('GENERAL', 'IMAGES_DIRS').split(',')
     images_views = []
     for directory in directories:
         for root, dirs, files in os.walk(directory):

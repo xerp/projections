@@ -4,6 +4,7 @@ from PyQt4 import QtCore, QtGui
 from jinja2 import Environment, FileSystemLoader
 
 import app.lib.orm as orm
+import app.lib.helpers as helpers
 
 
 class ProjectionError(Exception):
@@ -99,7 +100,7 @@ class ApplicationModule(AbstractModule):
 class ApplicationDBModule(ApplicationModule):
     def instance_variable(self):
         super(ApplicationDBModule, self).instance_variable()
-        self._DBAdapter = orm.Adapter(self.config.get('GENERAL', 'DB_PATH'), orm.SQLITE)
+        self._DBAdapter = orm.Adapter(helpers.get_user_database_file(), orm.SQLITE)
 
 
 class ProjectionWizardPage(QtGui.QWizardPage):
