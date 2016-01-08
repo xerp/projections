@@ -1,0 +1,9 @@
+{% extends "general.html" %}
+
+{% block content %}
+    <div class="centered view">
+    	{%for line in lines%}
+    		<label>{{line}}</label><br>
+    	{%endfor%}
+    </div>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "general.html" %}
+
+{% block content %}
+	<ul>
+	{% for passage in passages %}
+    	<li>
+    		<h1 class="title view">{{passage.reference}}</h1>
+    		<div class="view centered">{{passage.text}}</div>
+    	</li>
+	{% endfor %}
+	</ul>
+{% endblock %}

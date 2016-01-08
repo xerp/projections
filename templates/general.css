@@ -1,0 +1,37 @@
+#content{
+	margin: 10% 5% 5% 5%;
+}
+
+#background{
+		top:0;
+		left: 0;
+		position: fixed;
+		min-width:100%;
+		min-height:100%;
+}
+
+li{
+	list-style: none;
+}
+
+body{
+	background-size: cover;
+	color: white;
+	background-color: {{background_color}};
+}
+
+
+.centered{
+	text-align: center;
+	vertical-align: middle;
+}
+
+.title{
+	font-size: {{'{{font_size -5}}'}}pt;
+}
+
+.view{
+	color: {{text_color}};
+	text-shadow: 0.1em 0.1em 0.4em {{text_shadow_color}};
+	font-size: {{'{{font_size}}'}}pt;
+}
