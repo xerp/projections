@@ -1,27 +1,26 @@
+import os
+
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import Qt, QUrl
-from PyQt4.QtWebKit import QWebView,QWebSettings
-
-import os
-import app.modules.utils as utils
-from app.lib.helpers import get_projections_font
+from PyQt4.QtWebKit import QWebView, QWebSettings
 from jinja2 import Template
+
+import app.modules.utils as utils
+from app.lib.helpers import get_user_app_directory, to_unicode, to_str, get_default_encoding
 
 
 ZOOM_OUT_STEP = 8
 
-class LiveViewer(QtGui.QFrame,utils.AbstractModule):
 
-
+class LiveViewer(QtGui.QFrame, utils.AbstractModule):
     def __init__(self, parent):
-        utils.AbstractModule.__init__(self,parent,QtGui.QFrame)
+        utils.AbstractModule.__init__(self, parent, QtGui.QFrame)
 
 
     def instance_variable(self):
         utils.AbstractModule.instance_variable(self)
 
-        self.filePath = "{0}/__last_live.html".format(self.config.get('GENERAL','template_path'))
-        self.__zoom_out = True
+        self.filePath = os.path.join(get_user_app_directory(), 'last_live.html')
         self.size = QtCore.QSize(400, 400)
         self.screen_geometry = None
 
@@ -34,31 +33,19 @@ class LiveViewer(QtGui.QFrame,utils.AbstractModule):
         self.setWindowFlags(Qt.CustomizeWindowHint or Qt.WindowStaysOnTopHint)
         self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
 
-        self.lblLive.settings().setAttribute(QWebSettings.LocalContentCanAccessRemoteUrls,True)
-        self.lblLive.settings().setAttribute(QWebSettings.LocalContentCanAccessFileUrls,True)
-        self.lblLive.settings().setAttribute(QWebSettings.PluginsEnabled,True)
-        self.lblLive.loadFinished.connect(self.__load_finished)
+        self.lblLive.settings().setAttribute(QWebSettings.LocalContentCanAccessRemoteUrls, True)
+        self.lblLive.settings().setAttribute(QWebSettings.LocalContentCanAccessFileUrls, True)
+        self.lblLive.settings().setAttribute(QWebSettings.PluginsEnabled, True)
         self.main_layout.addWidget(self.lblLive)
         self.lblLive.setVisible(True)
 
-        self.main_layout.setContentsMargins(0,0,0,0)
+        self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.reset()
 
-    def __load_finished(self,ok):
-        if self.lblLive.page().mainFrame().scrollBarMaximum(Qt.Vertical) > 0:
-
-            if not self.lastFontSize - ZOOM_OUT_STEP == 0 and self.__zoom_out:
-                self.lastFontSize -= ZOOM_OUT_STEP
-
-            self.set_font_size(self.lastFontSize)
-
-        elif self.lblLive.page().mainFrame().scrollBarMaximum(Qt.Vertical) == 0:
-            self.__zoom_out = False
-
-    def __create_html_file(self,html):
+    def __create_html_file(self, unicode_html):
 
         file = open(self.filePath, "w")
-        file.write(html)
+        file.write(to_str(unicode_html, 'latin1'))
         file.close()
 
     def __set_html_text(self):
@@ -76,6 +63,7 @@ class LiveViewer(QtGui.QFrame,utils.AbstractModule):
 
         self.reset()
         self.show() if visible else self.hide()
+        self.setFixedSize(self.screen_geometry.size())
 
     def reset(self):
         self.set_full_screen(False)
@@ -101,8 +89,7 @@ class LiveViewer(QtGui.QFrame,utils.AbstractModule):
         if not image_file:
             raise utils.ProjectionError('error occurred trying to loading image')
 
-
-        html ='''
+        html = '''
         <body>
             <style>
                 body{
@@ -126,24 +113,17 @@ class LiveViewer(QtGui.QFrame,utils.AbstractModule):
         self.__create_html_file(template.render(image=image_file))
         self.__set_html_text()
 
-    def set_text(self,**kwargs):
+    def set_text(self, **kwargs):
         self.set_color()
 
-        self.__zoom_out = True
-        self.lastEncode = kwargs['encode'] if 'encode' in kwargs else 'UTF-8'
-        self.lastTemplate = Template(kwargs['text'])
-        self.lastFontSize = kwargs['font_size']
-        self.set_font_size(self.lastFontSize)
+        unicode_last_template = Template(kwargs['item'])
+        font_size = kwargs['font_size']
+        unicode_html_text = unicode_last_template.render(charset=get_default_encoding,
+                                                         font_size=font_size if font_size > 0 else ZOOM_OUT_STEP)
 
-
-    def set_font_size(self,font_size):
-
-        self.__create_html_file(self.lastTemplate.render(
-                charset=self.lastEncode,
-                font_size=font_size if font_size > 0 else ZOOM_OUT_STEP).encode(self.lastEncode))
-
+        self.__create_html_file(unicode_html_text)
         self.__set_html_text()
 
-
-    def set_url(self,**kwargs):
-        self.lblLive.load(QUrl(kwargs['url']))
+    def set_url(self, **kwargs):
+        if kwargs['item']:
+            self.lblLive.load(QUrl(kwargs['item']))

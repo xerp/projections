@@ -1,35 +1,180 @@
 import os
+import sys
+import subprocess
+import orm
+import shutil
+from ConfigParser import ConfigParser
 
 from PyQt4 import QtGui, QtCore
 from PyQt4.QtCore import Qt
 
-from ConfigParser import ConfigParser
 
-conf = ConfigParser()
-conf.read('config.ini')
+def get_default_encoding(pretty=False):
+    return 'UTF-8' if pretty else 'utf8'
+
+
+def to_unicode(text, encoding=get_default_encoding(), errors='strict'):
+    return unicode(text, encoding, errors)
+
+
+def to_str(text, encoding=get_default_encoding(), errors='strict'):
+    return str(text.encode(encoding, errors))
+
+
+def get_app_config():
+    config = ConfigParser()
+    config.read(os.environ['config_file'])
+    return config
+
+def get_user_name_home():
+    return os.path.expanduser('~')
+
+def get_user_app_directory():
+    user_name_home = get_user_name_home()
+    dir = ''
+
+    # Windows
+    if sys.platform == 'win32':
+        dir = os.path.join(user_name_home, 'AppData\\Local\\Projections')
+    # Linux
+    elif sys.platform == 'linux2':
+        dir = os.path.join(user_name_home, '.local/share/projections')
+
+    if dir and not os.path.isdir(dir):
+        os.mkdir(dir)
+
+    return dir
+
+def get_user_database_file():
+    return os.path.join(get_user_app_directory(),'projections.db')
+
+def exists_user_database():
+    database = get_user_database_file()
+    return database and os.path.isfile(database)
+
+def create_user_database():
+    queries = {'artist_create': '''
+    CREATE TABLE Artist (
+            id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+            first_name VARCHAR(50) NOT NULL,
+            last_name VARCHAR(50) NULL
+    );
+    ''',
+    'song_create':'''
+    CREATE TABLE Song (
+            id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+            id_artist INT NULL,
+            title VARCHAR(100) NOT NULL,
+            body TEXT NOT NULL,
+            CONSTRAINT FK_artist FOREIGN KEY (id_artist) REFERENCES artist (id)
+    );
+    '''}
+
+    engine =  orm.connect_to_engine(get_user_database_file(), orm.SQLITE)
+    session = orm.get_session(engine)
+
+    session.execute(queries['artist_create'])
+    session.execute(queries['song_create'])
+
+def check_user_database():
+    if not exists_user_database():
+        create_user_database();
+
+def get_app_config_filename():
+    return os.path.join(get_user_app_directory(), 'app_config.ini')
+
+
+def get_user_app_config():
+    filename = get_app_config_filename()
+    if filename and os.path.isfile(filename):
+        config = ConfigParser()
+        config.read(filename)
+        return config
+
+
+def get_user_application_geometry():
+    # Default Geometry
+    geometry = {'x': 50,
+                'y': 50,
+                'width': 900,
+                'height': 600}
+
+    config = get_user_app_config()
+    if config:
+        try:
+            geometry['x'] = config.getfloat('LOCATION', 'x')
+            geometry['y'] = config.getfloat('LOCATION', 'y')
+            geometry['width'] = config.getfloat('SIZE', 'width')
+            geometry['height'] = config.getfloat('SIZE', 'height')
+        except Exception:
+            pass
+
+    return geometry
+
+
+def set_user_configuration(filename, kwargs):
+    with open(filename, 'w') as cfg_file:
+        config = ConfigParser()
+
+        for section in kwargs.keys():
+            config.add_section(section)
+
+            for variable in kwargs[section].keys():
+                config.set(section, variable, kwargs[section][variable])
+
+        config.write(cfg_file)
+
+
+def set_user_application_geometry(geometry):
+    filename = get_app_config_filename()
+
+    config = {'LOCATION': {'x': geometry.x(), 'y': geometry.y()},
+              'SIZE': {'width': geometry.width(), 'height': geometry.height()}}
+
+    set_user_configuration(filename, config)
+
+
+def is_valid_directory(dir):
+    return os.path.isdir(dir)
+
+
+def open_directory(dir):
+    # Windows
+    if sys.platform == 'win32':
+        subprocess.Popen(['explorer', dir])
+
+    # On Mac
+    elif sys.platform == 'darwin':
+        subprocess.Popen(['open', dir])
+
+    # Linux
+    else:
+        subprocess.Popen(['xdg-open', dir])
 
 
 def remove_pycs():
-    for root,dirs,files in os.walk('.'):
+    for root, dirs, files in os.walk('.'):
         for fi in files:
             if fi[-3:] == 'pyc':
-                os.remove(os.path.join(root,fi))
+                os.remove(os.path.join(root, fi))
 
-def get_projections_font(font_properties):
+
+def get_projections_font(font_properties,default_font_size):
     font = QtGui.QFont(font_properties.get('name', 'arial'))
-    font.setPointSize(int(font_properties.get('size', conf.getint('LIVE', 'DEFAULT_FONT_SIZE'))))
+    font.setPointSize(int(font_properties.get('size',default_font_size)))
     font.setBold(bool(font_properties.get('bold', False)))
     font.setWeight(int(font_properties.get('weight', 75)))
 
     return font
+
 
 def get_screens():
     app = QtGui.QApplication.instance()
     return app.desktop().numScreens()
 
 
-def get_images_view(directories=conf.get('GENERAL', 'IMAGES_DIRS')):
-    directories = directories.split(',')
+def get_images_view(image_directory):
+    directories = image_directory.split(',')
     images_views = []
     for directory in directories:
         for root, dirs, files in os.walk(directory):
@@ -37,6 +182,7 @@ def get_images_view(directories=conf.get('GENERAL', 'IMAGES_DIRS')):
                 map(lambda f: os.path.join(root, f), filter(lambda f: f.endswith('.png') or f.endswith('.jpg'), files)))
 
     return images_views
+
 
 def set_alignment(text_edit, desired_alignment):
     #Make sure the cursor is at the start of the text field
@@ -71,8 +217,9 @@ class AbstractProjectionLinealDataModel(QtCore.QAbstractListModel):
     def selected(self):
         try:
             return self.data_list[self.parent().currentIndex()]
-        except (AttributeError,IndexError):
+        except (AttributeError, IndexError):
             pass
+
 
 class ImagesViewModel(AbstractProjectionLinealDataModel):
     def data(self, index, role=Qt.DisplayRole):

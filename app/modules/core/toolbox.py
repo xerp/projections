@@ -1,28 +1,31 @@
-from PyQt4 import QtCore, QtGui
+from PyQt4 import QtGui
 from PyQt4.QtCore import Qt
 
+import sys
+import os
 import pkgutil
 import importlib
 import app.resources.modules.core.toolbox as ui_resource
 import app.modules.utils as utils
 
-MODULES_TO_EXCLUDE = ['utils',]
 
-class ToolBox(QtGui.QDockWidget,utils.AbstractModule):
+MODULES_TO_EXCLUDE = ['utils', ]
 
+
+class ToolBox(QtGui.QDockWidget, utils.AbstractModule):
     __controls = {
-        'color': {'cmdColorScreen':'clicked()'},
-        'live':{'cmdLive':'toggled(bool)'},
-        'fullscreen':{'cmdFullScreen':'toggled(bool)'},
-        'go_to_live':{'cmdGotoLive':'clicked()'},
-        'direct_live':{'cmdDirectToLive':'toggled(bool)'},
-        'image':{'cmdMainView':'clicked()'},
-        'options' : {'cbOptions': 'currentIndexChanged(const QString&)'} 
+        'color': {'cmdColorScreen': 'clicked()'},
+        'live': {'cmdLive': 'toggled(bool)'},
+        'fullscreen': {'cmdFullScreen': 'toggled(bool)'},
+        'go_to_live': {'cmdGotoLive': 'clicked()'},
+        'direct_live': {'cmdDirectToLive': 'toggled(bool)'},
+        'image': {'cmdMainView': 'clicked()'},
+        'options': {'cbOptions': 'currentIndexChanged(const QString&)'}
     }
 
-    def __init__(self,parent):
+    def __init__(self, parent):
         utils.AbstractModule.__init__(self,
-            parent,QtGui.QDockWidget,ui_resource.Ui_dockProjectionsTools(),self.__controls)
+                                      parent, QtGui.QDockWidget, ui_resource.Ui_dockProjectionsTools(), self.__controls)
 
     def instance_variable(self):
         utils.AbstractModule.instance_variable(self)
@@ -33,51 +36,56 @@ class ToolBox(QtGui.QDockWidget,utils.AbstractModule):
     def config_components(self):
         self._widget.cmdColorScreen.setText('{0} (F9)'.format(self.config.get('LIVE', 'DEFAULT_COLOR').upper()))
         self._widget.cmdColorScreen.setShortcut('F9')
+        self._widget.cmdFullScreen.setVisible(False)
 
         self.__set_modules()
 
-        self.callback('live',self.set_live)
-        self.callback('image',self.__image_view)
-        self.callback('color',self.__color_view)
-        self.callback('fullscreen',self.__full_screen)
-        self.callback('options',self.__option_changed)
-        self.callback('direct_live',self.__direct_to_live)
-        self.callback('go_to_live',self.go_to_live)
+        self.callback('live', self.set_live)
+        self.callback('image', self.__image_view)
+        self.callback('color', self.__color_view)
+        # Temporaly commented self.callback('fullscreen', self.__full_screen)
+        self.callback('options', self.__option_changed)
+        self.callback('direct_live', self.__direct_to_live)
+        self.callback('go_to_live', self.go_to_live)
 
 
     def __set_modules(self):
-
-
         modules = filter(lambda mod: 'app.modules.' in mod and 'core' not in mod,
-            map(lambda (m,n,i): n ,pkgutil.walk_packages('app.modules')))
-        modules = map(lambda mod: mod.split('.')[-1].capitalize(),modules)
+                         map(lambda (m, n, i): n, pkgutil.walk_packages('app.modules')))
+        modules = map(lambda mod: mod.split('.')[-1].capitalize(), modules)
+        print modules
 
         try:
-            MODULES_TO_EXCLUDE_TEMP = MODULES_TO_EXCLUDE + self.config.get('GENERAL','options_to_exclude').split(',')
-            modules = filter(lambda mod: mod.lower() not in MODULES_TO_EXCLUDE_TEMP,modules)
+            MODULES_TO_EXCLUDE_TEMP = MODULES_TO_EXCLUDE + self.config.get('GENERAL', 'options_to_exclude').split(',')
+            modules = filter(lambda mod: mod.lower() not in MODULES_TO_EXCLUDE_TEMP, modules)
         except Exception:
-            modules = filter(lambda mod: mod.lower() not in MODULES_TO_EXCLUDE,modules)
+            modules = filter(lambda mod: mod.lower() not in MODULES_TO_EXCLUDE, modules)
 
-        modules = map(lambda m: m.replace('_',' '),modules)
+        modules = map(lambda m: m.replace('_', ' '), modules)
+
+        #Ignore bible module on Windows
+        if sys.platform == 'win32':
+            filter_func = lambda mo: not mo.lower() == 'bible'
+            modules = filter(filter_func, modules)
+
         self._widget.cbOptions.addItems(modules)
 
         try:
-            indexDefaultOption = modules.index(self.config.get('GENERAL','default_option').capitalize())
+            indexDefaultOption = modules.index(self.config.get('GENERAL', 'default_option').capitalize())
             self._widget.cbOptions.setCurrentIndex(indexDefaultOption)
         except Exception:
             pass
 
-
     def __image_view(self):
-        
+
         try:
             self._liveViewer.set_image(self._controls.selected_image())
 
             self._statusbar.set_button_status('Image View')
             self._statusbar.set_status('Live in Image View')
-        
+
         except utils.ProjectionError, e:
-            self._statusbar.set_status(e.message, True,5)
+            self._statusbar.set_status(e.message, True, 5)
 
     def __color_view(self):
         self._liveViewer.set_color()
@@ -91,7 +99,7 @@ class ToolBox(QtGui.QDockWidget,utils.AbstractModule):
         self._liveViewer.set_full_screen(active)
         self._statusbar.set_full_screen_status(active)
 
-    def __option_changed(self,text):
+    def __option_changed(self, text):
         self.configure_selected_module()
 
     def __direct_to_live(self, active):
@@ -100,15 +108,20 @@ class ToolBox(QtGui.QDockWidget,utils.AbstractModule):
 
     def go_to_live(self):
 
-        text = self._previewer.toPlainText()
+        preview_text = self._previewer.toPlainText()
+        module = self.selected_module
 
-        if hasattr(self,'go_to_live_callback'):
-            kwargs = self.go_to_live_callback(text)
-            if kwargs:
-                getattr(self._liveViewer,'set_{0}'.format(kwargs['method']))(**kwargs)
-        else:
+        if module and isinstance(module, utils.Projectable):
+            module.process_projection(preview_text)
+
+            kwargs = {'item': module.get_projection_item(),
+                      'font_size': self._controls.live_font()}
+            getattr(self._liveViewer, 'set_{0}'.format(module.get_projection_method()))(**kwargs)
+
+        elif module and isinstance(module, utils.Slideable):
             try:
-                kwargs = {'text':self._controls.slides[self._controls.slide_position],'font_size':self._controls.live_font()}
+                kwargs = {'item': module.get_projection_item()[self._controls.slide_position],
+                          'font_size': self._controls.live_font()}
                 self._liveViewer.set_text(**kwargs)
                 self._controls.seeker()
             except IndexError:
@@ -116,41 +129,40 @@ class ToolBox(QtGui.QDockWidget,utils.AbstractModule):
 
         self._statusbar.set_status('View refreshed')
 
-    def set_go_to_live_callback(self,callback):
-        setattr(self,'go_to_live_callback',callback)
 
     def reset(self):
-        try:
-            del(self.go_to_live_callback)
-        except Exception:
-            pass
+        pass
 
     def configure_selected_module(self):
 
         module = self.selected_option()
-        module = module.replace(' ','_')
-        module = importlib.import_module('app.modules.{0}'.format(str(module).lower()))
+        if module:
+            module = module.replace(' ', '_')
+            module = importlib.import_module('app.modules.{0}'.format(str(module).lower()))
 
-        if hasattr(module, 'configure_options'):
-            self._controls.reset()
-            self._previewer.reset()
-            self.reset()
-            module.configure_options(
-                controls=self._controls,
-                statusbar=self._statusbar, 
-                previewer=self._previewer, 
-                liveViewer=self._liveViewer, 
-                toolbox=self)
-        else:
-            self._controls.hide_module_options()
-            self._controls.hide_search_box()
-            self._statusbar.set_status('{0} module dont have options'.format(module.__name__.split('.')[-1].replace('_',' ')),time_to_hide=5)
+            self.selected_module = None
+            if hasattr(module, 'configure_options'):
+                self._controls.reset()
+                self._previewer.reset()
+                self.reset()
+                self.selected_module = module.configure_options(
+                    controls=self._controls,
+                    statusbar=self._statusbar,
+                    previewer=self._previewer,
+                    liveViewer=self._liveViewer,
+                    toolbox=self)
+            else:
+                self._controls.hide_module_options()
+                self._controls.hide_search_box()
+                self._statusbar.set_status(
+                    '{0} module dont have options'.format(module.__name__.split('.')[-1].replace('_', ' ')),
+                    time_to_hide=5)
 
 
     def selected_option(self):
         return str(self._widget.cbOptions.currentText())
 
-    def set_live(self,in_live):
+    def set_live(self, in_live):
 
         self.in_live = in_live
 

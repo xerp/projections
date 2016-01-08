@@ -1,8 +1,0 @@
-#!/usr/bin/python
-
-import app.application as app
-
-if __name__ == "__main__":
-    app.main()
-
-

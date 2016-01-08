@@ -14,7 +14,7 @@
    <set>QDockWidget::DockWidgetMovable</set>
   </property>
   <property name="windowTitle">
-   <string>Projections Control</string>
+   <string>Projection Controls</string>
   </property>
   <widget class="QWidget" name="dockWidgetContents">
    <layout class="QGridLayout" name="gridLayout_3">
@@ -170,8 +170,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>645</width>
-           <height>137</height>
+           <width>647</width>
+           <height>138</height>
           </rect>
          </property>
          <layout class="QGridLayout" name="gridLayout_2">
@@ -199,6 +199,26 @@
            <iconset>
             <normalon>:/main/icons/refresh-20.png</normalon>
            </iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>20</width>
+            <height>20</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="cmdOpenImageDirectory">
+          <property name="toolTip">
+           <string>Open Image directory</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="resources.qrc">
+            <normaloff>:/main/icons/directory.png</normaloff>:/main/icons/directory.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -301,8 +321,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>647</width>
-         <height>273</height>
+         <width>649</width>
+         <height>275</height>
         </rect>
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout"/>
