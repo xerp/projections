@@ -1,9 +1,14 @@
+"""Database queries module."""
+
+QUERIES = {
+    'artist_create': '''
 CREATE TABLE Artist (
         id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
         first_name VARCHAR(50) NOT NULL,
         last_name VARCHAR(50) NULL
 );
-
+''',
+    'song_create': '''
 CREATE TABLE Song (
         id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
         id_artist INT NULL,
@@ -11,3 +16,4 @@ CREATE TABLE Song (
         body TEXT NOT NULL,
         CONSTRAINT FK_artist FOREIGN KEY (id_artist) REFERENCES artist (id)
 );
+'''}
