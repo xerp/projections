@@ -102,4 +102,4 @@ class Ui_statusBar(object):
         self.lblFullScreen.setText(_translate("statusBar", "FullScreen", None))
         self.lblLive.setText(_translate("statusBar", "LIVE", None))
 
-import resources_rc
+# import resources_rc

@@ -6,25 +6,60 @@ import utils
 
 from PyQt4 import QtCore, QtGui
 # from jinja2 import Environment, FileSystemLoader
-from abc import ABCMeta, abstractmethod
 
 
-# import app.lib.helpers as helpers
+class AbstractModel:
+    """AbstractModel class."""
+
+    def __init__(self, view):
+        """AbstractModel Constructor."""
+        if isinstance(view, AbstractModule):
+            self._view = view
+        else:
+            raise utils.ProjectionError('view must be AbstractModule')
+
+        self._instance_variable()
+
+    def _instance_variable(self):
+        """Instance variables."""
+        pass
+
+    def configure_module(self):
+        """Configuration of module."""
+        pass
+
+
+class SingletonModule:
+    """SingletonModule Decorator."""
+
+    def __init__(self, klass):
+        """Constructor."""
+        if issubclass(klass, AbstractModule):
+            self.klass = klass
+            self.instance = None
+        else:
+            raise utils.ProjectionError('klass must be a AbstractModule')
+
+    def __call__(self, parent=None):
+        """Call method."""
+        if not self.instance:
+            self.instance = self.klass(parent)
+        return self.instance
 
 
 class AbstractModule(QtGui.QWidget):
     """Abstract Module class."""
 
-    __metaclass__ = ABCMeta
     module_enable = True
 
     def __init__(self, parent, type_class=None, resource=None, callbacks={}):
         """AbstractModule constructor."""
         type_class = type_class if type_class else QtGui.QWidget
-        if not issubclass(type_class, QtGui.QDialog):
-            super(type_class, self).__init__()
-        else:
-            super(type_class, self).__init__(parent)
+        super(type_class, self).__init__(parent)
+        # if not issubclass(type_class, QtGui.QDialog):
+        # super(type_class, self).__init__()
+        # else:
+        #    super(type_class, self).__init__(parent)
 
         if resource:
             self._widget = resource
@@ -76,22 +111,13 @@ class AbstractModule(QtGui.QWidget):
                     QtCore.QObject.disconnect(
                         obj, QtCore.SIGNAL(button_sig), callback)
 
-    @abstractmethod
     def _configure(self):
         """Configure module."""
         pass
 
-    @abstractmethod
     def _get_default_configuration(self):
         """Return default configuration."""
         pass
-
-        # def set_dependent(self, module_name, module):
-        #     setattr(self, '_{0}'.format(module_name), module)
-        #
-        # def set_dependents(self, modules):
-        #     for module_name, module in modules.iteritems():
-        #         self.set_dependent(module_name, module)
 
 
 class CoreModule(AbstractModule):
@@ -133,24 +159,24 @@ class ApplicationDBModule(ApplicationModule):
 class Projection:
     """Projection class."""
 
-    __metaclass__ = ABCMeta
-    _projection_item = None
+    __projection_item = None
 
-    @abstractmethod
-    def process(self, preview_text, **kwargs):
-        """Process item."""
-        pass
+    @property
+    def _projection_item(self):
+        return self._projection_item
 
     @_projection_item.setter
     def _projection_item(self, value):
         """Set projection item."""
-        self._projection_item = value
+        self.__projection_item = value
+
+    def process(self, preview_text, **kwargs):
+        """Process item."""
+        pass
 
 
 class Projectable(Projection):
     """Projectable class."""
-
-    __metaclass__ = ABCMeta
 
     def __init__(self, projection_method):
         """Projectable constructor."""
@@ -177,9 +203,6 @@ class Slideable(Projection):
 class ISearchable:
     """Searchable Interface."""
 
-    __metaclass__ = ABCMeta
-
-    @abstractmethod
     def search(self, criteria=None):
         """Search a criteria."""
         pass

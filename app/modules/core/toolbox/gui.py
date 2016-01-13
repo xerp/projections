@@ -17,20 +17,25 @@ except AttributeError:
 
 try:
     _encoding = QtGui.QApplication.UnicodeUTF8
+
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig, _encoding)
 except AttributeError:
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig)
 
+
 class Ui_dockProjectionsTools(object):
+
     def setupUi(self, dockProjectionsTools):
         dockProjectionsTools.setObjectName(_fromUtf8("dockProjectionsTools"))
         dockProjectionsTools.resize(844, 78)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Fixed)
+        sizePolicy = QtGui.QSizePolicy(
+            QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(dockProjectionsTools.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            dockProjectionsTools.sizePolicy().hasHeightForWidth())
         dockProjectionsTools.setSizePolicy(sizePolicy)
         dockProjectionsTools.setMaximumSize(QtCore.QSize(524287, 78))
         dockProjectionsTools.setFeatures(QtGui.QDockWidget.DockWidgetMovable)
@@ -43,10 +48,12 @@ class Ui_dockProjectionsTools(object):
         self.horizontalLayout_4 = QtGui.QHBoxLayout()
         self.horizontalLayout_4.setObjectName(_fromUtf8("horizontalLayout_4"))
         self.label = QtGui.QLabel(self.dockWidgetContents)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Preferred)
+        sizePolicy = QtGui.QSizePolicy(
+            QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.label.sizePolicy().hasHeightForWidth())
         self.label.setSizePolicy(sizePolicy)
         font = QtGui.QFont()
         font.setKerning(True)
@@ -99,7 +106,8 @@ class Ui_dockProjectionsTools(object):
         self.cmdFullScreen = QtGui.QPushButton(self.dockWidgetContents)
         self.cmdFullScreen.setEnabled(False)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/main/icons/Fullscreen-64.png")), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        icon.addPixmap(QtGui.QPixmap(_fromUtf8(
+            ":/main/icons/Fullscreen-64.png")), QtGui.QIcon.Normal, QtGui.QIcon.On)
         self.cmdFullScreen.setIcon(icon)
         self.cmdFullScreen.setCheckable(True)
         self.cmdFullScreen.setObjectName(_fromUtf8("cmdFullScreen"))
@@ -111,7 +119,8 @@ class Ui_dockProjectionsTools(object):
         self.horizontalLayout_4.addWidget(self.line_3)
         self.cmdLive = QtGui.QPushButton(self.dockWidgetContents)
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(_fromUtf8(":/main/icons/Live.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap(
+            _fromUtf8(":/main/icons/Live.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.cmdLive.setIcon(icon1)
         self.cmdLive.setIconSize(QtCore.QSize(28, 28))
         self.cmdLive.setCheckable(True)
@@ -125,16 +134,27 @@ class Ui_dockProjectionsTools(object):
         QtCore.QMetaObject.connectSlotsByName(dockProjectionsTools)
 
     def retranslateUi(self, dockProjectionsTools):
-        self.cmdGotoLive.setText(_translate("dockProjectionsTools", "Go to Live (F5)", None))
-        self.cmdGotoLive.setShortcut(_translate("dockProjectionsTools", "F5", None))
-        self.cmdDirectToLive.setText(_translate("dockProjectionsTools", "Direct To Live (F6)", None))
-        self.cmdDirectToLive.setShortcut(_translate("dockProjectionsTools", "F6", None))
-        self.cmdColorScreen.setText(_translate("dockProjectionsTools", "ColorScreen", None))
-        self.cmdMainView.setText(_translate("dockProjectionsTools", "Image View (F10)", None))
-        self.cmdMainView.setShortcut(_translate("dockProjectionsTools", "F10", None))
-        self.cmdFullScreen.setText(_translate("dockProjectionsTools", "Fullscreen (F11)", None))
-        self.cmdFullScreen.setShortcut(_translate("dockProjectionsTools", "F11", None))
-        self.cmdLive.setText(_translate("dockProjectionsTools", "Live (F12)", None))
-        self.cmdLive.setShortcut(_translate("dockProjectionsTools", "F12", None))
+        self.cmdGotoLive.setText(_translate(
+            "dockProjectionsTools", "Go to Live (F5)", None))
+        self.cmdGotoLive.setShortcut(_translate(
+            "dockProjectionsTools", "F5", None))
+        self.cmdDirectToLive.setText(_translate(
+            "dockProjectionsTools", "Direct To Live (F6)", None))
+        self.cmdDirectToLive.setShortcut(
+            _translate("dockProjectionsTools", "F6", None))
+        self.cmdColorScreen.setText(_translate(
+            "dockProjectionsTools", "ColorScreen", None))
+        self.cmdMainView.setText(_translate(
+            "dockProjectionsTools", "Image View (F10)", None))
+        self.cmdMainView.setShortcut(_translate(
+            "dockProjectionsTools", "F10", None))
+        self.cmdFullScreen.setText(_translate(
+            "dockProjectionsTools", "Fullscreen (F11)", None))
+        self.cmdFullScreen.setShortcut(
+            _translate("dockProjectionsTools", "F11", None))
+        self.cmdLive.setText(_translate(
+            "dockProjectionsTools", "Live (F12)", None))
+        self.cmdLive.setShortcut(_translate(
+            "dockProjectionsTools", "F12", None))
 
 import resources_rc

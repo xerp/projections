@@ -1,113 +1,114 @@
-import sys
-import os
+"""Main Application module."""
 
-from ConfigParser import ConfigParser
+import sys
+# import os
+
+# from ConfigParser import ConfigParser
 
 from PyQt4 import QtGui
 
-from modules.core import toolbox, statusbar, previewer, controls, live_viewer
-from lib.helpers import remove_pycs, get_user_application_geometry,set_user_application_geometry,check_user_database, get_app_config
+from libraries.utils import remove_pycs
+from libraries.configuration import check_user_database, get_application_geometry, set_application_geometry
+
+from modules.core import core_modules
 
 
 def main():
+    """Main function call."""
     app = QtGui.QApplication(sys.argv)
     frame = Application()
     frame.show()
-    remove_pycs()
+    remove_pycs('.')
     sys.exit(app.exec_())
 
 
 class Application(QtGui.QFrame):
+    """Main Application class."""
+
     def __init__(self):
+        """Main Application Constructor."""
         QtGui.QFrame.__init__(self)
 
-        self.config = get_app_config()
+        # FIXME self.config = get_app_config()
 
         check_user_database()
         self.add_core_modules()
         self.window_config()
-        self.config_core_modules()
-
+        self.configure_core_modules()
 
     def add_core_modules(self):
+        """Add core module to main application."""
         vBoxMainLayout = QtGui.QVBoxLayout()
 
-        #ToolBox
-        self.__toolbox = toolbox.ToolBox(self)
+        # ToolBox
+        self.__toolbox = core_modules.get_toolbox(self)
         vBoxMainLayout.addWidget(self.__toolbox)
 
-        #Splitter
+        # Splitter
         splitter = QtGui.QSplitter(self)
 
-        #Previewer
-        self.__previewer = previewer.Previewer(self)
+        # Previewer
+        self.__previewer = core_modules.get_previewer(self)
         splitter.addWidget(self.__previewer)
 
-        #Controls
-        self.__controls = controls.Controls(self)
-        splitter.addWidget(self.__controls)
+        # Controls
+        # self.__controls = core_modules.get_controls(self)
+        # splitter.addWidget(self.__controls)
 
         splitter.setSizes([700, 400])
         vBoxMainLayout.addWidget(splitter)
 
-        #StatusBar
-        self.__statusbar = statusbar.StatusBar(self)
+        # StatusBar
+        self.__statusbar = core_modules.get_status_bar(self)
         vBoxMainLayout.addWidget(self.__statusbar)
 
-        #LiveViewer
-        self.__liveViewer = live_viewer.LiveViewer(self)
+        # LiveViewer
+        self.__liveViewer = core_modules.get_live_viewer(self)
 
         self.setLayout(vBoxMainLayout)
 
     def window_config(self):
-        self.setWindowTitle("{0} Manager".format(self.config.get('GENERAL', 'TITLE')))
+        """Window configuration."""
+        self.setWindowTitle("{0} Manager".format("Main"))
+        # self.config.get('GENERAL', 'TITLE')
 
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/main/icons/video-projector.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(
+            ":/main/icons/video-projector.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.setWindowIcon(icon)
 
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Preferred)
+        sizePolicy = QtGui.QSizePolicy(
+            QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Preferred)
         sizePolicy.setHeightForWidth(self.sizePolicy().hasHeightForWidth())
         self.setSizePolicy(sizePolicy)
 
-        app_geometry = get_user_application_geometry()
-        self.setGeometry(app_geometry['x'],app_geometry['y'],app_geometry['width'],app_geometry['height'])
+        app_geometry = get_application_geometry()
+        self.setGeometry(app_geometry['x'], app_geometry['y'], app_geometry[
+                         'width'], app_geometry['height'])
 
         self.__statusbar.set_status('Ready')
 
-    def config_core_modules(self):
-        #Configure Toolbox
-        self.__toolbox.set_dependents({
-            'controls': self.__controls,
-            'statusbar': self.__statusbar,
-            'liveViewer': self.__liveViewer,
-            'previewer': self.__previewer
-        })
-
-        #Configure Controls
-        self.__controls.set_dependents({
-            'toolbox': self.__toolbox,
-            'statusbar': self.__statusbar,
-            'liveViewer': self.__liveViewer
-        })
-
-        self.__controls.configure()
+    def configure_core_modules(self):
+        """Configure core module."""
+        # self.__controls.configure()
         self.__toolbox.configure_selected_module()
 
-
-    #Handlers
+    # Handlers
     def closeEvent(self, e):
+        """Close event."""
         self.__liveViewer.set_visible(False)
         self.__liveViewer.hide()
 
     def keyPressEvent(self, e):
+        """On key press event."""
         self.__toolbox.keyPressEvent(e)
         self.__statusbar.keyPressEvent(e)
         self.__controls.keyPressEvent(e)
 
+    def resizeEvent(self, resizeEvent):
+        """On resize event."""
+        set_application_geometry(self.geometry())
 
-    def resizeEvent(self,resizeEvent):
-        set_user_application_geometry(self.geometry())
-
-    def moveEvent(self,moveEvent):
-        set_user_application_geometry(self.geometry())
+    def moveEvent(self, moveEvent):
+        """On move event."""
+        set_application_geometry(self.geometry())
