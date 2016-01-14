@@ -1,9 +1,8 @@
 """Live viewer view module."""
 
 
-from PyQt4.QtCore import Qt
 from PyQt4 import QtCore, QtGui
-from PyQt4.QtWebKit import QWebView, QWebSettings
+from PyQt4.QtWebKit import QWebView
 
 from app.libraries.modules import CoreModule, SingletonModule
 from models import LiveViewerModel
@@ -15,40 +14,18 @@ class LiveViewer(QtGui.QFrame, CoreModule):
 
     def __init__(self, parent):
         """LiveViewer constructor."""
-        super(CoreModule, self).__init__(parent, QtGui.QFrame)
+        super(CoreModule, self).__init__(parent, LiveViewerModel, QtGui.QFrame)
 
     def _instance_variable(self):
         super(CoreModule, self)._instance_variable()
 
-        self.__model = LiveViewerModel(self)
         self.__default_size = QtCore.QSize(400, 400)
 
         self.__main_layout = QtGui.QGridLayout(self)
         self.__lblLive = QWebView()
 
     def _configure(self):
-        self.setWindowTitle('{0} Live Window'.format("hola"))
-        # self.config.get('GENERAL', 'TITLE')
-
-        self.setWindowFlags(
-            Qt.CustomizeWindowHint or Qt.WindowStaysOnTopHint)
-        self.setSizePolicy(
-            QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-
-        self.__lblLive.settings().setAttribute(
-            QWebSettings.LocalContentCanAccessRemoteUrls, True)
-
-        self.__lblLive.settings().setAttribute(
-            QWebSettings.LocalContentCanAccessFileUrls, True)
-
-        self.__lblLive.settings().setAttribute(
-            QWebSettings.PluginsEnabled, True)
-
-        self.__main_layout.addWidget(self.__lblLive)
-        self.__lblLive.setVisible(True)
-
-        self.__main_layout.setContentsMargins(0, 0, 0, 0)
-        self.reset()
+        self.__model.configure_module()
 
     def set_visible(self, visible, screen=1):
         """Set live viewer visible."""

@@ -8,10 +8,6 @@ from app.libraries.encoding import to_unicode
 class PreviewerModel(AbstractModel):
     """PreviewerModel class."""
 
-    def __init__(self, view):
-        """PreviewerModel Constructor."""
-        AbstractModel.__init__(self, view)
-
     def configure_module(self):
         """Configure module."""
         # self.setFont(get_projection_font(dict(self.config.items(

@@ -23,16 +23,13 @@ class ToolBox(QtGui.QDockWidget, CoreModule):
 
     def __init__(self, parent):
         """ToolBox Constructor."""
-        super(CoreModule, self).__init__(parent, QtGui.QDockWidget,
+        super(CoreModule, self).__init__(parent, ToolBoxModel, QtGui.QDockWidget,
                                          gui.Ui_dockProjectionsTools(),
                                          self.__controls)
 
-    def _instance_variable(self):
-        self.__model = ToolBoxModel(self)
-
     def _configure(self):
-        self.__model.configure_module()
-        self.__model.set_modules()
+        self._model.configure_module()
+        self._model.set_modules()
 
         self._callback('live', self.set_live)
         self._callback('image', self.__image_view)
@@ -42,23 +39,23 @@ class ToolBox(QtGui.QDockWidget, CoreModule):
         self._callback('go_to_live', self.go_to_live)
 
     def __image_view(self):
-        self.__model.image_view()
+        self._model.image_view()
 
     def __color_view(self):
-        self.__model.color_view()
+        self._model.color_view()
 
     def __full_screen(self, active):
-        self.__model.fullscreen(active)
+        self._model.fullscreen(active)
 
     def __option_changed(self, text):
         self.configure_selected_module()
 
     def __direct_to_live(self, active):
-        self.__model.direct_to_live(active)
+        self._model.direct_to_live(active)
 
     def go_to_live(self):
         """Go to live."""
-        self.__model.go_to_live()
+        self._model.go_to_live()
 
     def reset(self):
         """Reset module."""
@@ -66,7 +63,7 @@ class ToolBox(QtGui.QDockWidget, CoreModule):
 
     def configure_selected_module(self):
         """Configure selected module."""
-        self.__model.configure_selected_module()
+        self._model.configure_selected_module()
 
     def selected_option(self):
         """Return selected option."""
@@ -74,4 +71,4 @@ class ToolBox(QtGui.QDockWidget, CoreModule):
 
     def set_live(self, in_live):
         """Set live."""
-        self.__model.set_live(in_live)
+        self._model.set_live(in_live)

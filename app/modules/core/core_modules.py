@@ -3,8 +3,8 @@
 
 def get_controls(parent=None):
     """Return controls singleton core module."""
-    # from controls.view import Controls
-    # return Controls(parent)
+    from controls.view import Controls
+    return Controls(parent)
     pass
 
 

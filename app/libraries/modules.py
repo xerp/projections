@@ -52,14 +52,13 @@ class AbstractModule(QtGui.QWidget):
 
     module_enable = True
 
-    def __init__(self, parent, type_class=None, resource=None, callbacks={}):
+    def __init__(self, parent, model_type, type_class=None, resource=None, callbacks={}):
         """AbstractModule constructor."""
         type_class = type_class if type_class else QtGui.QWidget
-        super(type_class, self).__init__(parent)
-        # if not issubclass(type_class, QtGui.QDialog):
-        # super(type_class, self).__init__()
-        # else:
-        #    super(type_class, self).__init__(parent)
+        if not issubclass(type_class, QtGui.QDialog):
+            type_class.__init__(self)
+        else:
+            type_class.__init__(self, parent)
 
         if resource:
             self._widget = resource
@@ -67,6 +66,11 @@ class AbstractModule(QtGui.QWidget):
 
         self.__parent = parent
         self.__controls_to_callback = callbacks
+
+        if model_type and issubclass(model_type, AbstractModel):
+            self._model = model_type(self)
+        else:
+            raise utils.ProjectionError('model must be a AbstractModel')
 
         self._instance_variable()
         self._configure()

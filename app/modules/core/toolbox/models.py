@@ -23,10 +23,6 @@ def __get_modules():
 class ToolBoxModel(AbstractModel):
     """ToolBoxModel class."""
 
-    def __init__(self, view):
-        """ToolBoxModel Constructor."""
-        AbstractModel.__init__(self, view)
-
     def _instance_variable(self):
         self.in_live = False
         self.direct_live = False

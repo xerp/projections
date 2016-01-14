@@ -4,6 +4,14 @@ from PyQt4 import QtGui, QtCore
 from PyQt4.QtCore import Qt
 
 
+def get_icon(file_name):
+    """Return a icon."""
+    icon = QtGui.QIcon()
+    icon.addPixmap(QtGui.QPixmap(file_name),
+                   QtGui.QIcon.Normal, QtGui.QIcon.Off)
+    return icon
+
+
 def get_projection_font(font_properties, default_font_size):
     """Return projection font."""
     font = QtGui.QFont(font_properties.get('name', 'arial'))

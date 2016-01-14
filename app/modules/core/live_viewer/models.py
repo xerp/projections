@@ -3,7 +3,8 @@
 import os
 
 from PyQt4 import QtGui
-from PyQt4.QtCore import QUrl
+from PyQt4.QtCore import QUrl, Qt
+from PyQt4.QtWebKit import QWebSettings
 
 from jinja2 import Template
 
@@ -64,12 +65,31 @@ def _set_html_text(lblLive):
 class LiveViewerModel(AbstractModel):
     """LiveViewerModel class."""
 
-    def __init__(self, view):
-        """LiveViewerModel Constructor."""
-        AbstractModel.__init__(self, view)
-
     def _instance_variable(self):
         self.__screen_geometry = None
+
+    def configure_module(self):
+        # self.setWindowTitle('{0} Live Window'.format(self.config.get('GENERAL', 'TITLE')))
+
+        self._view.setWindowFlags(
+            Qt.CustomizeWindowHint or Qt.WindowStaysOnTopHint)
+        self._view.setSizePolicy(
+            QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+
+        self._view.__lblLive.settings().setAttribute(
+            QWebSettings.LocalContentCanAccessRemoteUrls, True)
+
+        self._view.__lblLive.settings().setAttribute(
+            QWebSettings.LocalContentCanAccessFileUrls, True)
+
+        self._view.__lblLive.settings().setAttribute(
+            QWebSettings.PluginsEnabled, True)
+
+        self._view.__main_layout.addWidget(self._view.__lblLive)
+        self._view.__lblLive.setVisible(True)
+
+        self._view.__main_layout.setContentsMargins(0, 0, 0, 0)
+        self._view.reset()
 
     def set_visible(self, visible, screen):
         """

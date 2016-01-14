@@ -10,10 +10,6 @@ from app.libraries.modules import AbstractModel
 class StatusBarModel(AbstractModel):
     """StatusBarModel class."""
 
-    def __init__(self, view):
-        """StatusBarModel Constructor."""
-        AbstractModel.__init__(self, view)
-
     def set_status(self, msg, error=False, time_hide=None, msg_af_hide=''):
         """Set a status."""
         pixmap = QtGui.QPixmap(

@@ -12,19 +12,17 @@ class Previewer(QtGui.QTextEdit, CoreModule):
 
     def __init__(self, parent):
         """Module constructor."""
-        super(CoreModule, self).__init__(parent, QtGui.QTextEdit)
-
-    def _instance_variable(self):
-        self.__model = PreviewerModel(self)
+        super(CoreModule, self).__init__(
+            parent, PreviewerModel, QtGui.QTextEdit)
 
     def _configure(self):
-        self.__model.configure_module()
+        self._model.configure_module()
         self.setReadOnly(True)
 
     def set_text(self, text):
         """Set previewer text."""
-        self.__model.set_text(text)
+        self._model.set_text(text)
 
     def reset(self):
         """Reset previewer text."""
-        self.__model.reset()
+        self._model.reset()

@@ -9,6 +9,7 @@ from PyQt4 import QtGui
 
 from libraries.utils import remove_pycs
 from libraries.configuration import check_user_database, get_application_geometry, set_application_geometry
+from libraries.ui import get_icon
 
 from modules.core import core_modules
 
@@ -52,8 +53,8 @@ class Application(QtGui.QFrame):
         splitter.addWidget(self.__previewer)
 
         # Controls
-        # self.__controls = core_modules.get_controls(self)
-        # splitter.addWidget(self.__controls)
+        self.__controls = core_modules.get_controls(self)
+        splitter.addWidget(self.__controls)
 
         splitter.setSizes([700, 400])
         vBoxMainLayout.addWidget(splitter)
@@ -63,19 +64,15 @@ class Application(QtGui.QFrame):
         vBoxMainLayout.addWidget(self.__statusbar)
 
         # LiveViewer
-        self.__liveViewer = core_modules.get_live_viewer(self)
+        # self.__liveViewer = core_modules.get_live_viewer(self)
 
         self.setLayout(vBoxMainLayout)
 
     def window_config(self):
         """Window configuration."""
-        self.setWindowTitle("{0} Manager".format("Main"))
-        # self.config.get('GENERAL', 'TITLE')
-
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(
-            ":/main/icons/video-projector.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.setWindowIcon(icon)
+        # self.setWindowTitle("{0} Manager".format(
+        #     self.config.get('GENERAL', 'TITLE')))
+        self.setWindowIcon(get_icon(':/main/icons/video-projector.png'))
 
         sizePolicy = QtGui.QSizePolicy(
             QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Preferred)
@@ -90,14 +87,13 @@ class Application(QtGui.QFrame):
 
     def configure_core_modules(self):
         """Configure core module."""
-        # self.__controls.configure()
         self.__toolbox.configure_selected_module()
 
     # Handlers
     def closeEvent(self, e):
         """Close event."""
-        self.__liveViewer.set_visible(False)
-        self.__liveViewer.hide()
+        # self.__liveViewer.set_visible(False)
+        # self.__liveViewer.hide()
 
     def keyPressEvent(self, e):
         """On key press event."""
