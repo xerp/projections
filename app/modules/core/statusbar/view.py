@@ -2,11 +2,11 @@
 
 import gui
 
-from app.libraries.modules import CoreModule, SingletonModule
+from app.libraries.modules import CoreModule, SingletonCoreModule
 from models import StatusBarModel
 
 
-@SingletonModule
+@SingletonCoreModule
 class StatusBar(CoreModule):
     """StatusBar class."""
 

@@ -3,11 +3,11 @@
 from PyQt4 import QtGui
 import gui
 
-from app.libraries.modules import CoreModule, SingletonModule
+from app.libraries.modules import CoreModule, SingletonCoreModule
 from models import ToolBoxModel
 
 
-@SingletonModule
+@SingletonCoreModule
 class ToolBox(QtGui.QDockWidget, CoreModule):
     """ToolBox core module class."""
 

@@ -105,16 +105,16 @@ class KaraokeOptions(utils.ApplicationDBModule, utils.Slideable, utils.Searchabl
             self._widget.lstSongs.hideColumn(2)
 
     def search(self, text=None):
-        unicode_search_text = to_unicode(self._controls.search_box_text())
+        unicode_search_text = to_unicode(self._controls.search_box_text)
 
         songs = self.__songs_db(unicode_search_text)
         if songs:
-            self._controls.add_to_history(unicode_search_text)
+            self._controls.append_to_history(unicode_search_text)
             self.__set_table_data(songs)
         else:
             self._statusbar.set_status('Song not found', True, 4)
 
-        self._controls.clear_search_box()
+        self._controls.search_text
 
     def __add_song(self):
         songManagement = SongManagement(self, 'Add Song')

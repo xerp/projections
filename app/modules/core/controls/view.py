@@ -2,25 +2,22 @@
 
 import gui
 
-from PyQt4 import QtCore, QtGui
+from PyQt4 import QtGui
 from PyQt4.QtCore import Qt
 
 from app.libraries.modules import CoreModule
-from models import ControlsModel
+from models import ControlsModel, HistoryModel, SliderModel
 
 from app.modules.core import core_modules
 
-# import app.resources.modules.core.controls as ui_resource
-# import app.modules.utils as utils
-# from app.lib.helpers import get_images_view, get_screens, open_directory, is_valid_directory
-# from functools import partial
-
 
 class Controls(QtGui.QDockWidget, CoreModule):
+    """Controls class."""
+
     __controls = {
         'live_font': {'sLiveFont': ['sliderMoved(int)', 'valueChanged(int)']},
         'refresh_images': {'cmdRefreshImageView': 'clicked()'},
-        'open_image_dir': {'cmdOpenImageDirectory': 'clicked()'},
+        'open_images_directory': {'cmdOpenImageDirectory': 'clicked()'},
         'previous_slide': {'cmdPrevious': 'clicked()'},
         'next_slide': {'cmdNext': 'clicked()'},
         'refresh_screens': {'cmdRefreshLiveScreens': 'clicked()'},
@@ -29,274 +26,135 @@ class Controls(QtGui.QDockWidget, CoreModule):
         'next_history': {'cmdNextHistory': 'clicked()'}
     }
 
+    __setters__ = {}
+
     def __init__(self, parent):
+        """Controls Constructor."""
         super(CoreModule, self).__init__(parent, ControlsModel, QtGui.QDockWidget,
                                          gui.Ui_projectionsControls(),
                                          self.__controls)
 
+    def __setattr__(self, name, value):
+        """Set attributes."""
+        try:
+            prop = self.__setters__[name]
+            prop(value)
+        except Exception:
+            pass
+
     def _instance_variable(self):
-        super(CoreModule, self)._instance_variable()
-
-        self.slide_position = 0
-
-        self.__search_in_history = False
-        self.__history = {}
-
-        self._module_options_panel = self._widget.saModuleOptions
+        self._history_model = HistoryModel(self._view)
+        self._slider_model = SliderModel(self._view)
 
     def _configure(self):
         self._model.configure_module()
+        self._history_model.configure_module()
 
         self._callback('refresh_images', self.__set_images)
-        self._callback('open_image_dir', self.__open_image_dir)
+        self._callback('open_images_directory', self.__open_images_directory)
         self._callback('refresh_screens', self.__set_live_screens)
         self._callback('live_font', self.__live_font)
-        self._callback('previous_slide', self.__previous_slide)
-        self._callback('next_slide', self.__next_slide)
-        self._callback('previous_history', self.__previous_history)
-        self._callback('next_history', self.__next_history)
+        self._callback('previous_slide', self.__previous_slide_clicked)
+        self._callback('next_slide', self.__next_slide_clicked)
+        self._callback('previous_history', self.__previous_history_clicked)
+        self._callback('next_history', self.__next_history_clicked)
+
+        self.__dict__['search_box_text'] = self._widget.txtSearch.text()
+        self.__dict__['live_font'] = self._widget.sLiveFont.value()
+        self.__dict__['selected_screen'] = self.__selected_screen()
+
+        self.__dict__['selected_image'] = self._model.selected_image
+        self.__dict__['live'] = self._model.live
+        self.__dict__['slide_position'] = self._slider_model.slide_position
+        self.__dict__['history_control'] = self._history_model.history_control
+        self.__dict__[
+            'search_in_history'] = self._history_model.search_in_history
+
+        self.__setters__['search_text'] = self._widget.txtSearch.setText
+        self.__setters__['enable_live_font'] = self.__set_enable_live_font
 
     def __set_live_screens(self):
         self._model.set_live_screen()
 
-    def __set_buttons_slides(self, max_slides):
-        self._model.set_button_slides(max_slides)
-
     def __set_images(self):
         self._model.set_images()
 
-    def __open_image_dir(self):
-        self._model.open_image_dir()
+    def __open_images_directory(self):
+        self._model.open_images_directory()
 
     def __live_font(self, value):
         core_modules.get_status_bar().set_status(
             'Font size: {0} point(s)'.format(value), time_hide=2)
 
-    def __previous_slide(self):
-        pass
-        # if self._toolbox.selected_module and isinstance(self._toolbox.selected_module, utils.Slideable):
-        #     module = self._toolbox.selected_module
-        #
-        #     self.slide_position -= 1
-        #     kwarg = {'item': module.get_projection_item()[self.slide_position],
-        #              'font_size': self._widget.sLiveFont.value()}
-        #     self._liveViewer.set_text(**kwarg)
-        #
-        #     self._widget.cmdNext.setEnabled(True)
-        #     self._widget.cmdPrevious.setEnabled(
-        #         False if self.slide_position == 0 else True)
+    def __previous_slide_clicked(self):
+        self._slider_model.previous_slide_clicked()
 
-    def __next_slide(self):
-        pass
-        # if self._toolbox.selected_module and isinstance(self._toolbox.selected_module, utils.Slideable):
-        #     module = self._toolbox.selected_module
-        #
-        #     self.slide_position += 1
-        #     kwarg = {'item': module.get_projection_item()[self.slide_position],
-        #              'font_size': self._widget.sLiveFont.value()}
-        #     self._liveViewer.set_text(**kwarg)
-        #
-        #     self._widget.cmdPrevious.setEnabled(True)
-        #     self._widget.cmdNext.setEnabled(False if self.slide_position == (
-        #         module.get_slide_length() - 1) else True)
+    def __next_slide_clicked(self):
+        self._slider_model.next_slide_clicked()
 
-    def __slide_click(self, button_num):
-        pass
-        # if self._toolbox.selected_module and isinstance(self._toolbox.selected_module, utils.Slideable):
-        #     module = self._toolbox.selected_module
-        #
-        #     self.slide_position = button_num - 1
-        #     kwarg = {'item': module.get_projection_item()[self.slide_position],
-        #              'font_size': self._widget.sLiveFont.value()}
-        #     self._liveViewer.set_text(**kwarg)
-        #
-        #     self._widget.cmdNext.setEnabled(False if self.slide_position == (
-        #         module.get_slide_length() - 1) else True)
-        #     self._widget.cmdPrevious.setEnabled(
-        #         False if self.slide_position == 0 else True)
+    def __next_history_clicked(self):
+        self._history_model.next_history_clicked()
 
-    def __history_control_text(self, text):
-        pass
-        # if hasattr(self, 'history_control_method'):
-        #     self.history_control_method(text)
-        # else:
-        #     self.set_search_box_text(text)
+    def __previous_history_clicked(self):
+        self._history_model.previous_history_clicked()
 
-    def __clear_history_control(self):
-        pass
-        # if hasattr(self, 'history_control_method'):
-        #     self.history_control_method('')
-        # else:
-        #     self._widget.txtSearch.setText('')
-
-    def __next_history(self):
-        pass
-        # option = self._toolbox.selected_option()
-        #
-        # if option in self.__history:
-        #     self.__history[option]['position'] += 1
-        #     try:
-        #         position = self.__history[option]['position']
-        #         self.__history_control_text(
-        #             self.__history[option]['data'][position])
-        #     except IndexError:
-        #         self.__history[option]['position'] = len(
-        #             self.__history[option]['data'])
-        #         self.__clear_history_control()
-
-    def __previous_history(self):
-        pass
-        # option = self._toolbox.selected_option()
-        #
-        # if option in self.__history:
-        #     if self.__history[option]['position'] > 0:
-        #         self.__history[option]['position'] -= 1
-        #         try:
-        #             position = self.__history[option]['position']
-        #             self.__history_control_text(
-        #                 self.__history[option]['data'][position])
-        #         except IndexError:
-        #             self.__history[option]['position'] += 1
-        #     else:
-        #         self.__history[option]['position'] = 0
-        #         position = self.__history[option]['position']
-        #         self.__history_control_text(
-        #             self.__history[option]['data'][position])
-
-    def search_in_history(self, option):
-        pass
-    #     self.__search_in_history = option
-    #
-    #     self._widget.cmdPreviousHistory.setVisible(option)
-    #     self._widget.cmdNextHistory.setVisible(option)
-    #
-    # def configure_search_box(self, module):
-    #     self._widget.txtSearch.setVisible(True)
-    #
-    #     self._widget.txtSearch.selectAll()
-    #     self._widget.txtSearch.setFocus()
-    #
-    #     if module and isinstance(module, utils.Searchable):
-    #         self.callback('search', module.search)
-
-    def search_box_text(self):
-        return self._widget.txtSearch.text()
-
-    def set_search_box_text(self, text=None):
-        pass
-        # if text:
-        #     self._widget.txtSearch.setText(text)
-
-    def clear_search_box(self):
-        pass
-        # self._widget.txtSearch.setText('')
-
-    def live_font(self):
-        return self._widget.sLiveFont.value()
-
-    def add_module_options(self, widget):
-        pass
-        # self._module_options_panel.setWidget(widget)
-        # self._module_options_panel.setVisible(True)
-
-    def hide_module_options(self):
-        pass
-        # self._module_options_panel.setVisible(False)
-
-    def hide_search_box(self):
-        pass
-        # self._widget.txtSearch.setVisible(False)
-
-    def reset(self):
-        pass
-        # self.set_enable_slides(True)
-        # self.set_enable_live_font_size(True)
-        # self._widget.txtSearch.setVisible(False)
-        # self.clear_search_box()
-        #
-        # self.search_in_history(False)
-        #
-        # try:
-        #     del (self.history_control_method)
-        # except Exception, e:
-        #     pass
-    def seeker(self):
-        pass
-        # self.__remove_buttons_slides()
-        #
-        # self._widget.cmdPrevious.setEnabled(False)
-        # self._widget.cmdNext.setEnabled(False)
-        #
-        # if self._toolbox.in_live and self._toolbox.selected_module.get_slide_length() > 1:
-        #     self.__set_buttons_slides(
-        #         self._toolbox.selected_module.get_slide_length())
-        #
-        #     self._widget.cmdPrevious.setEnabled(False)
-        #     self._widget.cmdNext.setEnabled(True)
-
-    def selected_screen(self):
+    def __selected_screen(self):
         return self._widget.cbLiveScreens.currentIndex() + 1
 
-    def selected_image(self):
-        image_name = str(self._widget.cbImagesView.currentText())
-        if image_name:
-            return \
-                filter(lambda img: img.split(os.sep)[-1].split('.')[0] == image_name, self._widget.cbImagesView.images)[
-                    0]
-
-    def set_enable_slides(self, enable):
-        self._widget.cmdNext.setVisible(enable)
-        self._widget.cmdPrevious.setVisible(enable)
-        self._widget.saCmdSlides.setVisible(enable)
-
-    def set_enable_live_font_size(self, enable):
+    def __set_enable_live_font(self, enable):
         self._widget.sLiveFont.setVisible(enable)
         self._widget.lblLiveFont.setVisible(enable)
 
-    def set_slides(self):
-        self.slide_position = 0
-        self.seeker()
+    # FIXME
+    # def slider_seeker(self):
+    #     self._slider_model.slider_seeker()
 
-    def add_to_history(self, text):
-        option = self._toolbox.selected_option()
+    # FIXME
+    # def set_enable_slides(self, enable):
+    #     self._slider_model.set_enable_slides(enable)
 
-        if option not in self.__history:
-            self.__history[option] = {'position': 0, 'data': []}
+    def configure_search_box(self, module):
+        """Configure search box."""
+        self._model.configure_search_box(module)
 
-        if text and text not in self.__history[option]['data']:
-            self.__history[option]['data'].append(text)
-            self.__history[option]['position'] = len(
-                self.__history[option]['data'])
+    def add_module_options(self, widget):
+        """Add module options."""
+        self._module_options_panel.setWidget(widget)
+        self._module_options_panel.setVisible(True)
 
-    def set_history_control(self, control_method):
-        setattr(self, 'history_control_method', control_method)
+    def hide_module_options(self):
+        """Hide module options."""
+        self._module_options_panel.setVisible(False)
 
-        self.search_in_history(True)
+    def hide_search_box(self):
+        """Hide search box."""
+        self._widget.txtSearch.setVisible(False)
 
-    def set_live(self, in_live):
-        self._widget.cbLiveScreens.setEnabled(not in_live)
+    def append_to_history(self, text):
+        """Append to history."""
+        self._history_model.append_to_history(text)
 
-        if not in_live:
-            self._widget.cmdPrevious.setEnabled(False)
-            self._widget.cmdNext.setEnabled(False)
-
-        if self._toolbox.selected_module and isinstance(self._toolbox.selected_module, utils.Slideable):
-            self.seeker()
+    def reset(self):
+        """Reset module."""
+        self._history_model.reset()
+        self._model.reset()
 
     def keyPressEvent(self, e):
+        """On Key press event."""
         if e.key() == Qt.Key_F3:
             self._widget.txtSearch.selectAll()
             self._widget.txtSearch.setFocus()
 
         if e.key() == Qt.Key_Plus:
-            self._widget.sLiveFont.setValue(self.live_font() + 3)
+            self._widget.sLiveFont.setValue(self.live_font + 3)
 
         if e.key() == Qt.Key_Minus:
-            self._widget.sLiveFont.setValue(self.live_font() - 3)
+            self._widget.sLiveFont.setValue(self.live_font - 3)
 
-        if self.__search_in_history:
-            if e.key() == Qt.Key_PageDown:
-                self.__next_history()
-
-            if e.key() == Qt.Key_PageUp:
-                self.__previous_history()
+        # FIXME
+        # if self.__search_in_history:
+        #     if e.key() == Qt.Key_PageDown:
+        #         self.__next_history_clicked()
+        #
+        #     if e.key() == Qt.Key_PageUp:
+        #         self.__previous_history_clicked()

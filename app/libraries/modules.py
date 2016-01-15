@@ -29,12 +29,12 @@ class AbstractModel:
         pass
 
 
-class SingletonModule:
-    """SingletonModule Decorator."""
+class SingletonCoreModule:
+    """SingletonCoreModule Decorator."""
 
     def __init__(self, klass):
         """Constructor."""
-        if issubclass(klass, AbstractModule):
+        if issubclass(klass, CoreModule):
             self.klass = klass
             self.instance = None
         else:

@@ -4,11 +4,11 @@
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtWebKit import QWebView
 
-from app.libraries.modules import CoreModule, SingletonModule
+from app.libraries.modules import CoreModule, SingletonCoreModule
 from models import LiveViewerModel
 
 
-@SingletonModule
+@SingletonCoreModule
 class LiveViewer(QtGui.QFrame, CoreModule):
     """LiveViewer class."""
 

@@ -198,8 +198,8 @@ class BibleOptions(utils.ApplicationModule, utils.Projectable, utils.Searchable)
 
     def search(self, text=None):
 
-        self._controls.set_search_box_text(text)
-        unicode_search_text = to_unicode(self._controls.search_box_text())
+        self._controls.search_text = text
+        unicode_search_text = to_unicode(self._controls.search_box_text)
 
         try:
 
@@ -207,14 +207,14 @@ class BibleOptions(utils.ApplicationModule, utils.Projectable, utils.Searchable)
                                                                                                 self._widget.chkInternetService.isChecked())
             self.__configure_navigations(unicode_search_text)
             if not text:
-                self._controls.add_to_history(unicode_search_text)
+                self._controls.append_to_history(unicode_search_text)
 
             self._previewer.set_text(self.entire_text)
 
             if self._toolbox.direct_live:
                 self._toolbox.go_to_live()
 
-            self._controls.clear_search_box()
+            self._controls.search_text
         except BibleError, e:
             self._statusbar.set_status(str(e), True, 2)
 

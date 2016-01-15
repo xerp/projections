@@ -33,10 +33,10 @@ class WebPageOptions(utils.ApplicationModule, utils.Projectable):
 
     def configure(self):
 
-        self._controls.set_history_control(self._widget.txtWebPage.setText)
+        self._controls.history_control = self._widget.txtWebPage.setText
         self._controls.add_module_options(self)
         self._controls.set_enable_slides(False)
-        self._controls.set_enable_live_font_size(False)
+        self._controls.enable_live_font = False
         self._previewer.setVisible(False)
 
         self._widget.txtWebPage.setFocus()
@@ -58,7 +58,7 @@ class WebPageOptions(utils.ApplicationModule, utils.Projectable):
         url = str(self._widget.txtWebPage.text())
 
         if url:
-            self._controls.add_to_history(url)
+            self._controls.append_to_history(url)
             self._widget.txtWebPage.clear()
 
             if 'http://' not in url and 'https://' not in url:

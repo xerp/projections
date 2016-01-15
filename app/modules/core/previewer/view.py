@@ -2,11 +2,11 @@
 
 from PyQt4 import QtGui
 
-from app.libraries.modules import CoreModule, SingletonModule
+from app.libraries.modules import CoreModule, SingletonCoreModule
 from models import PreviewerModel
 
 
-@SingletonModule
+@SingletonCoreModule
 class Previewer(QtGui.QTextEdit, CoreModule):
     """Previewer core module."""
 

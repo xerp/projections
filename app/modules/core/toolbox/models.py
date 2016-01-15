@@ -39,7 +39,7 @@ class ToolBoxModel(AbstractModel):
         """Image view option."""
         try:
             core_modules.get_live_viewer().set_image(
-                core_modules.get_controls().selected_image())
+                core_modules.get_controls().selected_image)
 
             core_modules.get_status_bar().set_button_status('Image View')
             core_modules.get_status_bar().set_status('Live in Image View')
@@ -77,16 +77,16 @@ class ToolBoxModel(AbstractModel):
         #     module.process_projection(preview_text)
         #
         #     kwargs = {'item': module.get_projection_item(),
-        #               'font_size': self._controls.live_font()}
+        #               'font_size': self._controls.live_font}
         #     getattr(self._liveViewer, 'set_{0}'.format(
         #         module.get_projection_method()))(**kwargs)
         #
         # elif module and isinstance(module, utils.Slideable):
         #     try:
         #         kwargs = {'item': module.get_projection_item()[self._controls.slide_position],
-        #                   'font_size': self._controls.live_font()}
+        #                   'font_size': self._controls.live_font}
         #         self._liveViewer.set_text(**kwargs)
-        #         self._controls.seeker()
+        #         self._controls.slider_seeker()
         #     except IndexError:
         #         pass
         #
@@ -119,7 +119,7 @@ class ToolBoxModel(AbstractModel):
         # self._controls.set_live(in_live)
         #
         # self._liveViewer.set_visible(
-        #     self.in_live, self._controls.selected_screen())
+        #     self.in_live, self._controls.selected_screen)
         # self._liveViewer.set_color(Qt.red)
 
     def configure_selected_module(self):
