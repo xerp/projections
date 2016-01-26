@@ -36,15 +36,15 @@ class Controls(QtGui.QDockWidget, CoreModule):
 
     def __setattr__(self, name, value):
         """Set attributes."""
-        try:
+        if self.__setters__:
             prop = self.__setters__[name]
-            prop(value)
-        except Exception:
-            pass
+            return prop(value)
+        else:
+            super(CoreModule, self).__setattr__(name, value)
 
     def _instance_variable(self):
-        self._history_model = HistoryModel(self._view)
-        self._slider_model = SliderModel(self._view)
+        self._history_model = HistoryModel(self)
+        self._slider_model = SliderModel(self)
 
     def _configure(self):
         self._model.configure_module()
@@ -64,11 +64,11 @@ class Controls(QtGui.QDockWidget, CoreModule):
         self.__dict__['selected_screen'] = self.__selected_screen()
 
         self.__dict__['selected_image'] = self._model.selected_image
-        self.__dict__['live'] = self._model.live
+        # self.__dict__['live'] = self._model.live
         self.__dict__['slide_position'] = self._slider_model.slide_position
-        self.__dict__['history_control'] = self._history_model.history_control
-        self.__dict__[
-            'search_in_history'] = self._history_model.search_in_history
+        # self.__dict__['history_control'] = self._history_model.history_control
+        # self.__dict__[
+        #     'search_in_history'] = self._history_model.search_in_history
 
         self.__setters__['search_text'] = self._widget.txtSearch.setText
         self.__setters__['enable_live_font'] = self.__set_enable_live_font

@@ -57,14 +57,17 @@ class HistoryModel(AbstractModel):
     __setters__ = {}
 
     def _instance_variable(self):
-        self.__search_in_history = False
+        self._search_in_history = False
         self.__history_control_method = None
         self.__history = {}
 
     def __setattr__(self, name, value):
         """Set Attributes."""
-        prop = self.__setters__[name]
-        prop(value)
+        if self.__setters__:
+            prop = self.__setters__[name]
+            prop(value)
+        else:
+            setattr(AbstractModel, name, value)
 
     def configure_module(self):
         """Configure module."""
@@ -72,14 +75,14 @@ class HistoryModel(AbstractModel):
             'history_control_text'] = self.__set_history_control_text
 
         self.__setters__['search_in_history'] = self.__search_in_history
-        self.__setters__['set_history_control'] = self.__set_history_control
+        self.__setters__['history_control'] = self.__set_history_control
 
     def __set_history_control_text(self, text):
         pass
 
     def __search_in_history(self, search):
         """Search in history."""
-        self.__search_in_history = search
+        self._search_in_history = search
 
         self._view._widget.cmdPreviousHistory.setVisible(search)
         self._view._widget.cmdNextHistory.setVisible(search)
@@ -243,23 +246,29 @@ class ControlsModel(AbstractModel):
 
     def _instance_variable(self):
 
-        self._module_options_panel = self._widget.saModuleOptions
+        self._module_options_panel = self._view._widget.saModuleOptions
 
         self.__getters__['selected_image'] = self.__selected_image
         self.__setters__['live'] = self.__set_live
 
     def __setattr__(self, name, value):
         """Setter methods."""
-        prop = self.__setters__[name]
-        prop(value)
+        if self.__setters__:
+            prop = self.__setters__[name]
+            prop(value)
+        else:
+            setattr(AbstractModel, name, value)
 
     def __getattr__(self, name):
         """Getter methods."""
-        return self.__getters__[name]()
+        if self.__getters__:
+            return self.__getters__[name]()
+        else:
+            return getattr(AbstractModel, name)
 
     def configure_module(self):
         """Configure Controls module."""
-        self._view._module_options_panel.setVisible(False)
+        self._module_options_panel.setVisible(False)
         self._view._widget.txtSearch.setVisible(False)
 
         self.set_live_screens()
@@ -276,7 +285,8 @@ class ControlsModel(AbstractModel):
     def __selected_image(self):
         """Return selected image."""
         image_name = str(self._view._widget.cbImagesView.currentText())
-        images = self._view._widget.cbImagesView.images[0]
+        # FIXME
+        images = []  # self._view._widget.cbImagesView.images[0]
         if image_name:
             filter_func = lambda img: img.split(
                 os.sep)[-1].split('.')[0] == image_name
